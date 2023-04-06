@@ -56,7 +56,7 @@ class _LoginPageState extends State<LoginPage> {
       key: _formKey,
       child: Column(children: [
         TextFormField(
-          validator: RequiredValidator(errorText: "Veuillez entrer votre email"),
+          validator: RequiredValidator(errorText: "Veuillez saisir votre email"),
           decoration: const InputDecoration(
             isDense: true,
             border: OutlineInputBorder(),
@@ -70,7 +70,7 @@ class _LoginPageState extends State<LoginPage> {
           height: 20,
         ),
         TextFormField(
-          validator: RequiredValidator(errorText: "Veuillez entrer votre mot de passe"),
+          validator: RequiredValidator(errorText: "Veuillez saisir votre mot de passe"),
           decoration: InputDecoration(
             isDense: true,
             border: const OutlineInputBorder(),
@@ -112,8 +112,12 @@ class _LoginPageState extends State<LoginPage> {
             //ou state.status == LoginSuccess
             if(state is LoginSuccess) {
               Navigator.pushNamed(context, '/home');
+            } else if (state is LoginFailure) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: const Text("Erreur d'authentification"),
+                backgroundColor: Theme.of(context).errorColor,
+              ));
             }
-            //else show error message
           },
           builder: (context, state) {
             return ElevatedButton(

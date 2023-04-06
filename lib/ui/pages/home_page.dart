@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
   @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  int _currentIndex = 2;
+
+  @override
   Widget build(BuildContext context) {
-    // a list of 10 items displayed as squared cards by 2 and with an image and the title under it
     return Scaffold(
       body: GridView.builder(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -51,33 +58,50 @@ class HomePage extends StatelessWidget {
           );
         },
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.amber,
-        unselectedItemColor: Colors.black,
-        selectedItemColor: Theme.of(context).colorScheme.primary,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Search',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add),
-            label: 'Add',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: 'Favorite',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-      ),
+      bottomNavigationBar: _buildBottomNavigationBar(),
+    );
+  }
+
+  Widget _buildBottomNavigationBar() {
+    return BottomNavigationBar(
+      currentIndex: _currentIndex,
+      backgroundColor: Colors.amber,
+      unselectedItemColor: Colors.grey[800],
+      selectedItemColor: Theme.of(context).colorScheme.primary,
+      items: const [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.logout),
+          label: 'Déconnexion',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.add),
+          label: 'Add',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home),
+          label: 'Home',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.favorite),
+          label: 'Favorite',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.person),
+          label: 'Profile',
+        ),
+      ],
+      onTap: (index) {
+        if(index == 0) {
+          Navigator.of(context).pushReplacementNamed('/');
+          //TODO passer par un bloc
+          SharedPreferences.getInstance().then((prefs) {
+            prefs.remove('token');
+          });
+        }
+        setState(() {
+          _currentIndex = index;
+        });
+      },
     );
   }
 }

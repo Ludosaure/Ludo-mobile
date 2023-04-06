@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:injectable/injectable.dart';
+import 'package:ludo_mobile/core/exception.dart';
 import 'package:ludo_mobile/data/providers/authentication/login/login_request.dart';
 
 import '../../../models/user.dart';
@@ -23,8 +24,11 @@ class LoginProvider {
     //TODO changer par 200 quand back modifié
     if (response.statusCode == 201) {
       return LoginResponse.fromJson(jsonDecode(response.body));
+    } else if(response.statusCode == 400) {
+      throw const LoginFailureException("Erreur d'authentification");
     } else {
-      throw Exception('Failed to login');
+      //Problème de connexion ?
+      throw Exception('Erreur inconnue');
     }
   }
 }
