@@ -9,6 +9,10 @@ class LoginSubmitEvent extends LoginEvent {
   const LoginSubmitEvent();
 }
 
+class LogoutEvent extends LoginEvent {
+  const LogoutEvent();
+}
+
 class EmailChangedEvent extends LoginEvent {
   final String email;
 

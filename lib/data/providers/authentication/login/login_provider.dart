@@ -23,11 +23,14 @@ class LoginProvider {
 
     //TODO changer par 200 quand back modifié
     if (response.statusCode == 201) {
-      return LoginResponse.fromJson(jsonDecode(response.body));
-    } else if(response.statusCode == 400) {
+      return LoginResponse.fromJson(
+        jsonDecode(response.body),
+      );
+    } else if (response.statusCode == 400) {
       throw const LoginFailureException("Erreur d'authentification");
+    } else if (response.statusCode == 404) {
+      throw const LoginFailureException('User not found');
     } else {
-      //Problème de connexion ?
       throw Exception('Erreur inconnue');
     }
   }
@@ -42,8 +45,7 @@ class LoginResponse {
   String accessToken;
   User user;
 
-  factory LoginResponse.fromJson(Map<String, dynamic> json) =>
-      LoginResponse(
+  factory LoginResponse.fromJson(Map<String, dynamic> json) => LoginResponse(
         accessToken: json["accessToken"],
         user: User.fromJson(json["user"]),
       );

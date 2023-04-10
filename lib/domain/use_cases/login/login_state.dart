@@ -14,7 +14,7 @@ class LoginState {
   LoginState copyWith({
     String? email,
     String? password,
-    FormStatus? status,
+    FormStatus? status = const FormNotSent(),
   }) {
     return LoginState(
       email: email ?? this.email,

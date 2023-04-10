@@ -16,7 +16,11 @@ class AppRouter {
       case '/':
         return MaterialPageRoute(builder: (_) => const LandingPage());
       case '/home':
-        return MaterialPageRoute(builder: (_) => const HomePage());
+        return MaterialPageRoute(builder: (_) => BlocProvider.value(
+              value: _loginBloc, // pas fou
+              child: const HomePage(),
+            )
+        );
       case '/login':
         return MaterialPageRoute(builder: (_) => BlocProvider.value(
               value: _loginBloc,

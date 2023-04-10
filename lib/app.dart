@@ -70,10 +70,8 @@ class _MyAppState extends State<MyApp> {
         await SharedPreferences.getInstance();
     final String? accessToken = localStorage.getString('token');
 
-    if (accessToken != null) {
       setState(() {
-        _isLogged = true;
+        _isLogged = accessToken != null;
       });
-    }
   }
 }

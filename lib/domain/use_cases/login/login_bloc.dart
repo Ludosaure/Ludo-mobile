@@ -5,8 +5,10 @@ import 'package:ludo_mobile/core/form_status.dart';
 import 'package:ludo_mobile/data/providers/authentication/login/login_request.dart';
 import 'package:ludo_mobile/data/repositories/authentication_repository.dart';
 import 'package:meta/meta.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 part 'login_event.dart';
+
 part 'login_state.dart';
 
 @injectable
@@ -17,6 +19,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     on<LoginSubmitEvent>(onSubmitForm);
     on<EmailChangedEvent>(onEmailChanged);
     on<PasswordChangedEvent>(onPasswordChanged);
+    on<LogoutEvent>(onLogout);
   }
 
   void onEmailChanged(event, Emitter emit) async {
@@ -42,5 +45,19 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     emit(state.copyWith(
       status: const FormSubmissionSuccessful(),
     ));
+  }
+
+  void onLogout(event, Emitter emit) async {
+    SharedPreferences.getInstance().then((prefs) {
+      prefs.remove('token');
+    });
+
+    emit(
+      state.copyWith(
+        email: '',
+        password: '',
+        status: const FormNotSent(),
+      ),
+    );
   }
 }

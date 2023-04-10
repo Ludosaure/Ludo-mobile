@@ -118,6 +118,7 @@ class _LoginPageState extends State<LoginPage> {
         ),
         BlocConsumer<LoginBloc, LoginState>(
           listener: (context, state) {
+
             if (state.status is FormSubmissionSuccessful) {
               Navigator.pushNamed(context, '/home');
             } else if (state.status is FormSubmissionFailed) {
