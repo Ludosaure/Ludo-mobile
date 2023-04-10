@@ -1,32 +1,20 @@
 import 'package:flutter/material.dart';
-
-import '../../tools/responsive_layout.dart';
+import 'package:responsive_framework/responsive_value.dart';
+import 'package:responsive_framework/responsive_wrapper.dart';
 
 class LandingPage extends StatelessWidget {
   const LandingPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    //size
     final Size _size = MediaQuery.of(context).size;
     return Scaffold(
-      body: ResponsiveLayout(
-        mobile: _buildLandingPage(_size, context),
-        tablet: Center(
-          child: Container(
-            width: _size.width * 0.5,
-            height: _size.height * 0.6,
-            child: _buildLandingPage(_size, context),
-          )
+      body: Center(
+        child: Container(
+          width: _size.width * 0.5,
+          height: _size.height * 0.7,
+          child: _buildLandingPage(_size, context),
         ),
-        computer: Center(
-          //with a border
-          child: Container(
-            width: _size.width * 0.3,
-            height: _size.height * 0.6,
-            child: _buildLandingPage(_size, context),
-          )
-        )
       ),
     );
   }
@@ -53,17 +41,24 @@ class LandingPage extends StatelessWidget {
           ),
           const Text(
             "La Ludosaure",
+            textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 25,
               fontWeight: FontWeight.bold,
             ),
           ),
-          const Text(
-            //align text to the center
+          Text(
             "Retrouvez tous vos jeux de société préférés",
             style: TextStyle(
-              fontSize: 15,
-              color: Color(0xFF838486),
+              fontSize: ResponsiveValue(
+                context,
+                defaultValue: 15.0,
+                valueWhen: [
+                  const Condition.smallerThan(name: MOBILE, value: 10.0),
+                  const Condition.largerThan(name: TABLET, value: 20.0),
+                ],
+              ).value,
+              color: const Color(0xFF838486),
             ),
             textAlign: TextAlign.center,
           ),
@@ -77,7 +72,8 @@ class LandingPage extends StatelessWidget {
               Navigator.pushNamed(context, '/login');
             },
             style: ElevatedButton.styleFrom(
-              minimumSize: Size(size.width * 0.9, 40),
+              maximumSize: const Size(400, 40),
+              minimumSize: const Size(400, 40),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0),
               ),
@@ -94,7 +90,8 @@ class LandingPage extends StatelessWidget {
               Navigator.pushNamed(context, '/register');
             },
             style: ElevatedButton.styleFrom(
-              minimumSize: Size(size.width * 0.9, 40),
+              maximumSize: const Size(400, 40),
+              minimumSize: const Size(400, 40),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0),
               ),
@@ -106,14 +103,28 @@ class LandingPage extends StatelessWidget {
             ),
           ),
           TextButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/home');
-              },
-              style: TextButton.styleFrom(
-                alignment: Alignment.centerRight,
-                minimumSize: Size(size.width * 0.9, 40),
+            onPressed: () {
+              Navigator.pushNamed(context, '/home');
+            },
+            style: TextButton.styleFrom(
+              alignment: Alignment.centerRight,
+              minimumSize: const Size(400, 40),
+              maximumSize: const Size(400, 40),
+            ),
+            child: Text(
+              'Continuer sans compte',
+              style: TextStyle(
+                fontSize: ResponsiveValue(
+                  context,
+                  defaultValue: 15.0,
+                  valueWhen: [
+                    const Condition.smallerThan(name: MOBILE, value: 10.0),
+                    const Condition.largerThan(name: TABLET, value: 20.0),
+                  ],
+                ).value,
               ),
-              child: const Text('Continuer sans compte')),
+            ),
+          ),
         ],
       ),
     );
