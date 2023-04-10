@@ -1,7 +1,10 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:form_field_validator/form_field_validator.dart';
+import 'package:ludo_mobile/core/form_status.dart';
 import 'package:ludo_mobile/domain/use_cases/login/login_bloc.dart';
+import 'package:ludo_mobile/utils/app_dimensions.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -19,32 +22,37 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const Flexible(
-                child: SizedBox(
-                  height: 50,
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Flexible(
+                  child: SizedBox(
+                    height: 50,
+                  ),
                 ),
-              ),
-              _titleRow(context),
-              const Flexible(
-                child: SizedBox(
-                  height: 50,
+                _titleRow(context),
+                const Flexible(
+                  child: SizedBox(
+                    height: 50,
+                  ),
                 ),
-              ),
-              _loginForm(),
-              const Flexible(
-                child: SizedBox(
-                  height: 5,
+                SizedBox(
+                  width: AppDimensions.formWidth,
+                  child: _loginForm(),
                 ),
-              ),
-              _registerRow(context),
-            ],
+                const Flexible(
+                  child: SizedBox(
+                    height: 5,
+                  ),
+                ),
+                _registerText(context),
+              ],
+            ),
           ),
         ),
       ),
@@ -56,7 +64,8 @@ class _LoginPageState extends State<LoginPage> {
       key: _formKey,
       child: Column(children: [
         TextFormField(
-          validator: RequiredValidator(errorText: "Veuillez saisir votre email"),
+          validator:
+              RequiredValidator(errorText: "Veuillez saisir votre email"),
           decoration: const InputDecoration(
             isDense: true,
             border: OutlineInputBorder(),
@@ -70,7 +79,8 @@ class _LoginPageState extends State<LoginPage> {
           height: 20,
         ),
         TextFormField(
-          validator: RequiredValidator(errorText: "Veuillez saisir votre mot de passe"),
+          validator: RequiredValidator(
+              errorText: "Veuillez saisir votre mot de passe"),
           decoration: InputDecoration(
             isDense: true,
             border: const OutlineInputBorder(),
@@ -108,38 +118,41 @@ class _LoginPageState extends State<LoginPage> {
         ),
         BlocConsumer<LoginBloc, LoginState>(
           listener: (context, state) {
-            //ou state.status == "success"
-            //ou state.status == LoginSuccess
-            if(state is LoginSuccess) {
+            if (state.status is FormSubmissionSuccessful) {
               Navigator.pushNamed(context, '/home');
-            } else if (state is LoginFailure) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: const Text("Erreur d'authentification"),
-                backgroundColor: Theme.of(context).errorColor,
-              ));
+            } else if (state.status is FormSubmissionFailed) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: const Text("Erreur d'authentification"),
+                  backgroundColor: Theme.of(context).errorColor,
+                ),
+              );
             }
           },
           builder: (context, state) {
-            return ElevatedButton(
-              onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  context.read<LoginBloc>().add(const LoginSubmitEvent());
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                minimumSize: Size(MediaQuery.of(context).size.width * 0.9, 40),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-              ),
-              child: const Text(
-                "Se connecter",
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            );
+            return state.status is FormSubmitting
+                ? const CircularProgressIndicator()
+                : ElevatedButton(
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        context.read<LoginBloc>().add(const LoginSubmitEvent());
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: AppDimensions.largeButtonSize,
+                      maximumSize: AppDimensions.largeButtonSize,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                    ),
+                    child: const Text(
+                      "Se connecter",
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  );
           },
         ),
       ]),
@@ -171,26 +184,29 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _registerRow(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Text(
-          "Vous n'avez pas encore de compte ?",
-          style: TextStyle(
-            fontSize: 15,
-            color: Color(0xFF838486),
-          ),
+  Widget _registerText(BuildContext context) {
+    return RichText(
+      text: TextSpan(
+        text: "Vous n'avez pas encore de compte ? ",
+        style: const TextStyle(
+          fontSize: 15,
+          color: Color(0xFF838486),
         ),
-        TextButton(
-          onPressed: () {
-            Navigator.pushNamed(context, '/register');
-          },
-          child: const Text(
-            "S'inscrire",
+        children: <TextSpan>[
+          TextSpan(
+            text: "S'inscrire",
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            recognizer: TapGestureRecognizer()
+              ..onTap = () {
+                Navigator.pushNamed(context, '/register');
+              },
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

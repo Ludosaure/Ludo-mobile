@@ -5,7 +5,7 @@ import 'package:ludo_mobile/ui/router/app_router.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'custom_theme.dart';
+import 'utils/custom_theme.dart';
 
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);

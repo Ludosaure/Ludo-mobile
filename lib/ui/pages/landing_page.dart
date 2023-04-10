@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ludo_mobile/utils/app_dimensions.dart';
 import 'package:responsive_framework/responsive_value.dart';
 import 'package:responsive_framework/responsive_wrapper.dart';
 
@@ -72,8 +73,8 @@ class LandingPage extends StatelessWidget {
               Navigator.pushNamed(context, '/login');
             },
             style: ElevatedButton.styleFrom(
-              maximumSize: const Size(400, 40),
-              minimumSize: const Size(400, 40),
+              maximumSize: AppDimensions.largeButtonSize,
+              minimumSize: AppDimensions.largeButtonSize,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0),
               ),
@@ -90,8 +91,8 @@ class LandingPage extends StatelessWidget {
               Navigator.pushNamed(context, '/register');
             },
             style: ElevatedButton.styleFrom(
-              maximumSize: const Size(400, 40),
-              minimumSize: const Size(400, 40),
+              maximumSize: AppDimensions.largeButtonSize,
+              minimumSize: AppDimensions.largeButtonSize,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0),
               ),
@@ -108,8 +109,8 @@ class LandingPage extends StatelessWidget {
             },
             style: TextButton.styleFrom(
               alignment: Alignment.centerRight,
-              minimumSize: const Size(400, 40),
-              maximumSize: const Size(400, 40),
+              minimumSize: AppDimensions.largeButtonSize,
+              maximumSize: AppDimensions.largeButtonSize,
             ),
             child: Text(
               'Continuer sans compte',

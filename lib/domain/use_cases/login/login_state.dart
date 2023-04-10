@@ -3,22 +3,18 @@ part of 'login_bloc.dart';
 class LoginState {
   final String email;
   final String password;
-  final String status;
-
-  // final FormStatus status;
+  final FormStatus status;
 
   LoginState({
     this.email = '',
     this.password = '',
-    this.status = '',
-    // this.status = const FormNotSent(), // TODO
+    this.status = const FormNotSent(),
   });
 
   LoginState copyWith({
     String? email,
     String? password,
-    // FormStatus? status,
-    String? status,
+    FormStatus? status,
   }) {
     return LoginState(
       email: email ?? this.email,

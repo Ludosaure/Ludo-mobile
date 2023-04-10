@@ -16,6 +16,7 @@ class CustomTheme {
       900: Color.fromRGBO(125, 43, 136, 1),
     },
   );
+
   static MaterialColor primaryLight = MaterialColor(
     const Color.fromRGBO(164, 106, 171, 1).value,
     const <int, Color>{

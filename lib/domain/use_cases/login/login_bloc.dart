@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/core/exception.dart';
+import 'package:ludo_mobile/core/form_status.dart';
 import 'package:ludo_mobile/data/providers/authentication/login/login_request.dart';
 import 'package:ludo_mobile/data/repositories/authentication_repository.dart';
 import 'package:meta/meta.dart';
@@ -31,25 +32,15 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     try {
       await _authenticationRepository.login(req);
     } catch (exception) {
-      if(exception is LoginFailureException) {
-        emit(LoginFailure(message: exception.message));
+      if (exception is LoginFailureException) {
+        emit(state.copyWith(
+          status: const FormSubmissionFailed(),
+        ));
         return;
       }
-      //TODO gestion des erreurs
     }
-
-    // emit(state.copyWith(status: "LoginStatus.success"));
-    emit(LoginSuccess());
+    emit(state.copyWith(
+      status: const FormSubmissionSuccessful(),
+    ));
   }
-
-
-}
-
-class LoginFailure extends LoginState {
-  final String message;
-  LoginFailure({required this.message}) : super();
-}
-
-class LoginSuccess extends LoginState {
-  LoginSuccess() : super();
 }
