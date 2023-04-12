@@ -11,7 +11,8 @@ class FormSubmitting extends FormStatus {
 }
 
 class FormSubmissionFailed extends FormStatus {
-  const FormSubmissionFailed();
+  final String message;
+  const FormSubmissionFailed({required this.message});
 }
 
 class FormSubmissionSuccessful extends FormStatus {

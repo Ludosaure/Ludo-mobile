@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/core/exception.dart';
+import 'package:ludo_mobile/core/http_code.dart';
 import 'package:ludo_mobile/data/providers/authentication/login/login_request.dart';
 
 import '../../../models/user.dart';
@@ -21,15 +22,15 @@ class LoginProvider {
       },
     );
 
-    //TODO changer par 200 quand back modifié
-    if (response.statusCode == 201) {
+    if (response.statusCode == HttpCode.OK) {
       return LoginResponse.fromJson(
         jsonDecode(response.body),
       );
-    } else if (response.statusCode == 400) {
-      throw const LoginFailureException("Erreur d'authentification");
-    } else if (response.statusCode == 404) {
-      throw const LoginFailureException('User not found');
+    } else if (response.statusCode == HttpCode.BAD_REQUEST) {
+      throw const BadCredentialsException("Erreur d'authentification");
+    } else if (response.statusCode == HttpCode.NOT_FOUND) {
+      //Pas trop fan de renvoyer cette information
+      throw const UserNotFoundException('Utilisateur inconnu');
     } else {
       throw Exception('Erreur inconnue');
     }

@@ -122,9 +122,10 @@ class _LoginPageState extends State<LoginPage> {
             if (state.status is FormSubmissionSuccessful) {
               Navigator.pushNamed(context, '/home');
             } else if (state.status is FormSubmissionFailed) {
+              FormSubmissionFailed status = state.status as FormSubmissionFailed;
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: const Text("Erreur d'authentification"),
+                  content: Text(status.message),
                   backgroundColor: Theme.of(context).errorColor,
                 ),
               );

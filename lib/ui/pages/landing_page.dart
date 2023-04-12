@@ -12,8 +12,6 @@ class LandingPage extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: Container(
-          width: _size.width * 0.5,
-          height: _size.height * 0.7,
           child: _buildLandingPage(_size, context),
         ),
       ),

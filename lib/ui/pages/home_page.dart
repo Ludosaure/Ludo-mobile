@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ludo_mobile/utils/app_constants.dart';
 
 import '../../domain/use_cases/login/login_bloc.dart';
 
@@ -11,7 +12,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _currentIndex = 2;
+  int _currentIndex = AppConstants.HOME_INDEX;
 
   @override
   Widget build(BuildContext context) {
