@@ -1,17 +1,17 @@
 import 'dart:convert';
 
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/core/exception.dart';
 import 'package:ludo_mobile/core/http_code.dart';
 import 'package:ludo_mobile/data/providers/authentication/login/login_request.dart';
+import 'package:ludo_mobile/utils/app_constants.dart';
 
 import '../../../models/user.dart';
 import 'package:http/http.dart' as http;
 
 @injectable
 class LoginProvider {
-  final baseUrl = dotenv.env['API_URL']!;
+  final baseUrl = AppConstants.API_URL;
 
   Future<LoginResponse> login(LoginRequest request) async {
     final response = await http.post(
