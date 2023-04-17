@@ -15,8 +15,9 @@ jobs:
         with:
           flutter-version: "3.3.9"
       - run: flutter pub get
+      - run: flutter pub run build_runner build
       - run: flutter test
-      - run: flutter build web
+      - run: flutter build web --dart-define=API_URL=https://api-preprod.ludo-mobile.com
 
   build_apk:
     name: build_apk
@@ -32,9 +33,10 @@ jobs:
         with:
           flutter-version: "3.3.9"
       - run: flutter pub get
+      - run: flutter pub run build_runner build
       - run: flutter test
       - run: flutter build apk
-      - run: flutter build appbundle
+      - run: flutter build appbundle --dart-define=API_URL=https://api-preprod.ludo-mobile.com
 
   build_ios:
     name: build_ios
@@ -47,5 +49,6 @@ jobs:
           flutter-version: '3.3.9'
           architecture: x64
       - run: flutter pub get
+      - run: flutter pub run build_runner build
       - run: flutter test
-      - run: flutter build ios --release --no-codesign
+      - run: flutter build ios --release --no-codesign --dart-define=API_URL=https://api-preprod.ludo-mobile.com
