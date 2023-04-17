@@ -17,6 +17,7 @@ jobs:
       - run: flutter pub get
       - run: flutter test
       - run: flutter build web --dart-define=API_URL=https://api.ludo-mobile.com
+
   build_apk:
     name: build_apk
     needs: build_web
@@ -34,6 +35,7 @@ jobs:
       - run: flutter test
       - run: flutter build apk
       - run: flutter build appbundle --dart-define=API_URL=https://api.ludo-mobile.com
+
   build_ios:
     name: build_ios
     needs: build_apk
