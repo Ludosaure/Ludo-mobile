@@ -24,3 +24,14 @@ class PasswordChangedEvent extends LoginEvent {
 
   const PasswordChangedEvent(this.password);
 }
+
+class ResendConfirmAccountEmailEvent extends LoginEvent {
+  final String email;
+
+  const ResendConfirmAccountEmailEvent(this.email);
+}
+
+class ForgottenPasswordEvent extends LoginEvent {
+  final String email;
+  const ForgottenPasswordEvent(this.email);
+}

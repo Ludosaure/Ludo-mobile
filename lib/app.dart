@@ -42,6 +42,10 @@ class _MyAppState extends State<MyApp> {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       onGenerateRoute: _appRouter.onGenerateRoute,
+      supportedLocales: const [
+        Locale('en', 'US'),
+        Locale('fr', 'FR'),
+      ],
       home: SafeArea(
         child: _homePage(),
       ),

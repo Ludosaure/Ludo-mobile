@@ -25,7 +25,6 @@ class User {
   final bool hasVerifiedAccount;
   final bool isAccountClosed;
 
-  //Est-ce qu'on en a bsn si j'ai un JsonUser ?
   factory User.fromJson(Map<String, dynamic> json) => User(
         id: json["id"],
         email: json["email"],

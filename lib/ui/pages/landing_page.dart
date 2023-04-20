@@ -82,7 +82,7 @@ class LandingPage extends StatelessWidget {
             ),
           ),
           const SizedBox(
-            height: 20,
+            height: 5,
           ),
           ElevatedButton(
             onPressed: () {
