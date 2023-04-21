@@ -22,8 +22,7 @@ class RegisterProvider {
         'phone': request.phone,
       },
     );
-    print(response.statusCode);
-    print(response.body);
+
     if(response.statusCode == HttpCode.CREATED) {
       return RegisterResponse();
     } else {
@@ -33,13 +32,12 @@ class RegisterProvider {
 
   Future<RegisterResponse> resendConfirmAccountEmail(String email) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/authentication/resend-confirmation-email'),
+      Uri.parse('$baseUrl/authentication/resend-confirmation-mail'),
       body: {
         'email': email,
       },
     );
-    print(response.statusCode);
-    print(response.body);
+
     if(response.statusCode == HttpCode.CREATED) { //TODO changer par 200 quand l'api sera fix
       return RegisterResponse();
     } else {
