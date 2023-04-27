@@ -271,7 +271,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _confirmAccountDialog(BuildContext context) {
-    final _confirmAccountFormKey = GlobalKey<FormState>();
+    final confirmAccountFormKey = GlobalKey<FormState>();
     String email = "";
 
     return AlertDialog(
@@ -289,7 +289,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
           Form(
-            key: _confirmAccountFormKey,
+            key: confirmAccountFormKey,
             child: TextFormField(
               onChanged: (value) {
                 email = value;
@@ -313,8 +313,9 @@ class _LoginPageState extends State<LoginPage> {
       actions: [
         TextButton(
           onPressed: () {
-            if (_confirmAccountFormKey.currentState!.validate()) {
+            if (confirmAccountFormKey.currentState!.validate()) {
               context.read<LoginBloc>().add(ResendConfirmAccountEmailEvent(email));
+              Navigator.of(context, rootNavigator: true).pop();
             }
           },
           child: const Text("Envoyer"),

@@ -32,13 +32,11 @@ class AuthenticationRepository {
     _localStorage.remove("token");
   }
 
-  //TODO gestion des erreurs
   Future<void> register(RegisterRequest request) async {
-    final response = await registerProvider.register(request);
+    await registerProvider.register(request);
   }
 
-  //TODO gestion des erreurs
   Future<void> resendConfirmAccountEmail(String email) async {
-    final response = await registerProvider.resendConfirmAccountEmail(email);
+    await registerProvider.resendConfirmAccountEmail(email);
   }
 }

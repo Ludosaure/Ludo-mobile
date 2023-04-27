@@ -5,7 +5,8 @@ import 'package:ludo_mobile/domain/use_cases/register/register_bloc.dart';
 import 'package:ludo_mobile/injection.dart';
 import 'package:ludo_mobile/ui/pages/home_page.dart';
 import 'package:ludo_mobile/ui/pages/login_page.dart';
-import 'package:ludo_mobile/ui/pages/register_page.dart';
+import 'package:ludo_mobile/ui/pages/register/register_page.dart';
+import 'package:ludo_mobile/ui/pages/register/register_success_page.dart';
 import 'package:ludo_mobile/ui/pages/terms_and_conditions_page.dart';
 
 import '../pages/landing_page.dart';
@@ -36,8 +37,12 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) => BlocProvider.value(
             value: _registerBLoc,
-            child: RegisterPage(),
+            child: const RegisterPage(),
           ),
+        );
+      case '/register-success':
+        return MaterialPageRoute(
+          builder: (_) => const RegisterSuccessPage(),
         );
       case '/terms-and-conditions':
         return MaterialPageRoute(builder: (_) => TermsAndConditionsPage());

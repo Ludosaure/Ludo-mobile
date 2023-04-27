@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+//WIP Ne pas faire le code review
 class CustomFilePicker extends StatelessWidget {
   File? _selectedPicture;
   CustomFilePicker({Key? key}) : super(key: key);

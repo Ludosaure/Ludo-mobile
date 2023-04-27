@@ -17,10 +17,14 @@ class LoginFailureException extends BadRequestException {
   const LoginFailureException(String message) : super(message);
 }
 
-class UserNotFoundException extends NotFoundException {
-  const UserNotFoundException(String message) : super(message);
-}
-
 class BadCredentialsException extends BadRequestException {
   const BadCredentialsException(String message) : super(message);
+}
+
+class EmailAlreadyUsedException extends BadRequestException {
+  const EmailAlreadyUsedException(String message) : super(message);
+}
+
+class UnverifiedAccountException extends BadRequestException {
+  const UnverifiedAccountException(String message) : super(message);
 }

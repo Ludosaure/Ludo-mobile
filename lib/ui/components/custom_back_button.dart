@@ -15,7 +15,14 @@ class CustomBackButton extends StatelessWidget {
       child: IconButton(
         splashRadius: 20,
         onPressed: () {
-          Navigator.pop(context);
+          if(Navigator.canPop(context)) {
+            Navigator.pop(context);
+          } else {
+            Navigator.of(context).pushNamedAndRemoveUntil(
+              '/home',
+              (Route<dynamic> route) => false,
+            );
+          }
         },
         icon: const Icon(Icons.arrow_back),
       ),

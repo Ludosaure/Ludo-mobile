@@ -179,7 +179,7 @@ class _RegisterPageState extends State<RegisterPage> {
       listener: (context, state) {
         if (state.status is FormSubmissionSuccessful) {
           Navigator.of(context).pushNamedAndRemoveUntil(
-            '/login',
+            '/register-success',
             (route) => false,
           );
         } else if (state.status is FormSubmissionFailed) {

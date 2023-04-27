@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:ludo_mobile/ui/pages/home_page.dart';
 import 'package:ludo_mobile/ui/pages/landing_page.dart';
 import 'package:ludo_mobile/ui/router/app_router.dart';
@@ -45,6 +46,11 @@ class _MyAppState extends State<MyApp> {
       supportedLocales: const [
         Locale('en', 'US'),
         Locale('fr', 'FR'),
+      ],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
       ],
       home: SafeArea(
         child: _homePage(),
