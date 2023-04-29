@@ -19,6 +19,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     on<EmailChangedEvent>(onEmailChanged);
     on<PasswordChangedEvent>(onPasswordChanged);
     on<LogoutEvent>(onLogout);
+    on<ResendConfirmAccountEmailEvent>(onResendConfirmAccountEmail);
   }
 
   void onEmailChanged(event, Emitter emit) async {
@@ -57,5 +58,16 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         status: const FormNotSent(),
       ),
     );
+  }
+
+  void onResendConfirmAccountEmail(event, Emitter emit) async {
+    try {
+      await _authenticationRepository.resendConfirmAccountEmail(event.email);
+    } catch (exception) {
+      emit(state.copyWith(
+        status: FormSubmissionFailed(message: exception.toString()),
+      ));
+      return;
+    }
   }
 }

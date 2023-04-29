@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:ludo_mobile/core/form_status.dart';
 import 'package:ludo_mobile/domain/use_cases/login/login_bloc.dart';
+import 'package:ludo_mobile/ui/components/custom_back_button.dart';
+import 'package:ludo_mobile/ui/components/form_field_decoration.dart';
 import 'package:ludo_mobile/utils/app_dimensions.dart';
 
 class LoginPage extends StatefulWidget {
@@ -16,7 +18,6 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   bool _hidePassword = true;
-  Icon _passwordIcon = const Icon(Icons.visibility_off);
 
   @override
   Widget build(BuildContext context) {
@@ -24,18 +25,29 @@ class _LoginPageState extends State<LoginPage> {
       body: SafeArea(
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.all(20),
             child: Column(
               mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                SizedBox(
+                  width: AppDimensions.formWidth,
+                  child: _titleRow(),
+                ),
                 const Flexible(
                   child: SizedBox(
                     height: 50,
                   ),
                 ),
-                _titleRow(context),
+                Flexible(
+                  flex: 2,
+                  child: Image(
+                    image: const AssetImage('assets/ludosaure_icn.png'),
+                    width: MediaQuery.of(context).size.width * 0.6,
+                    height: 250,
+                  ),
+                ),
                 const Flexible(
                   child: SizedBox(
                     height: 50,
@@ -64,13 +76,10 @@ class _LoginPageState extends State<LoginPage> {
       key: _formKey,
       child: Column(children: [
         TextFormField(
-          validator:
-              RequiredValidator(errorText: "Veuillez saisir votre email"),
-          decoration: const InputDecoration(
-            isDense: true,
-            border: OutlineInputBorder(),
-            labelText: 'Email',
+          validator: RequiredValidator(
+            errorText: "Veuillez saisir votre email",
           ),
+          decoration: FormFieldDecoration.textField("Email"),
           onChanged: (value) {
             context.read<LoginBloc>().add(EmailChangedEvent(value));
           },
@@ -80,35 +89,52 @@ class _LoginPageState extends State<LoginPage> {
         ),
         TextFormField(
           validator: RequiredValidator(
-              errorText: "Veuillez saisir votre mot de passe"),
-          decoration: InputDecoration(
-            isDense: true,
-            border: const OutlineInputBorder(),
-            labelText: 'Mot de passe',
-            suffixIcon: IconButton(
-              onPressed: () {
-                setState(() {
-                  _hidePassword = !_hidePassword;
-                  _passwordIcon = _hidePassword
-                      ? const Icon(Icons.visibility_off)
-                      : const Icon(Icons.visibility);
-                });
-              },
-              icon: _passwordIcon,
-            ),
+            errorText: "Veuillez saisir votre mot de passe",
+          ),
+          decoration: FormFieldDecoration.passwordField(
+            "Mot de passe",
+            _togglePasswordVisibility,
+            _hidePassword,
           ),
           obscureText: _hidePassword,
           onChanged: (value) {
             context.read<LoginBloc>().add(PasswordChangedEvent(value));
           },
         ),
-        Row(
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisAlignment: MainAxisAlignment.end,
+          verticalDirection: VerticalDirection.down,
           children: [
             TextButton(
-              onPressed: () {},
+              style: TextButton.styleFrom(
+                visualDensity: VisualDensity.compact,
+                padding: const EdgeInsets.all(0),
+              ),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (_) => _forgottenPasswordDialog(context),
+                );
+              },
               child: const Text(
                 "Mot de passe oublié ?",
+              ),
+            ),
+            TextButton(
+              style: TextButton.styleFrom(
+                visualDensity: VisualDensity.compact,
+                padding: const EdgeInsets.all(0),
+              ),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (_) => _confirmAccountDialog(context),
+                );
+              },
+              child: const Text(
+                "Vous n'avez pas reçu votre mail de confirmation ?",
               ),
             ),
           ],
@@ -116,72 +142,70 @@ class _LoginPageState extends State<LoginPage> {
         const SizedBox(
           height: 5,
         ),
-        BlocConsumer<LoginBloc, LoginState>(
-          listener: (context, state) {
-
-            if (state.status is FormSubmissionSuccessful) {
-              Navigator.pushNamed(context, '/home');
-            } else if (state.status is FormSubmissionFailed) {
-              FormSubmissionFailed status = state.status as FormSubmissionFailed;
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(status.message),
-                  backgroundColor: Theme.of(context).errorColor,
-                ),
-              );
-            }
-          },
-          builder: (context, state) {
-            return state.status is FormSubmitting
-                ? const CircularProgressIndicator()
-                : ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        context.read<LoginBloc>().add(const LoginSubmitEvent());
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: AppDimensions.largeButtonSize,
-                      maximumSize: AppDimensions.largeButtonSize,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                    ),
-                    child: const Text(
-                      "Se connecter",
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  );
-          },
-        ),
+        _submitButton(context),
       ]),
     );
   }
 
-  Widget _titleRow(BuildContext context) {
-    return Row(
-      children: [
-        IconButton(
+  BlocConsumer _submitButton(BuildContext context) {
+    return BlocConsumer<LoginBloc, LoginState>(
+      listener: (context, state) {
+        if (state.status is FormSubmissionSuccessful) {
+          Navigator.pushNamed(context, '/home');
+        } else if (state.status is FormSubmissionFailed) {
+          FormSubmissionFailed status = state.status as FormSubmissionFailed;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(status.message),
+              backgroundColor: Theme.of(context).errorColor,
+            ),
+          );
+        }
+      },
+      builder: (context, state) {
+        if (state.status is FormSubmitting) {
+          return const CircularProgressIndicator();
+        }
+        return ElevatedButton(
           onPressed: () {
-            Navigator.pop(context);
+            if (_formKey.currentState!.validate()) {
+              context.read<LoginBloc>().add(const LoginSubmitEvent());
+            }
           },
-          icon: const Icon(Icons.arrow_back),
-        ),
-        const Flexible(
-          child: SizedBox(
-            width: 20,
+          style: ElevatedButton.styleFrom(
+            minimumSize: AppDimensions.largeButtonSize,
+            maximumSize: AppDimensions.largeButtonSize,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0),
+            ),
           ),
-        ),
-        const Text(
+          child: const Text(
+            "Se connecter",
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _titleRow() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: const [
+        CustomBackButton(),
+        Spacer(),
+        Text(
           "Connexion",
           style: TextStyle(
             fontSize: 25,
             fontWeight: FontWeight.bold,
           ),
+          textAlign: TextAlign.center,
         ),
+        Spacer(),
       ],
     );
   }
@@ -210,5 +234,99 @@ class _LoginPageState extends State<LoginPage> {
         ],
       ),
     );
+  }
+
+  Widget _forgottenPasswordDialog(BuildContext context) {
+    return AlertDialog(
+      title: const Text("Mot de passe oublié"),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Veuillez saisir votre adresse email pour réinitialiser votre mot de passe.",
+            style: TextStyle(
+              fontSize: 15,
+              color: Color(0xFF838486),
+            ),
+          ),
+          TextFormField(
+            decoration: const InputDecoration(
+              labelText: "Email",
+              hintText: "john.doe@gmail.com",
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: const Text("OK"),
+        ),
+      ],
+    );
+  }
+
+  Widget _confirmAccountDialog(BuildContext context) {
+    final confirmAccountFormKey = GlobalKey<FormState>();
+    String email = "";
+
+    return AlertDialog(
+      title: const Text("Confirmer mon compte"),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Renseignez votre adresse mail pour recevoir le mail de confirmation à nouveau.",
+            style: TextStyle(
+              fontSize: 15,
+              color: Color(0xFF838486),
+            ),
+          ),
+          Form(
+            key: confirmAccountFormKey,
+            child: TextFormField(
+              onChanged: (value) {
+                email = value;
+              },
+              validator: MultiValidator([
+                RequiredValidator(
+                  errorText: "Veuillez saisir votre email",
+                ),
+                EmailValidator(
+                  errorText: "Veuillez saisir un email valide",
+                ),
+              ]),
+              decoration: const InputDecoration(
+                labelText: "Email",
+                hintText: "john.doe@gmail.com",
+              ),
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            if (confirmAccountFormKey.currentState!.validate()) {
+              context.read<LoginBloc>().add(ResendConfirmAccountEmailEvent(email));
+              Navigator.of(context, rootNavigator: true).pop();
+            }
+          },
+          child: const Text("Envoyer"),
+        ),
+      ],
+    );
+  }
+
+  void _togglePasswordVisibility() {
+    setState(() {
+      _hidePassword = !_hidePassword;
+    });
   }
 }

@@ -26,11 +26,14 @@ class LoginProvider {
       return LoginResponse.fromJson(
         jsonDecode(response.body),
       );
-    } else if (response.statusCode == HttpCode.BAD_REQUEST) {
-      throw const BadCredentialsException("Erreur d'authentification");
-    } else if (response.statusCode == HttpCode.NOT_FOUND) {
-      //Pas trop fan de renvoyer cette information
-      throw const UserNotFoundException('Utilisateur inconnu');
+    } else if (response.statusCode == HttpCode.BAD_REQUEST ||
+        response.statusCode == HttpCode.NOT_FOUND) {
+      throw const BadCredentialsException(
+        "Erreur d'authentification, votre email ou votre mot de passe sont invalides",
+      );
+    } else if (response.statusCode == HttpCode.FORBIDDEN) {
+      throw const UnverifiedAccountException(
+          "Vous n'avez pas encore vérifié votre compte");
     } else {
       throw Exception('Erreur inconnue');
     }
