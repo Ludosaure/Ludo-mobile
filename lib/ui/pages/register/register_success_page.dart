@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/utils/app_dimensions.dart';
 
 class RegisterSuccessPage extends StatelessWidget {
@@ -61,10 +62,11 @@ class RegisterSuccessPage extends StatelessWidget {
               ),
               ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                    '/login',
-                    (route) => false,
-                  );
+                  context.go('/login');
+                  // Navigator.of(context).pushNamedAndRemoveUntil(
+                  //   '/login',
+                  //   (route) => false,
+                  // );
                 },
                 style: ElevatedButton.styleFrom(
                   minimumSize: AppDimensions.largeButtonSize,

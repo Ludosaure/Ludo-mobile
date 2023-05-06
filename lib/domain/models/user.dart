@@ -1,34 +1,37 @@
+import 'package:ludo_mobile/utils/app_constants.dart';
+
 class User {
+  final String id;
+  final String email;
+  final String firstname;
+  final String lastname;
+  final String phone;
+  final String? pseudo;
+  final String? profilePicturePath;
+  final String role;
+  final bool hasVerifiedAccount;
+  final bool isAccountClosed;
+
   User({
     required this.id,
     required this.email,
-    required this.password,
     required this.firstname,
     required this.lastname,
     required this.phone,
-    required this.pseudo,
-    required this.profilePicturePath,
+    this.pseudo,
+    this.profilePicturePath,
     required this.role,
     required this.hasVerifiedAccount,
     required this.isAccountClosed,
   });
 
-  final String id;
-  final String email;
-  final String password;
-  final String firstname;
-  final String lastname;
-  final String phone;
-  final String pseudo;
-  final String profilePicturePath;
-  final String role;
-  final bool hasVerifiedAccount;
-  final bool isAccountClosed;
+  bool isAdmin() {
+    return role == AppConstants.ADMIN_ROLE;
+  }
 
   factory User.fromJson(Map<String, dynamic> json) => User(
         id: json["id"],
         email: json["email"],
-        password: json["password"],
         firstname: json["firstname"],
         lastname: json["lastname"],
         phone: json["phone"],
@@ -42,7 +45,6 @@ class User {
   Map<String, dynamic> toJson() => {
         "id": id,
         "email": email,
-        "password": password,
         "firstname": firstname,
         "lastname": lastname,
         "phone": phone,

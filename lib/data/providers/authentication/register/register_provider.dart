@@ -27,7 +27,8 @@ class RegisterProvider {
       return RegisterResponse();
     } else if (response.statusCode == HttpCode.CONFLICT) {
       throw const EmailAlreadyUsedException(
-          'Un compte utilisant cet email existe déjà');
+          'Un compte utilisant cet email existe déjà'
+      );
     } else {
       throw Exception('Erreur inconnue');
     }
@@ -41,11 +42,9 @@ class RegisterProvider {
       },
     );
 
-    if (response.statusCode == HttpCode.CREATED) {
-      //TODO changer par 200 quand l'api sera fix
+    if (response.statusCode == HttpCode.OK) {
       return RegisterResponse();
     } else if (response.statusCode == HttpCode.NOT_FOUND) {
-      // On ne doit pas donner cette information en cas de brut force
       return RegisterResponse();
     } else {
       throw Exception('Erreur inconnue');

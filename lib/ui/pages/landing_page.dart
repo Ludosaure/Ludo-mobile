@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/utils/app_dimensions.dart';
 import 'package:responsive_framework/responsive_value.dart';
 import 'package:responsive_framework/responsive_wrapper.dart';
@@ -68,7 +69,8 @@ class LandingPage extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () {
-              Navigator.pushNamed(context, '/login');
+              context.go('/login');
+              // Navigator.pushNamed(context, '/login');
             },
             style: ElevatedButton.styleFrom(
               maximumSize: AppDimensions.largeButtonSize,
@@ -86,7 +88,8 @@ class LandingPage extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () {
-              Navigator.pushNamed(context, '/register');
+              context.go('/register');
+              // Navigator.pushNamed(context, '/register');
             },
             style: ElevatedButton.styleFrom(
               maximumSize: AppDimensions.largeButtonSize,
@@ -103,7 +106,8 @@ class LandingPage extends StatelessWidget {
           ),
           TextButton(
             onPressed: () {
-              Navigator.pushNamed(context, '/home');
+              context.go('/home', extra: null);
+              // Navigator.pushNamed(context, '/home', arguments: null);
             },
             style: TextButton.styleFrom(
               alignment: Alignment.centerRight,

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class CustomBackButton extends StatelessWidget {
-  const CustomBackButton({Key? key}) : super(key: key);
+  final Color color;
+  const CustomBackButton({Key? key, this.color = Colors.black}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 40,
+      width: MediaQuery.of(context).size.width * 0.1,
       margin: const EdgeInsets.only(right: 10),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
@@ -18,13 +20,10 @@ class CustomBackButton extends StatelessWidget {
           if(Navigator.canPop(context)) {
             Navigator.pop(context);
           } else {
-            Navigator.of(context).pushNamedAndRemoveUntil(
-              '/home',
-              (Route<dynamic> route) => false,
-            );
+            context.go('/', extra: null);
           }
         },
-        icon: const Icon(Icons.arrow_back),
+        icon: Icon(Icons.arrow_back, color: color),
       ),
     );
   }

@@ -2,7 +2,9 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:form_field_validator/form_field_validator.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/core/form_status.dart';
+import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:ludo_mobile/domain/use_cases/login/login_bloc.dart';
 import 'package:ludo_mobile/ui/components/custom_back_button.dart';
 import 'package:ludo_mobile/ui/components/form_field_decoration.dart';
@@ -151,7 +153,13 @@ class _LoginPageState extends State<LoginPage> {
     return BlocConsumer<LoginBloc, LoginState>(
       listener: (context, state) {
         if (state.status is FormSubmissionSuccessful) {
-          Navigator.pushNamed(context, '/home');
+          final user = state.loggedUser as User;
+          // Navigator.pushNamed(context, '/home', arguments: user);
+          if(user.isAdmin()){
+            context.go('/home/admin', extra: user);
+          } else {
+            context.go('/home', extra: user);
+          }
         } else if (state.status is FormSubmissionFailed) {
           FormSubmissionFailed status = state.status as FormSubmissionFailed;
           ScaffoldMessenger.of(context).showSnackBar(
@@ -228,7 +236,8 @@ class _LoginPageState extends State<LoginPage> {
             ),
             recognizer: TapGestureRecognizer()
               ..onTap = () {
-                Navigator.pushNamed(context, '/register');
+                context.go('/register');
+                // Navigator.pushNamed(context, '/register');
               },
           ),
         ],

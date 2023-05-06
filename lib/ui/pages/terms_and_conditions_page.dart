@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:ludo_mobile/data/repositories/administration/terms_and_conditions_repository.dart';
+import 'package:ludo_mobile/domain/models/terms_and_conditions.dart';
 import 'package:ludo_mobile/ui/components/sized_box_20.dart';
 
-import '../../data/models/terms_and_conditions.dart';
 import '../components/custom_back_button.dart';
 import 'package:intl/intl.dart';
 

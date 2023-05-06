@@ -1,6 +1,5 @@
 import 'package:injectable/injectable.dart';
-
-import '../../models/terms_and_conditions.dart';
+import 'package:ludo_mobile/domain/models/terms_and_conditions.dart';
 
 @injectable
 class TermsAndConditionsRepository {

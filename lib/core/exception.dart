@@ -13,6 +13,13 @@ class NotFoundException implements Exception {
   String toString() => message;
 }
 
+class InternalServerException implements Exception {
+  final String message;
+  const InternalServerException(this.message);
+  @override
+  String toString() => message;
+}
+
 class LoginFailureException extends BadRequestException {
   const LoginFailureException(String message) : super(message);
 }
@@ -27,4 +34,8 @@ class EmailAlreadyUsedException extends BadRequestException {
 
 class UnverifiedAccountException extends BadRequestException {
   const UnverifiedAccountException(String message) : super(message);
+}
+
+class ServiceUnavailableException extends InternalServerException {
+  const ServiceUnavailableException(String message) : super(message);
 }
