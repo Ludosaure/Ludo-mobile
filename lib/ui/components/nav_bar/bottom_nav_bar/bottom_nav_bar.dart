@@ -31,7 +31,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
         ),
         BottomNavigationBarItem(
           icon: Icon(MenuItems.Home.icon),
-          label: MenuItems.Profile.label,
+          label: MenuItems.Home.label,
         ),
         BottomNavigationBarItem(
           icon: Icon(MenuItems.Favorites.icon),
@@ -44,8 +44,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
       ],
       onTap: (index) {
         if (index == MenuItems.Messages.index) {
-          print('Messages');
-          context.go('/messages');
+          context.go('/inbox');
         }  else if (index == MenuItems.Search.index) {
           showDialog(
             context: context,
@@ -53,6 +52,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
               return const SearchBar();
             },
           );
+          index = MenuItems.Home.index;
         } else if (index == MenuItems.Home.index) {
           context.go('/home');
         } else if (index == MenuItems.Profile.index) {
@@ -61,7 +61,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
           });
           context.go('/');
         } else if (index == MenuItems.Favorites.index) {
-          context.go('/favorites');
+          context.go('/game-favorites');
         }
 
         setState(() {

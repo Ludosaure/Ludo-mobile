@@ -44,11 +44,11 @@ class _AdminBottomNavBarState extends State<AdminBottomNavBar> {
       onTap: (index) {
         if( index == AdminMenuItems.Messages.index ) {
           print('Messages');
-          context.go('/messages');
+          context.go('/inbox');
         }
         else if(index == AdminMenuItems.AddGame.index ) {
           print('Add Game');
-          context.go('/add-game');
+          context.go('/game-add');
         }
         else if(index == AdminMenuItems.Home.index ) {
           context.go('/home/admin');
