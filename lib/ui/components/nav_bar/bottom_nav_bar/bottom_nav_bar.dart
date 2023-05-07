@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/ui/components/search_bar.dart';
+import 'package:ludo_mobile/ui/router/routes.dart';
 import 'package:ludo_mobile/utils/menu_items.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -44,7 +45,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
       ],
       onTap: (index) {
         if (index == MenuItems.Messages.index) {
-          context.go('/inbox');
+          context.go(Routes.inbox.path);
         }  else if (index == MenuItems.Search.index) {
           showDialog(
             context: context,
@@ -54,14 +55,14 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
           );
           index = MenuItems.Home.index;
         } else if (index == MenuItems.Home.index) {
-          context.go('/home');
+          context.go(Routes.home.path);
         } else if (index == MenuItems.Profile.index) {
           SharedPreferences.getInstance().then((prefs) {
             prefs.remove('token');
           });
-          context.go('/');
+          context.go(Routes.landing.path);
         } else if (index == MenuItems.Favorites.index) {
-          context.go('/game-favorites');
+          context.go(Routes.favorites.path);
         }
 
         setState(() {

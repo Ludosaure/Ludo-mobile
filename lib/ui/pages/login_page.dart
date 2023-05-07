@@ -8,6 +8,7 @@ import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:ludo_mobile/domain/use_cases/login/login_bloc.dart';
 import 'package:ludo_mobile/ui/components/custom_back_button.dart';
 import 'package:ludo_mobile/ui/components/form_field_decoration.dart';
+import 'package:ludo_mobile/ui/router/routes.dart';
 import 'package:ludo_mobile/utils/app_dimensions.dart';
 
 class LoginPage extends StatefulWidget {
@@ -154,11 +155,11 @@ class _LoginPageState extends State<LoginPage> {
       listener: (context, state) {
         if (state.status is FormSubmissionSuccessful) {
           final user = state.loggedUser as User;
-          // Navigator.pushNamed(context, '/home', arguments: user);
+
           if(user.isAdmin()){
-            context.go('/home/admin', extra: user);
+            context.go(Routes.homeAdmin.path, extra: user);
           } else {
-            context.go('/home', extra: user);
+            context.go(Routes.home.path, extra: user);
           }
         } else if (state.status is FormSubmissionFailed) {
           FormSubmissionFailed status = state.status as FormSubmissionFailed;
@@ -236,8 +237,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             recognizer: TapGestureRecognizer()
               ..onTap = () {
-                context.go('/register');
-                // Navigator.pushNamed(context, '/register');
+                context.go(Routes.register.path);
               },
           ),
         ],

@@ -20,6 +20,7 @@ import 'package:ludo_mobile/ui/pages/profile_page.dart';
 import 'package:ludo_mobile/ui/pages/register/register_page.dart';
 import 'package:ludo_mobile/ui/pages/register/register_success_page.dart';
 import 'package:ludo_mobile/ui/pages/terms_and_conditions_page.dart';
+import 'package:ludo_mobile/ui/router/routes.dart';
 
 class AppRouter {
   final LoginBloc _loginBloc = locator<LoginBloc>();
@@ -31,7 +32,7 @@ class AppRouter {
   late final _router = GoRouter(
     routes: [
       GoRoute(
-        path: '/',
+        path: Routes.landing.path,
         pageBuilder: (context, state) => CustomTransitionPage(
           child: const LandingPage(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -43,7 +44,7 @@ class AppRouter {
         ),
       ),
       GoRoute(
-        path: '/home',
+        path: Routes.home.path,
         pageBuilder: (context, state) => CustomTransitionPage<void>(
           key: state.pageKey,
           child: MultiBlocProvider(
@@ -68,7 +69,7 @@ class AppRouter {
         ),
       ),
       GoRoute(
-        path: '/home/admin',
+        path: Routes.homeAdmin.path,
         pageBuilder: (context, state) => CustomTransitionPage(
           child: BlocProvider.value(
             value: _loginBloc,
@@ -83,7 +84,7 @@ class AppRouter {
         ),
       ),
       GoRoute(
-        path: '/login',
+        path: Routes.login.path,
         pageBuilder: (context, state) => CustomTransitionPage(
           child: BlocProvider.value(
             value: _loginBloc,
@@ -98,7 +99,7 @@ class AppRouter {
         ),
       ),
       GoRoute(
-        path: '/register',
+        path: Routes.register.path,
         pageBuilder: (context, state) => CustomTransitionPage(
           child: BlocProvider.value(
             value: _registerBLoc,
@@ -113,20 +114,7 @@ class AppRouter {
         ),
         routes: [
           GoRoute(
-            path: 'terms',
-            pageBuilder: (context, state) => CustomTransitionPage(
-              child: TermsAndConditionsPage(),
-              transitionsBuilder:
-                  (context, animation, secondaryAnimation, child) {
-                return FadeTransition(
-                  opacity: animation,
-                  child: child,
-                );
-              },
-            ),
-          ),
-          GoRoute(
-            path: 'success',
+            path: Routes.success.path,
             pageBuilder: (context, state) => CustomTransitionPage(
               child: const RegisterSuccessPage(),
               transitionsBuilder:
@@ -141,7 +129,20 @@ class AppRouter {
         ],
       ),
       GoRoute(
-        path: '/game',
+        path: Routes.terms.path,
+        pageBuilder: (context, state) => CustomTransitionPage(
+          child: TermsAndConditionsPage(),
+          transitionsBuilder:
+              (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+        ),
+      ),
+      GoRoute(
+        path: Routes.game.path,
         routes: [
           GoRoute(
             path: ':id',
@@ -164,7 +165,7 @@ class AppRouter {
         ],
       ),
       GoRoute(
-        path: '/game-add',
+        path: Routes.addGame.path,
         pageBuilder: (context, state) => CustomTransitionPage(
           child: const AddGamePage(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -176,7 +177,7 @@ class AppRouter {
         ),
       ),
       GoRoute(
-        path: '/game-favorites',
+        path: Routes.favorites.path,
         pageBuilder: (context, state) => CustomTransitionPage(
           child: const GameFavoritesPage(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -188,7 +189,7 @@ class AppRouter {
         ),
       ),
       GoRoute(
-        path: '/inbox',
+        path: Routes.inbox.path,
         pageBuilder: (context, state) => CustomTransitionPage(
           child: const InboxPage(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -200,7 +201,7 @@ class AppRouter {
         ),
       ),
       GoRoute(
-        path: '/logout',
+        path: Routes.logout.path,
         pageBuilder: (context, state) => CustomTransitionPage(
           child: const LandingPage(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -212,7 +213,7 @@ class AppRouter {
         ),
       ),
       GoRoute(
-        path: '/profile',
+        path: Routes.profile.path,
         pageBuilder: (context, state) => CustomTransitionPage(
           child: const ProfilePage(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -224,7 +225,7 @@ class AppRouter {
         ),
       ),
       GoRoute(
-        path: '/dashboard',
+        path: Routes.adminDashboard.path,
         pageBuilder: (context, state) => CustomTransitionPage(
           child: const AdminDashboardPage(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {

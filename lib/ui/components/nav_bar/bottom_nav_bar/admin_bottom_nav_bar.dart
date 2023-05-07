@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ludo_mobile/ui/router/routes.dart';
 import 'package:ludo_mobile/utils/menu_items.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -44,24 +45,24 @@ class _AdminBottomNavBarState extends State<AdminBottomNavBar> {
       onTap: (index) {
         if( index == AdminMenuItems.Messages.index ) {
           print('Messages');
-          context.go('/inbox');
+          context.go(Routes.inbox.path);
         }
         else if(index == AdminMenuItems.AddGame.index ) {
           print('Add Game');
-          context.go('/game-add');
+          context.go(Routes.addGame.path);
         }
         else if(index == AdminMenuItems.Home.index ) {
-          context.go('/home/admin');
+          context.go(Routes.homeAdmin.path);
         }
         else if(index == AdminMenuItems.Dashboard.index) {
-          context.go('/dashboard');
+          context.go(Routes.adminDashboard.path);
         }
         else if(index == AdminMenuItems.Profile.index ) {
           SharedPreferences.getInstance().then((prefs) {
             print('remove token');
             prefs.remove('token');
             prefs.remove('user');
-            context.go('/');
+            context.go(Routes.landing.path);
           });
         }
 

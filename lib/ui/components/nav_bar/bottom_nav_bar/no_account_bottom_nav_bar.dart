@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ludo_mobile/ui/router/routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class NoAccountBottomNavigationBar extends StatefulWidget {
@@ -33,9 +34,9 @@ class _NoAccountBottomNavigationBarState extends State<NoAccountBottomNavigation
               prefs.remove('token');
               prefs.remove('user');
             });
-            context.go('/register');
+            context.go(Routes.register.path);
           } else {
-            context.go('/login');
+            context.go(Routes.login.path);
           }
         });
       },

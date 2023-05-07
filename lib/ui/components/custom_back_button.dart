@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ludo_mobile/ui/router/routes.dart';
 
 class CustomBackButton extends StatelessWidget {
   final Color color;
@@ -20,7 +21,7 @@ class CustomBackButton extends StatelessWidget {
           if(Navigator.canPop(context)) {
             Navigator.pop(context);
           } else {
-            context.go('/', extra: null);
+            context.go(Routes.landing.path, extra: null);
           }
         },
         icon: Icon(Icons.arrow_back, color: color),
