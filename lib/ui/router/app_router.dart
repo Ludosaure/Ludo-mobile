@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
@@ -31,52 +32,111 @@ class AppRouter {
     routes: [
       GoRoute(
         path: '/',
-        builder: (context, state) => const LandingPage(),
+        pageBuilder: (context, state) => CustomTransitionPage(
+          child: const LandingPage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+        ),
       ),
       GoRoute(
         path: '/home',
-        builder: (context, state) => MultiBlocProvider(
-          providers: [
-            BlocProvider.value(
-              value: _loginBloc,
+        pageBuilder: (context, state) => CustomTransitionPage<void>(
+          key: state.pageKey,
+          child: MultiBlocProvider(
+            providers: [
+              BlocProvider.value(
+                value: _loginBloc,
+              ),
+              BlocProvider.value(
+                value: _getGamesCubit,
+              ),
+            ],
+            child: UserHomePage(
+              connectedUser: state.extra != null ? state.extra as User : null,
             ),
-            BlocProvider.value(
-              value: _getGamesCubit,
-            ),
-          ],
-          child: UserHomePage(
-            connectedUser: state.extra != null ? state.extra as User : null,
           ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
         ),
       ),
       GoRoute(
         path: '/home/admin',
-        builder: (context, state) => BlocProvider.value(
-          value: _loginBloc,
-          child: const AdminHomePage(),
+        pageBuilder: (context, state) => CustomTransitionPage(
+          child: BlocProvider.value(
+            value: _loginBloc,
+            child: const AdminHomePage(),
+          ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
         ),
       ),
       GoRoute(
         path: '/login',
-        builder: (context, state) => BlocProvider.value(
-          value: _loginBloc,
-          child: const LoginPage(),
+        pageBuilder: (context, state) => CustomTransitionPage(
+          child: BlocProvider.value(
+            value: _loginBloc,
+            child: const LoginPage(),
+          ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
         ),
       ),
       GoRoute(
         path: '/register',
-        builder: (context, state) => BlocProvider.value(
-          value: _registerBLoc,
-          child: const RegisterPage(),
+        pageBuilder: (context, state) => CustomTransitionPage(
+          child: BlocProvider.value(
+            value: _registerBLoc,
+            child: const RegisterPage(),
+          ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
         ),
         routes: [
           GoRoute(
             path: 'terms',
-            builder: (context, state) => TermsAndConditionsPage(),
+            pageBuilder: (context, state) => CustomTransitionPage(
+              child: TermsAndConditionsPage(),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                return FadeTransition(
+                  opacity: animation,
+                  child: child,
+                );
+              },
+            ),
           ),
           GoRoute(
             path: 'success',
-            builder: (context, state) => const RegisterSuccessPage(),
+            pageBuilder: (context, state) => CustomTransitionPage(
+              child: const RegisterSuccessPage(),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                return FadeTransition(
+                  opacity: animation,
+                  child: child,
+                );
+              },
+            ),
           ),
         ],
       ),
@@ -85,38 +145,95 @@ class AppRouter {
         routes: [
           GoRoute(
             path: ':id',
-            builder: (context, state) => BlocProvider.value(
-              value: _getGamesCubit,
-              child: GameDetailsPage(
-                game: state.extra as Game,
+            pageBuilder: (context, state) => CustomTransitionPage(
+              child: BlocProvider.value(
+                value: _getGamesCubit,
+                child: GameDetailsPage(
+                  game: state.extra as Game,
+                ),
               ),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                return FadeTransition(
+                  opacity: animation,
+                  child: child,
+                );
+              },
             ),
           ),
         ],
       ),
       GoRoute(
         path: '/game-add',
-        builder: (context, state) => const AddGamePage(),
+        pageBuilder: (context, state) => CustomTransitionPage(
+          child: const AddGamePage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+        ),
       ),
       GoRoute(
         path: '/game-favorites',
-        builder: (context, state) => const GameFavoritesPage(),
+        pageBuilder: (context, state) => CustomTransitionPage(
+          child: const GameFavoritesPage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+        ),
       ),
       GoRoute(
         path: '/inbox',
-        builder: (context, state) => const InboxPage(),
+        pageBuilder: (context, state) => CustomTransitionPage(
+          child: const InboxPage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+        ),
       ),
       GoRoute(
         path: '/logout',
-        builder: (context, state) => const LandingPage(),
+        pageBuilder: (context, state) => CustomTransitionPage(
+          child: const LandingPage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+        ),
       ),
       GoRoute(
         path: '/profile',
-        builder: (context, state) => const ProfilePage(),
+        pageBuilder: (context, state) => CustomTransitionPage(
+          child: const ProfilePage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+        ),
       ),
       GoRoute(
         path: '/dashboard',
-        builder: (context, state) => const AdminDashboardPage(),
+        pageBuilder: (context, state) => CustomTransitionPage(
+          child: const AdminDashboardPage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+        ),
       ),
     ],
     // redirect: (state) {
