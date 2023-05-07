@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:ludo_mobile/domain/models/reservation.dart';
 import 'package:ludo_mobile/domain/models/user.dart';
-import 'package:ludo_mobile/ui/components/nav_bar/app_bar/admin_app_bar.dart';
-import 'package:ludo_mobile/ui/components/nav_bar/bottom_nav_bar/admin_bottom_nav_bar.dart';
+import 'package:ludo_mobile/ui/components/scaffold/admin_scaffold.dart';
 import 'package:ludo_mobile/ui/pages/reservation/admin_reservation_list.dart';
+import 'package:ludo_mobile/utils/menu_items.dart';
 
 class AdminHomePage extends StatefulWidget {
   const AdminHomePage({Key? key}) : super(key: key);
@@ -46,13 +46,11 @@ class _AdminHomePageState extends State<AdminHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AdminScaffold(
       body: const Padding(
         padding: EdgeInsets.symmetric(horizontal: 20.0),
         child: AdminReservationList(),
-      ),
-      bottomNavigationBar: const AdminBottomNavBar(),
-      appBar: const AdminAppBar().build(context),
+      ), navBarIndex: AdminMenuItems.Home.index,
     );
   }
 }

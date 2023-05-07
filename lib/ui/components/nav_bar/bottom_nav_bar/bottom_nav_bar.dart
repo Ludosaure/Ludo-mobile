@@ -5,20 +5,14 @@ import 'package:ludo_mobile/ui/router/routes.dart';
 import 'package:ludo_mobile/utils/menu_items.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class CustomBottomNavigationBar extends StatefulWidget {
+class CustomBottomNavigationBar extends StatelessWidget {
+  final int index;
+  const CustomBottomNavigationBar({Key? key, required this.index}) : super(key: key);
 
-  const CustomBottomNavigationBar({Key? key}) : super(key: key);
-
-  @override
-  State<CustomBottomNavigationBar> createState() => _CustomBottomNavigationBarState();
-}
-
-class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
-  int _currentIndex = MenuItems.Home.index;
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
-      currentIndex: _currentIndex,
+      currentIndex: index,
       unselectedItemColor: Colors.grey[800],
       selectedItemColor: Theme.of(context).colorScheme.primary,
       items: [
@@ -64,10 +58,6 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
         } else if (index == MenuItems.Favorites.index) {
           context.go(Routes.favorites.path);
         }
-
-        setState(() {
-          _currentIndex = index;
-        });
       },
     );
   }

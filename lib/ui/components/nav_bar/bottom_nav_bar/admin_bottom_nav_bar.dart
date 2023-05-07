@@ -4,20 +4,18 @@ import 'package:ludo_mobile/ui/router/routes.dart';
 import 'package:ludo_mobile/utils/menu_items.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class AdminBottomNavBar extends StatefulWidget {
-  const AdminBottomNavBar({Key? key}) : super(key: key);
+class AdminBottomNavBar extends StatelessWidget {
+  final int index;
 
-  @override
-  State<AdminBottomNavBar> createState() => _AdminBottomNavBarState();
-}
-
-class _AdminBottomNavBarState extends State<AdminBottomNavBar> {
-  int _currentIndex = AdminMenuItems.Home.index;
+  const AdminBottomNavBar({
+    Key? key,
+    required this.index,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
-      currentIndex: _currentIndex,
+      currentIndex: index,
       unselectedItemColor: Colors.grey[800],
       selectedItemColor: Theme.of(context).colorScheme.primary,
       items: [
@@ -43,21 +41,17 @@ class _AdminBottomNavBarState extends State<AdminBottomNavBar> {
         ),
       ],
       onTap: (index) {
-        if( index == AdminMenuItems.Messages.index ) {
+        if (index == AdminMenuItems.Messages.index) {
           print('Messages');
           context.go(Routes.inbox.path);
-        }
-        else if(index == AdminMenuItems.AddGame.index ) {
+        } else if (index == AdminMenuItems.AddGame.index) {
           print('Add Game');
           context.go(Routes.addGame.path);
-        }
-        else if(index == AdminMenuItems.Home.index ) {
+        } else if (index == AdminMenuItems.Home.index) {
           context.go(Routes.homeAdmin.path);
-        }
-        else if(index == AdminMenuItems.Dashboard.index) {
+        } else if (index == AdminMenuItems.Dashboard.index) {
           context.go(Routes.adminDashboard.path);
-        }
-        else if(index == AdminMenuItems.Profile.index ) {
+        } else if (index == AdminMenuItems.Profile.index) {
           SharedPreferences.getInstance().then((prefs) {
             print('remove token');
             prefs.remove('token');
@@ -65,10 +59,6 @@ class _AdminBottomNavBarState extends State<AdminBottomNavBar> {
             context.go(Routes.landing.path);
           });
         }
-
-        setState(() {
-          _currentIndex = index;
-        });
       },
     );
   }
