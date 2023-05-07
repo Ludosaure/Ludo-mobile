@@ -6,7 +6,8 @@ import '../nav_bar/bottom_nav_bar/bottom_nav_bar.dart';
 class HomeScaffold extends StatelessWidget {
   final Widget body;
   final int navBarIndex;
-  const HomeScaffold({Key? key, required this.body, required this.navBarIndex}) : super(key: key);
+  final Widget? floatingActionButton;
+  const HomeScaffold({Key? key, required this.body, required this.navBarIndex, this.floatingActionButton}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -14,6 +15,7 @@ class HomeScaffold extends StatelessWidget {
       body: body,
       appBar: const CustomAppBar().build(context),
       bottomNavigationBar: CustomBottomNavigationBar(index: navBarIndex),
+      floatingActionButton: floatingActionButton,
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:ludo_mobile/domain/models/game.dart';
+import 'package:ludo_mobile/utils/extensions.dart';
 
 class GameJson {
   final String id;
@@ -31,14 +32,14 @@ class GameJson {
 
   factory GameJson.fromJson(Map<String, dynamic> json) => GameJson(
     id: json["id"],
-    name: json["name"],
+    name: json["name"].toString().titleCase(),
     description: json["description"]??"",
     imageUrl: "https://picsum.photos/200", //TODO
     averageDuration: json["averageDuration"],
     ageMin: json["ageMin"],
     nbPlayersMin: json["nbPlayersMin"],
     nbPlayersMax: json["nbPlayersMax"],
-    category: [json["category"]["name"]], //TODO
+    category: [json["category"]["name"].toString().titleCase()], //TODO
     weeklyAmount: json["weeklyAmount"].toDouble(),
     // rating: json["rating"],
     isArchived: json["isArchived"],

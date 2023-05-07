@@ -7,7 +7,7 @@ import 'package:ludo_mobile/domain/use_cases/get_games/get_games_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/login/login_bloc.dart';
 import 'package:ludo_mobile/domain/use_cases/register/register_bloc.dart';
 import 'package:ludo_mobile/injection.dart';
-import 'package:ludo_mobile/ui/pages/add_game_page.dart';
+import 'package:ludo_mobile/ui/pages/game/add_game_page.dart';
 import 'package:ludo_mobile/ui/pages/admin_dashboard_page.dart';
 import 'package:ludo_mobile/ui/pages/game/game_details_page.dart';
 import 'package:ludo_mobile/ui/pages/game/game_favorites_page.dart';

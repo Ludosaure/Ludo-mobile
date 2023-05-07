@@ -4,15 +4,21 @@ import 'package:ludo_mobile/domain/models/game.dart';
 import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:ludo_mobile/domain/use_cases/get_games/get_games_cubit.dart';
 import 'package:ludo_mobile/ui/components/scaffold/home_scaffold.dart';
-import 'package:ludo_mobile/ui/pages/game/game_list.dart';
+import 'package:ludo_mobile/ui/pages/game/list/game_list.dart';
 import 'package:ludo_mobile/utils/menu_items.dart';
 
-class UserHomePage extends StatelessWidget {
+class UserHomePage extends StatefulWidget {
   final User? connectedUser;
 
-  UserHomePage({Key? key, required this.connectedUser}) : super(key: key);
+  const UserHomePage({Key? key, required this.connectedUser}) : super(key: key);
 
+  @override
+  State<UserHomePage> createState() => _UserHomePageState();
+}
+
+class _UserHomePageState extends State<UserHomePage> {
   late List<Game> games;
+  bool _gridView = true;
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +53,7 @@ class UserHomePage extends StatelessWidget {
               games = state.games;
               return GameList(
                 games: state.games,
+                gridView: _gridView,
               );
             }
 
@@ -62,15 +69,22 @@ class UserHomePage extends StatelessWidget {
         ),
       ),
       navBarIndex: MenuItems.Home.index,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          setState(() {
+            _gridView = !_gridView;
+          });
+        },
+        child: _gridView
+            ? const Icon(
+                Icons.list,
+                color: Colors.white,
+              )
+            : const Icon(
+                Icons.grid_view,
+                color: Colors.white,
+              ),
+      ),
     );
   }
-
-  //TODO gestion de l'utilisateur connecté
-  // Widget _getBottomNavigationBar(BuildContext context, User? connectedUser) {
-  //   if (connectedUser == null) {
-  //     return const NoAccountBottomNavigationBar();
-  //   }
-  //
-  //   return const CustomBottomNavigationBar();
-  // }
 }
