@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
 
 class GameCard extends StatelessWidget {
@@ -24,9 +25,25 @@ class GameCard extends StatelessWidget {
     );
   }
 
-
-
   Widget _gridTile(BuildContext context) {
+    Widget child = Container(
+      width: MediaQuery.of(context).size.width * 0.20,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primary.withOpacity(0.88),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: const Center(
+        child: FaIcon(
+          FontAwesomeIcons.dice,
+          color: Colors.white,
+          size: 50,
+        ),
+      ),
+    );
+
+    if(game.imageUrl != null) {
+      child = Image.network(game.imageUrl!);
+    }
     return GridTile(
       footer: GridTileBar(
         backgroundColor: Colors.white,
@@ -54,13 +71,12 @@ class GameCard extends StatelessWidget {
                 style: Theme.of(context).textTheme.subtitle1,
               ),
             ]),
-        trailing: IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.favorite_border),
-          color: Theme.of(context).colorScheme.primary,
+        trailing: Text(
+          '${game.weeklyAmount} €',
+          style: Theme.of(context).textTheme.subtitle1,
         ),
       ),
-      child: Image.network(game.imageUrl),
+      child: child,
     );
   }
 }

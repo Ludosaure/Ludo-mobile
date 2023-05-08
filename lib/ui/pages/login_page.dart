@@ -9,6 +9,7 @@ import 'package:ludo_mobile/domain/use_cases/login/login_bloc.dart';
 import 'package:ludo_mobile/ui/components/custom_back_button.dart';
 import 'package:ludo_mobile/ui/components/form_field_decoration.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
+import 'package:ludo_mobile/utils/app_constants.dart';
 import 'package:ludo_mobile/utils/app_dimensions.dart';
 
 class LoginPage extends StatefulWidget {
@@ -46,7 +47,7 @@ class _LoginPageState extends State<LoginPage> {
                 Flexible(
                   flex: 2,
                   child: Image(
-                    image: const AssetImage('assets/ludosaure_icn.png'),
+                    image: const AssetImage(AppConstants.APP_LOGO),
                     width: MediaQuery.of(context).size.width * 0.6,
                     height: 250,
                   ),

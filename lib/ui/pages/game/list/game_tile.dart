@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
 
 class GameTile extends StatelessWidget {
@@ -25,16 +26,22 @@ class GameTile extends StatelessWidget {
   }
 
   Widget _tileCard(BuildContext context) {
+    Widget leading = const FaIcon(
+      FontAwesomeIcons.dice,
+      color: Colors.grey,
+    );
+
+    if (game.imageUrl != null) {
+      leading = Image.network(game.imageUrl!);
+    }
+
     return ListTile(
-      leading: Image.network(game.imageUrl),
+      leading: leading,
       title: Text(game.name),
       subtitle: Text(game.categories.join(', ')),
-      trailing: IconButton(
-        onPressed: () {},
-        icon: Icon(
-          Icons.favorite_border_outlined,
-          color: Theme.of(context).colorScheme.primary,
-        ),
+      trailing: Text(
+        '${game.weeklyAmount} €',
+        style: Theme.of(context).textTheme.subtitle1,
       ),
     );
   }

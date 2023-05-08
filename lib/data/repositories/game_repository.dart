@@ -12,14 +12,11 @@ class GameRepository {
 
   Future<List<Game>> getGames() async {
     final GameListingResponse response = await gameProvider.getGames();
-    print("response.games");
-    print(response.games);
+
     List<Game> games = [];
     for (var element in response.games) {
       games.add(element.toGame());
     }
-    print("games in repo");
-    print(games);
 
     return games;
   }

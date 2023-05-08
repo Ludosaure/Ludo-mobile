@@ -3,28 +3,28 @@ import 'game_category.dart';
 class Game {
   final String id;
   final String name;
-  final String description;
-  final String imageUrl;
+  final String? description;
+  final String? imageUrl;
   final int averageDuration;
   final int minAge;
   final int minPlayers;
   final int maxPlayers;
   final List<String> categories;
   final double weeklyAmount;
-  final double rating;
+  final double? rating;
 
   Game({
     required this.id,
     required this.name,
-    required this.description,
-    required this.imageUrl,
+    this.description,
+    this.imageUrl,
     required this.averageDuration,
     required this.minAge,
     required this.minPlayers,
     required this.maxPlayers,
     required this.categories,
     required this.weeklyAmount,
-    required this.rating,
+    this.rating,
   });
 
   factory Game.fromJson(Map<String, dynamic> json) {
@@ -40,7 +40,7 @@ class Game {
       categories:
           (json['category'] as List<GameCategory>).map((e) => e.name).toList(),
       weeklyAmount: json['weeklyAmount'],
-      rating: json['rating']?? 2.5,
+      rating: json['rating'],
     );
   }
 }

@@ -26,8 +26,7 @@ class LoginProvider {
       return LoginResponse.fromJson(
         jsonDecode(response.body),
       );
-    } else if (response.statusCode == HttpCode.BAD_REQUEST ||
-        response.statusCode == HttpCode.NOT_FOUND) {
+    } else if (response.statusCode == HttpCode.BAD_REQUEST) {
       throw const BadCredentialsException(
         "Erreur d'authentification, votre email ou votre mot de passe sont invalides",
       );

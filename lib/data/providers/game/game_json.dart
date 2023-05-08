@@ -4,44 +4,44 @@ import 'package:ludo_mobile/utils/extensions.dart';
 class GameJson {
   final String id;
   final String name;
-  final String description;
-  final String imageUrl;
+  final String? description;
+  final String? imageUrl;
   final int averageDuration;
   final int ageMin;
   final int nbPlayersMin;
   final int nbPlayersMax;
   final List<String> category;
   final double weeklyAmount;
-  // final double rating;
+  final double? rating;
   final bool isArchived;
 
   GameJson({
     required this.id,
     required this.name,
-    required this.description,
-    required this.imageUrl,
+    this.description,
+    this.imageUrl,
     required this.averageDuration,
     required this.ageMin,
     required this.nbPlayersMin,
     required this.nbPlayersMax,
     required this.category,
     required this.weeklyAmount,
-    // required this.rating,
+    this.rating,
     required this.isArchived,
   });
 
   factory GameJson.fromJson(Map<String, dynamic> json) => GameJson(
     id: json["id"],
     name: json["name"].toString().titleCase(),
-    description: json["description"]??"",
-    imageUrl: "https://picsum.photos/200", //TODO
+    description: json["description"] ?? "",
+    imageUrl: json["imageUrl"], //TODO
     averageDuration: json["averageDuration"],
     ageMin: json["ageMin"],
     nbPlayersMin: json["nbPlayersMin"],
     nbPlayersMax: json["nbPlayersMax"],
     category: [json["category"]["name"].toString().titleCase()], //TODO
     weeklyAmount: json["weeklyAmount"].toDouble(),
-    // rating: json["rating"],
+    rating: json["rating"],
     isArchived: json["isArchived"],
   );
 

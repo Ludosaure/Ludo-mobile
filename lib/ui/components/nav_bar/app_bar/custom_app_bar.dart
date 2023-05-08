@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ludo_mobile/utils/app_constants.dart';
 
 class CustomAppBar extends StatelessWidget {
   const CustomAppBar({Key? key}) : super(key: key);
@@ -8,10 +9,13 @@ class CustomAppBar extends StatelessWidget {
     return AppBar(
       backgroundColor: Colors.white,
       toolbarHeight: MediaQuery.of(context).size.height * 0.075,
-      title: Image(
-        image: const AssetImage('assets/ludosaure_icn.png'),
-        width: MediaQuery.of(context).size.width * 0.15,
-        height: MediaQuery.of(context).size.width * 0.15,
+      title: Padding(
+        padding: const EdgeInsets.all(4.0),
+        child: Image(
+          image: const AssetImage(AppConstants.APP_LOGO),
+          width: MediaQuery.of(context).size.width * 0.15,
+          height: MediaQuery.of(context).size.width * 0.15,
+        ),
       ),
       centerTitle: true,
       leading: Container(
