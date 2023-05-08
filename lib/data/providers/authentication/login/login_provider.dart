@@ -4,9 +4,9 @@ import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/core/exception.dart';
 import 'package:ludo_mobile/core/http_code.dart';
 import 'package:ludo_mobile/data/providers/authentication/login/login_request.dart';
+import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:ludo_mobile/utils/app_constants.dart';
 
-import '../../../models/user.dart';
 import 'package:http/http.dart' as http;
 
 @injectable
@@ -26,8 +26,7 @@ class LoginProvider {
       return LoginResponse.fromJson(
         jsonDecode(response.body),
       );
-    } else if (response.statusCode == HttpCode.BAD_REQUEST ||
-        response.statusCode == HttpCode.NOT_FOUND) {
+    } else if (response.statusCode == HttpCode.BAD_REQUEST) {
       throw const BadCredentialsException(
         "Erreur d'authentification, votre email ou votre mot de passe sont invalides",
       );

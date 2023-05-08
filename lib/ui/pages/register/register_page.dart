@@ -2,11 +2,13 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:form_field_validator/form_field_validator.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/core/form_status.dart';
 import 'package:ludo_mobile/domain/use_cases/register/register_bloc.dart';
 import 'package:ludo_mobile/ui/components/custom_back_button.dart';
 import 'package:ludo_mobile/ui/components/sized_box_20.dart';
 import 'package:ludo_mobile/ui/components/form_field_decoration.dart';
+import 'package:ludo_mobile/ui/router/routes.dart';
 import 'package:ludo_mobile/utils/app_dimensions.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -178,10 +180,11 @@ class _RegisterPageState extends State<RegisterPage> {
     return BlocConsumer<RegisterBloc, RegisterInitial>(
       listener: (context, state) {
         if (state.status is FormSubmissionSuccessful) {
-          Navigator.of(context).pushNamedAndRemoveUntil(
-            '/register-success',
-            (route) => false,
-          );
+          context.go(Routes.registerSuccess.path);
+          // Navigator.of(context).pushNamedAndRemoveUntil(
+          //   '/register-success',
+          //   (route) => false,
+          // );
         } else if (state.status is FormSubmissionFailed) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -258,7 +261,8 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
             recognizer: TapGestureRecognizer()
               ..onTap = () {
-                Navigator.pushNamed(context, '/login');
+                context.go(Routes.login.path);
+                // Navigator.pushNamed(context, '/login');
               },
           ),
         ],
@@ -284,7 +288,7 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
             recognizer: TapGestureRecognizer()
               ..onTap = () {
-                Navigator.pushNamed(context, '/terms-and-conditions');
+                context.go(Routes.terms.path);
               },
           ),
         ],

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:ludo_mobile/ui/router/routes.dart';
+import 'package:ludo_mobile/utils/app_constants.dart';
 import 'package:ludo_mobile/utils/app_dimensions.dart';
 import 'package:responsive_framework/responsive_value.dart';
 import 'package:responsive_framework/responsive_wrapper.dart';
@@ -28,7 +31,7 @@ class LandingPage extends StatelessWidget {
         children: [
           Flexible(
             child: Image(
-              image: const AssetImage('assets/ludosaure_icn.png'),
+              image: const AssetImage(AppConstants.APP_LOGO),
               width: size.width * 0.6,
               height: 250,
             ),
@@ -39,7 +42,7 @@ class LandingPage extends StatelessWidget {
             ),
           ),
           const Text(
-            "La Ludosaure",
+            AppConstants.APP_NAME,
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 25,
@@ -68,7 +71,7 @@ class LandingPage extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () {
-              Navigator.pushNamed(context, '/login');
+              context.go(Routes.login.path);
             },
             style: ElevatedButton.styleFrom(
               maximumSize: AppDimensions.largeButtonSize,
@@ -86,7 +89,7 @@ class LandingPage extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () {
-              Navigator.pushNamed(context, '/register');
+              context.go(Routes.register.path);
             },
             style: ElevatedButton.styleFrom(
               maximumSize: AppDimensions.largeButtonSize,
@@ -103,7 +106,7 @@ class LandingPage extends StatelessWidget {
           ),
           TextButton(
             onPressed: () {
-              Navigator.pushNamed(context, '/home');
+              context.go(Routes.home.path, extra: null);
             },
             style: TextButton.styleFrom(
               alignment: Alignment.centerRight,

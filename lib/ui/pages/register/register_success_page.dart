@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:ludo_mobile/ui/router/routes.dart';
+import 'package:ludo_mobile/utils/app_constants.dart';
 import 'package:ludo_mobile/utils/app_dimensions.dart';
 
 class RegisterSuccessPage extends StatelessWidget {
@@ -24,7 +27,7 @@ class RegisterSuccessPage extends StatelessWidget {
               Flexible(
                 flex: 2,
                 child: Image(
-                  image: const AssetImage('assets/ludosaure_icn.png'),
+                  image: const AssetImage(AppConstants.APP_LOGO),
                   width: MediaQuery.of(context).size.width * 0.6,
                   height: 250,
                 ),
@@ -61,10 +64,7 @@ class RegisterSuccessPage extends StatelessWidget {
               ),
               ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                    '/login',
-                    (route) => false,
-                  );
+                  context.go(Routes.login.path);
                 },
                 style: ElevatedButton.styleFrom(
                   minimumSize: AppDimensions.largeButtonSize,

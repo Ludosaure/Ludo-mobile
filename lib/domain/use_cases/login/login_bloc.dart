@@ -3,6 +3,7 @@ import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/core/form_status.dart';
 import 'package:ludo_mobile/data/providers/authentication/login/login_request.dart';
 import 'package:ludo_mobile/data/repositories/authentication_repository.dart';
+import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:meta/meta.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -32,8 +33,10 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
   void onSubmitForm(event, Emitter emit) async {
     final req = LoginRequest(email: state.email, password: state.password);
+    User user;
+
     try {
-      await _authenticationRepository.login(req);
+      user = await _authenticationRepository.login(req);
     } catch (exception) {
         emit(state.copyWith(
           status: FormSubmissionFailed(message: exception.toString()),
@@ -43,6 +46,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
     emit(state.copyWith(
       status: const FormSubmissionSuccessful(),
+      loggedUser: user,
     ));
   }
 
@@ -56,6 +60,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         email: '',
         password: '',
         status: const FormNotSent(),
+        loggedUser: null,
       ),
     );
   }

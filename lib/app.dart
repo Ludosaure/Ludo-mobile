@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:ludo_mobile/ui/pages/home_page.dart';
-import 'package:ludo_mobile/ui/pages/landing_page.dart';
 import 'package:ludo_mobile/ui/router/app_router.dart';
 import 'package:responsive_framework/responsive_framework.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 import 'utils/custom_theme.dart';
 
 class MyApp extends StatefulWidget {
@@ -17,11 +13,12 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final AppRouter _appRouter = AppRouter();
-  bool _isLogged = false;
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
+      routerDelegate: _appRouter.router.routerDelegate,
+      routeInformationParser: _appRouter.router.routeInformationParser,
       builder: (context, widget) {
         return ResponsiveWrapper.builder(
           ClampingScrollWrapper.builder(context, widget!),
@@ -42,7 +39,6 @@ class _MyAppState extends State<MyApp> {
         ),
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      onGenerateRoute: _appRouter.onGenerateRoute,
       supportedLocales: const [
         Locale('en', 'US'),
         Locale('fr', 'FR'),
@@ -52,15 +48,8 @@ class _MyAppState extends State<MyApp> {
         GlobalCupertinoLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
       ],
-      home: SafeArea(
-        child: _homePage(),
-      ),
       debugShowCheckedModeBanner: false,
     );
-  }
-
-  Widget _homePage() {
-    return _isLogged ? const HomePage() : const LandingPage();
   }
 
   @override
@@ -69,19 +58,4 @@ class _MyAppState extends State<MyApp> {
     super.dispose();
   }
 
-  @override
-  void initState() {
-    super.initState();
-    autoLogIn();
-  }
-
-  void autoLogIn() async {
-    final SharedPreferences localStorage =
-        await SharedPreferences.getInstance();
-    final String? accessToken = localStorage.getString('token');
-
-      setState(() {
-        _isLogged = accessToken != null;
-      });
-  }
 }
