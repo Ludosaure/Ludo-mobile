@@ -10,6 +10,8 @@ class AdminDashboardPage extends StatelessWidget {
     return AdminScaffold(
       body: const Center(child: Text('Admin Dashboard Page')),
       navBarIndex: AdminMenuItems.Dashboard.index,
+      onSortPressed: null,
+      onSearch: null,
     );
   }
 }

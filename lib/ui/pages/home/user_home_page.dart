@@ -62,6 +62,7 @@ class _UserHomePageState extends State<UserHomePage> {
                 child: Text("Aucun jeu trouvé"),
               );
             }
+
             return const Center(
               child: CircularProgressIndicator(),
             );

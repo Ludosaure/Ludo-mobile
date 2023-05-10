@@ -10,6 +10,8 @@ class AddGamePage extends StatelessWidget {
     return AdminScaffold(
       body: const Center(child: Text('Add Game Page')),
       navBarIndex: AdminMenuItems.AddGame.index,
+      onSortPressed: null,
+      onSearch: null,
     );
   }
 }

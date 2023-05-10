@@ -19,7 +19,6 @@ class CustomAppBar extends StatelessWidget {
       ),
       centerTitle: true,
       leading: Container(
-        width: 500,
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: Center(
           child: Text(
@@ -33,7 +32,7 @@ class CustomAppBar extends StatelessWidget {
           ),
         ),
       ),
-      leadingWidth: 500,
+      leadingWidth: MediaQuery.of(context).size.width * 0.35,
       actions: [
         SizedBox(
           width: MediaQuery.of(context).size.width * 0.35,

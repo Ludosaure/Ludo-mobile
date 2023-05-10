@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
 import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:ludo_mobile/domain/use_cases/get_games/get_games_cubit.dart';
+import 'package:ludo_mobile/domain/use_cases/list_all_reservations/list_all_reservations_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/login/login_bloc.dart';
 import 'package:ludo_mobile/domain/use_cases/register/register_bloc.dart';
 import 'package:ludo_mobile/injection.dart';
@@ -19,6 +20,7 @@ import 'package:ludo_mobile/ui/pages/login_page.dart';
 import 'package:ludo_mobile/ui/pages/profile_page.dart';
 import 'package:ludo_mobile/ui/pages/register/register_page.dart';
 import 'package:ludo_mobile/ui/pages/register/register_success_page.dart';
+import 'package:ludo_mobile/ui/pages/reservation/reservation_detail_page.dart';
 import 'package:ludo_mobile/ui/pages/terms_and_conditions_page.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
 
@@ -26,6 +28,8 @@ class AppRouter {
   final LoginBloc _loginBloc = locator<LoginBloc>();
   final RegisterBloc _registerBLoc = locator<RegisterBloc>();
   final GetGamesCubit _getGamesCubit = locator<GetGamesCubit>();
+  final ListAllReservationsCubit _listAllReservationsCubit =
+      locator<ListAllReservationsCubit>();
 
   GoRouter get router => _router;
 
@@ -72,7 +76,7 @@ class AppRouter {
         path: Routes.homeAdmin.path,
         pageBuilder: (context, state) => CustomTransitionPage(
           child: BlocProvider.value(
-            value: _loginBloc,
+            value: _listAllReservationsCubit,
             child: const AdminHomePage(),
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -177,6 +181,18 @@ class AppRouter {
         ),
       ),
       GoRoute(
+        path: '${Routes.reservations.path}/:id',
+        pageBuilder: (context, state) => CustomTransitionPage(
+          child: const ReservationDetailsPage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+        ),
+      ),
+      GoRoute(
         path: Routes.favorites.path,
         pageBuilder: (context, state) => CustomTransitionPage(
           child: const GameFavoritesPage(),
@@ -247,5 +263,6 @@ class AppRouter {
     _loginBloc.close();
     _registerBLoc.close();
     _getGamesCubit.close();
+    _listAllReservationsCubit.close();
   }
 }
