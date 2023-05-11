@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
 import 'package:ludo_mobile/ui/components/custom_back_button.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:ludo_mobile/ui/components/expandable_text_widget.dart';
 
 //WIP - Not finished yet
 class GameDetailsPage extends StatelessWidget {
@@ -22,34 +24,80 @@ class GameDetailsPage extends StatelessWidget {
         ),
         leadingWidth: MediaQuery.of(context).size.width * 0.20,
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisSize: MainAxisSize.max,
-        verticalDirection: VerticalDirection.down,
-        children: [
-          _buildGameImage(context),
-          const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+      body: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            verticalDirection: VerticalDirection.down,
             children: [
-              Text(
-                game.name,
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
+              _buildGameImage(context),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    game.name,
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Icon(
+                    Icons.favorite,
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
+                ],
               ),
-              const SizedBox(width: 8),
-              Icon(
-                Icons.favorite,
-                color: Theme.of(context).colorScheme.secondary,
+              _buildGameDescription(context),
+              Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  RatingBar.builder(
+                    initialRating: game.rating!,
+                    minRating: 1,
+                    direction: Axis.horizontal,
+                    allowHalfRating: true,
+                    itemCount: 5,
+                    unratedColor: Colors.amberAccent.withOpacity(0.3),
+                    itemSize: 35,
+                    itemBuilder: (context, _) {
+                      return const Icon(
+                        Icons.star,
+                        color: Colors.amber,
+                      );
+                    },
+                    onRatingUpdate: (rating) {
+                      //todo
+                    },
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    game.rating.toString(),
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(width: MediaQuery.of(context).size.width * 0.2),
+                  const Text(
+                    "23 avis", //TODO
+                    style: TextStyle(
+                      fontSize: 15,
+                    ),
+                    textAlign: TextAlign.end,
+                  ),
+                ],
               ),
             ],
           ),
-          _buildGameDescription(context)
-        ],
+        ),
       ),
       bottomNavigationBar: _buildGameDetailsBottomBar(context),
     );
@@ -79,16 +127,17 @@ class GameDetailsPage extends StatelessWidget {
       return const Spacer();
     }
 
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20),
-        child: Text(
-          game.description!,
-          style: const TextStyle(
-            fontSize: 15,
-          ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      verticalDirection: VerticalDirection.down,
+      children: [
+        ExpandableTextWidget(
+          text: game.description!,
+          height: MediaQuery.of(context).size.height * 0.25,
         ),
-      ),
+      ],
     );
   }
 
