@@ -55,46 +55,7 @@ class GameDetailsPage extends StatelessWidget {
                 ],
               ),
               _buildGameDescription(context),
-              Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  RatingBar.builder(
-                    initialRating: game.rating!,
-                    minRating: 1,
-                    direction: Axis.horizontal,
-                    allowHalfRating: true,
-                    itemCount: 5,
-                    unratedColor: Colors.amberAccent.withOpacity(0.3),
-                    itemSize: 35,
-                    itemBuilder: (context, _) {
-                      return const Icon(
-                        Icons.star,
-                        color: Colors.amber,
-                      );
-                    },
-                    onRatingUpdate: (rating) {
-                      //todo
-                    },
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    game.rating.toString(),
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(width: MediaQuery.of(context).size.width * 0.2),
-                  const Text(
-                    "23 avis", //TODO
-                    style: TextStyle(
-                      fontSize: 15,
-                    ),
-                    textAlign: TextAlign.end,
-                  ),
-                ],
-              ),
+              _buildGameRating(context),
             ],
           ),
         ),
@@ -122,9 +83,49 @@ class GameDetailsPage extends StatelessWidget {
     );
   }
 
+  Widget _buildGameRating(BuildContext context) {
+    if (game.rating == 0) {
+      return const Text("");
+    }
+
+    return Row(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        RatingBar.builder(
+          initialRating: game.rating,
+          minRating: 1,
+          direction: Axis.horizontal,
+          allowHalfRating: true,
+          itemCount: 5,
+          unratedColor: Colors.amberAccent.withOpacity(0.3),
+          itemSize: 30,
+          itemBuilder: (context, _) {
+            return const Icon(
+              Icons.star,
+              color: Colors.amber,
+            );
+          },
+          onRatingUpdate: (rating) {
+            //todo
+          },
+        ),
+        const SizedBox(width: 8),
+        Text(
+          game.rating.toString(),
+          style: const TextStyle(
+            fontSize: 15,
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildGameDescription(BuildContext context) {
     if (game.description == null) {
-      return const Spacer();
+      return const Flexible(
+        child: SizedBox(width: 8),
+      );
     }
 
     return Column(

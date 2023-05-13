@@ -13,7 +13,7 @@ class Game {
   final int maxPlayers;
   final List<String> categories;
   final double weeklyAmount;
-  final double? rating;
+  final double rating;
 
   Game({
     required this.id,
@@ -26,7 +26,7 @@ class Game {
     required this.maxPlayers,
     required this.categories,
     required this.weeklyAmount,
-    this.rating,
+    required this.rating,
   });
 
   factory Game.fromJson(Map<String, dynamic> json) {
@@ -45,7 +45,7 @@ class Game {
       maxPlayers: json['nbPlayersMax'],
       categories: categories,
       weeklyAmount: json['weeklyAmount'].toDouble(),
-      rating: json['rating'],
+      rating: json['averageRating'].toDouble(),
     );
   }
 }

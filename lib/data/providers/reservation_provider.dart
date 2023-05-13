@@ -12,8 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 @injectable
 class ReservationProvider {
-  final String endpoint = 'reservation';
-  final String apiUrl = '${AppConstants.API_URL}/reservation';
+  final String endpoint = '${AppConstants.API_URL}/reservation';
 
   Future<List<Reservation>> getReservations() async {
     String? token;
@@ -27,7 +26,7 @@ class ReservationProvider {
     late http.Response response;
 
     response = await http.get(
-        Uri.parse(apiUrl),
+        Uri.parse(endpoint),
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',

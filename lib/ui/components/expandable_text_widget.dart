@@ -63,7 +63,7 @@ class _ExpandableTextState extends State<ExpandableTextWidget> {
                   child: Row(
                     children: [
                       Text(
-                        "Show more",
+                        "Voir plus",
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.primary,
                           fontWeight: FontWeight.bold,
