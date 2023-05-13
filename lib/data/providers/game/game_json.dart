@@ -12,7 +12,7 @@ class GameJson {
   final int nbPlayersMax;
   final List<String> category;
   final double weeklyAmount;
-  final double? rating;
+  final double rating;
   final bool isArchived;
 
   GameJson({
@@ -26,7 +26,7 @@ class GameJson {
     required this.nbPlayersMax,
     required this.category,
     required this.weeklyAmount,
-    this.rating,
+    required this.rating,
     required this.isArchived,
   });
 
@@ -41,7 +41,7 @@ class GameJson {
     nbPlayersMax: json["nbPlayersMax"],
     category: [json["category"]["name"].toString().titleCase()], //TODO
     weeklyAmount: json["weeklyAmount"].toDouble(),
-    rating: json["rating"],
+    rating: json["averageRating"].toDouble(),
     isArchived: json["isArchived"],
   );
 
@@ -57,7 +57,7 @@ class GameJson {
       maxPlayers: nbPlayersMax,
       categories: category,
       weeklyAmount: weeklyAmount,
-      rating: 2.5,
+      rating: rating,
     );
   }
 }

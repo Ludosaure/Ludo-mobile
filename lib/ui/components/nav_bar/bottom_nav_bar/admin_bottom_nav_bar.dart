@@ -42,10 +42,8 @@ class AdminBottomNavBar extends StatelessWidget {
       ],
       onTap: (index) {
         if (index == AdminMenuItems.Messages.index) {
-          print('Messages');
           context.go(Routes.inbox.path);
         } else if (index == AdminMenuItems.AddGame.index) {
-          print('Add Game');
           context.go(Routes.addGame.path);
         } else if (index == AdminMenuItems.Home.index) {
           context.go(Routes.homeAdmin.path);
@@ -53,7 +51,6 @@ class AdminBottomNavBar extends StatelessWidget {
           context.go(Routes.adminDashboard.path);
         } else if (index == AdminMenuItems.Profile.index) {
           SharedPreferences.getInstance().then((prefs) {
-            print('remove token');
             prefs.remove('token');
             prefs.remove('user');
             context.go(Routes.landing.path);

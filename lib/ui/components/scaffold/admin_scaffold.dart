@@ -5,13 +5,25 @@ import 'package:ludo_mobile/ui/components/nav_bar/bottom_nav_bar/admin_bottom_na
 class AdminScaffold extends StatelessWidget {
   final Widget body;
   final int navBarIndex;
-  const AdminScaffold({Key? key, required this.body, required this.navBarIndex}) : super(key: key);
+  final void Function<T>(T selectedFilter)? onSortPressed;
+  final void Function(String toSearch)? onSearch;
+
+  const AdminScaffold({
+    Key? key,
+    required this.body,
+    required this.navBarIndex,
+    required this.onSortPressed,
+    required this.onSearch,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: body,
-      appBar: const AdminAppBar().build(context),
+      appBar: AdminAppBar(
+        onSortPressed: onSortPressed,
+        onSearch: onSearch,
+      ).build(context),
       bottomNavigationBar: AdminBottomNavBar(index: navBarIndex),
     );
   }

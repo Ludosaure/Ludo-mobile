@@ -1,3 +1,5 @@
+import 'package:ludo_mobile/utils/extensions.dart';
+
 import 'game_category.dart';
 
 class Game {
@@ -11,7 +13,7 @@ class Game {
   final int maxPlayers;
   final List<String> categories;
   final double weeklyAmount;
-  final double? rating;
+  final double rating;
 
   Game({
     required this.id,
@@ -24,23 +26,26 @@ class Game {
     required this.maxPlayers,
     required this.categories,
     required this.weeklyAmount,
-    this.rating,
+    required this.rating,
   });
 
   factory Game.fromJson(Map<String, dynamic> json) {
+    final List<String> categories = [];
+    json["category"] != null ? json["categories"].forEach((category) {
+      categories.add(GameCategory.fromJson(category).name);
+    }) : [];
     return Game(
       id: json['id'],
-      name: json['name'],
+      name: json['name'].toString().titleCase(),
       description: json['description'],
-      imageUrl: json['image'] ?? 'https://picsum.photos/200',
+      imageUrl: json['imageUrl'],
       averageDuration: json['averageDuration'],
       minAge: json['ageMin'],
       minPlayers: json['nbPlayersMin'],
       maxPlayers: json['nbPlayersMax'],
-      categories:
-          (json['category'] as List<GameCategory>).map((e) => e.name).toList(),
-      weeklyAmount: json['weeklyAmount'],
-      rating: json['rating'],
+      categories: categories,
+      weeklyAmount: json['weeklyAmount'].toDouble(),
+      rating: json['averageRating'].toDouble(),
     );
   }
 }

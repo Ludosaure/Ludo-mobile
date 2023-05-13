@@ -44,10 +44,12 @@ class CustomBottomNavigationBar extends StatelessWidget {
           showDialog(
             context: context,
             builder: (context) {
-              return const SearchBar();
+              return const SearchBar(
+                showFilter: true,
+                onSearch: null, //TODO
+              );
             },
           );
-          index = MenuItems.Home.index;
         } else if (index == MenuItems.Home.index) {
           context.go(Routes.home.path);
         } else if (index == MenuItems.Profile.index) {

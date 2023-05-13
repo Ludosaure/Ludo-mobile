@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/domain/models/reservation.dart';
-import 'package:ludo_mobile/domain/models/user.dart';
+import 'package:ludo_mobile/domain/use_cases/list_all_reservations/list_all_reservations_cubit.dart';
 import 'package:ludo_mobile/ui/components/scaffold/admin_scaffold.dart';
 import 'package:ludo_mobile/ui/pages/reservation/admin_reservation_list.dart';
 import 'package:ludo_mobile/utils/menu_items.dart';
@@ -13,46 +15,83 @@ class AdminHomePage extends StatefulWidget {
 }
 
 class _AdminHomePageState extends State<AdminHomePage> {
-  //TODO avoir une liste pour les réservations en retard etc
-  late List<Reservation> reservations = [
-    Reservation(
-      id: "1",
-      reservationNumber: 1,
-      gameName: "Monopoly",
-      amount: 10.5,
-      canceled: false,
-      canceledAt: null,
-      createdAt: DateTime.now(),
-      createdBy: User(
-        id: "1",
-        firstname: "John",
-        lastname: "Doe",
-        email: "john.doe@gmail.com",
-        phone: "0606060606",
-        role: "ADMIN",
-        hasVerifiedAccount: true,
-        isAccountClosed: false,
-        profilePicturePath: "assets/images/profile_picture.png",
-        pseudo: "johndoe",
-      ),
-      // 3 months from now
-      startDate: DateTime.now().add(const Duration(days: 90)),
-      endDate: DateTime.now().add(const Duration(days: 97)),
-      paid: false,
-      returned: false,
-      returnedAt: null,
-    )
-  ];
+  late List<Reservation> reservations;
 
   @override
   Widget build(BuildContext context) {
     return AdminScaffold(
-      body: const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20.0),
-        child: AdminReservationList(),
-      ), navBarIndex: AdminMenuItems.Home.index,
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        child: BlocConsumer<ListAllReservationsCubit, ListAllReservationsState>(
+          listener: (context, state) {
+            if (state is ListAllReservationsError) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: Theme.of(context).colorScheme.error,
+                ),
+              );
+            }
+            if (state is UserMustLogError) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: Theme.of(context).colorScheme.error,
+                ),
+              );
+            }
+          },
+          builder: (context, state) {
+            if (state is ListAllReservationsInitial) {
+              BlocProvider.of<ListAllReservationsCubit>(context)
+                  .listReservations();
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+
+            if (state is ListAllReservationsError) {
+              return const Center(child: Text("Aucune réservation trouvées"));
+            }
+
+            if (state is ListReservationsSuccess) {
+              reservations = state.reservations;
+
+              return AdminReservationList(reservations: reservations);
+            }
+
+            if(state is UserMustLogError) {
+              context.go('/login');
+            }
+
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          },
+        ),
+      ),
+      navBarIndex: AdminMenuItems.Home.index,
+      onSortPressed: null,
+      onSearch: onSearch,
     );
   }
+
+  void onSortPressed(String something) {
+    //TODO faire un type abstrait pour les filtres
+    setState(() {
+      // reservations.sort((a, b) => a.date.compareTo(b.date));
+    });
+  }
+
+  //TODO probablement passer par un cubit de ses morts
+  void onSearch(String value) {
+    setState(() {
+      reservations = reservations
+          .where((element) =>
+              element.createdBy.firstname.contains(value) ||
+              element.createdBy.lastname.contains(value) ||
+              element.createdBy.email.contains(value))
+          .toList();
+    });
+  }
 }
-
-
