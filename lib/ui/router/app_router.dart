@@ -7,6 +7,7 @@ import 'package:ludo_mobile/domain/use_cases/get_games/get_games_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/list_all_reservations/list_all_reservations_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/login/login_bloc.dart';
 import 'package:ludo_mobile/domain/use_cases/register/register_bloc.dart';
+import 'package:ludo_mobile/domain/use_cases/session/session_cubit.dart';
 import 'package:ludo_mobile/injection.dart';
 import 'package:ludo_mobile/ui/pages/game/add_game_page.dart';
 import 'package:ludo_mobile/ui/pages/admin_dashboard_page.dart';
@@ -25,6 +26,7 @@ import 'package:ludo_mobile/ui/pages/terms_and_conditions_page.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
 
 class AppRouter {
+  final SessionCubit _sessionCubit = locator<SessionCubit>();
   final LoginBloc _loginBloc = locator<LoginBloc>();
   final RegisterBloc _registerBLoc = locator<RegisterBloc>();
   final GetGamesCubit _getGamesCubit = locator<GetGamesCubit>();
@@ -136,8 +138,7 @@ class AppRouter {
         path: Routes.terms.path,
         pageBuilder: (context, state) => CustomTransitionPage(
           child: TermsAndConditionsPage(),
-          transitionsBuilder:
-              (context, animation, secondaryAnimation, child) {
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(
               opacity: animation,
               child: child,
@@ -146,27 +147,21 @@ class AppRouter {
         ),
       ),
       GoRoute(
-        path: Routes.game.path,
-        routes: [
-          GoRoute(
-            path: ':id',
-            pageBuilder: (context, state) => CustomTransitionPage(
-              child: BlocProvider.value(
-                value: _getGamesCubit,
-                child: GameDetailsPage(
-                  game: state.extra as Game,
-                ),
-              ),
-              transitionsBuilder:
-                  (context, animation, secondaryAnimation, child) {
-                return FadeTransition(
-                  opacity: animation,
-                  child: child,
-                );
-              },
+        path: "${Routes.game.path}/:id",
+        pageBuilder: (context, state) => CustomTransitionPage(
+          child: BlocProvider.value(
+            value: _getGamesCubit,
+            child: GameDetailsPage(
+              game: state.extra as Game,
             ),
           ),
-        ],
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+        ),
       ),
       GoRoute(
         path: Routes.addGame.path,
@@ -253,13 +248,52 @@ class AppRouter {
         ),
       ),
     ],
-    // redirect: (state) {
-    //   return '/';
-    // },
-    // refreshListenable: GoRouterRefreshStream(),
+    redirect: (GoRouterState state) {
+      print(state.location);
+      RegExp gameDetailsRoute = RegExp(
+          r'^\/game\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$');
+      gameDetailsRoute.hasMatch(state.location);
+      final bool isUnauthenticatedRoute = state.location == Routes.login.path ||
+          state.location == Routes.register.path ||
+          state.location == Routes.terms.path ||
+          state.location == Routes.home.path ||
+          state.location == Routes.landing.path ||
+          gameDetailsRoute.hasMatch(state.location);
+
+      final bool isAdminRoute = state.location == Routes.homeAdmin.path ||
+          state.location == Routes.addGame.path ||
+          state.location == Routes.reservations.path ||
+          state.location == Routes.adminDashboard.path;
+
+      bool isAuthenticated = _sessionCubit.state is UserLoggedIn;
+
+      if (!isAuthenticated && !isUnauthenticatedRoute) {
+        return Routes.login.path;
+      }
+
+      if(isAuthenticated) {
+        final User user = (_sessionCubit.state as UserLoggedIn).user;
+        print("ADMIN : ${user.isAdmin()}");
+        // guard admin ou auto-login client
+        if(isAdminRoute && !user.isAdmin() || state.location == Routes.landing.path && !user.isAdmin()) {
+          return Routes.home.path;
+        }
+
+        // auto-login admin
+        if(user.isAdmin() && state.location == Routes.landing.path) {
+          return Routes.homeAdmin.path;
+        }
+      }
+
+      return null;
+    },
+    refreshListenable: GoRouterRefreshStream(
+      _sessionCubit.stream,
+    ),
   );
 
   void dispose() {
+    _sessionCubit.close();
     _loginBloc.close();
     _registerBLoc.close();
     _getGamesCubit.close();

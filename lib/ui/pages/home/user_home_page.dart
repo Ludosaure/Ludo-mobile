@@ -86,6 +86,7 @@ class _UserHomePageState extends State<UserHomePage> {
                 color: Colors.white,
               ),
       ),
+      isLoggedIn: widget.connectedUser != null,
     );
   }
 }

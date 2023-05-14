@@ -16,4 +16,26 @@ class LocalStorageHelper {
 
     return user;
   }
+  static Future<String?> getTokenFromLocalStorage() async {
+    final SharedPreferences localStorage =
+        await SharedPreferences.getInstance();
+
+    return localStorage.getString('token');
+  }
+
+  static Future<void> saveUserToLocalStorage(User user, String token) async {
+    final SharedPreferences localStorage =
+        await SharedPreferences.getInstance();
+
+    localStorage.setString('user', jsonEncode(user.toJson()));
+    localStorage.setString('token', token);
+  }
+
+  static Future<void> removeUserFromLocalStorage() async {
+    final SharedPreferences localStorage =
+        await SharedPreferences.getInstance();
+
+    localStorage.remove('user');
+    localStorage.remove('token');
+  }
 }

@@ -5,6 +5,7 @@ import 'package:ludo_mobile/domain/models/reservation.dart';
 import 'package:ludo_mobile/domain/use_cases/list_all_reservations/list_all_reservations_cubit.dart';
 import 'package:ludo_mobile/ui/components/scaffold/admin_scaffold.dart';
 import 'package:ludo_mobile/ui/pages/reservation/admin_reservation_list.dart';
+import 'package:ludo_mobile/ui/router/routes.dart';
 import 'package:ludo_mobile/utils/menu_items.dart';
 
 class AdminHomePage extends StatefulWidget {
@@ -61,7 +62,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
             }
 
             if(state is UserMustLogError) {
-              context.go('/login');
+              context.go(Routes.login.path);
             }
 
             return const Center(
