@@ -1,16 +1,20 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/domain/models/user.dart';
+import 'package:ludo_mobile/domain/use_cases/session/session_cubit.dart';
+import 'package:ludo_mobile/injection.dart';
 import 'package:ludo_mobile/ui/components/search_bar.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
-import 'package:ludo_mobile/utils/local_storage_helper.dart';
 import 'package:ludo_mobile/utils/menu_items.dart';
 
 class CustomBottomNavigationBar extends StatelessWidget {
+  late final SessionCubit _sessionCubit = locator<SessionCubit>();
   final User user;
   final int index;
 
-  const CustomBottomNavigationBar({
+  CustomBottomNavigationBar({
     Key? key,
     required this.index,
     required this.user,
@@ -46,7 +50,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
       ],
       onTap: (index) {
         if (index == MenuItems.Messages.index) {
-          context.go(Routes.inbox.path, extra: user);
+          context.go(Routes.inbox.path);
         } else if (index == MenuItems.Search.index) {
           showDialog(
             context: context,
@@ -58,12 +62,14 @@ class CustomBottomNavigationBar extends StatelessWidget {
             },
           );
         } else if (index == MenuItems.Home.index) {
-          context.go(Routes.home.path, extra: user);
+          context.go(Routes.home.path);
         } else if (index == MenuItems.Profile.index) {
-          LocalStorageHelper.removeUserFromLocalStorage();
-          context.go(Routes.landing.path);
+          _sessionCubit.logout();
+          scheduleMicrotask(() {
+            context.go(Routes.landing.path);
+          });
         } else if (index == MenuItems.Favorites.index) {
-          context.go(Routes.favorites.path, extra: user);
+          context.go(Routes.favorites.path);
         }
       },
     );

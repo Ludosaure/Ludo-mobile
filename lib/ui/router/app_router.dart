@@ -70,7 +70,7 @@ class AppRouter {
               ),
             ],
             child: UserHomePage(
-              connectedUser: connectedUser!,
+              connectedUser: connectedUser,
             ),
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -201,7 +201,9 @@ class AppRouter {
       GoRoute(
         path: Routes.favorites.path,
         pageBuilder: (context, state) => CustomTransitionPage(
-          child: const GameFavoritesPage(),
+          child: GameFavoritesPage(
+            user: connectedUser!,
+          ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(
               opacity: animation,
