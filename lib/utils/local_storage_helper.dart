@@ -4,6 +4,7 @@ import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LocalStorageHelper {
+
   static Future<User?> getUserFromLocalStorage() async {
     final SharedPreferences localStorage =
         await SharedPreferences.getInstance();
@@ -16,6 +17,7 @@ class LocalStorageHelper {
 
     return user;
   }
+
   static Future<String?> getTokenFromLocalStorage() async {
     final SharedPreferences localStorage =
         await SharedPreferences.getInstance();

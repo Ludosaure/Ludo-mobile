@@ -7,7 +7,7 @@ import 'package:meta/meta.dart';
 
 part 'session_state.dart';
 
-@injectable
+@singleton
 class SessionCubit extends Cubit<SessionState> with ChangeNotifier {
   SessionCubit() : super(SessionInitial()) {
     checkSession();
@@ -16,20 +16,21 @@ class SessionCubit extends Cubit<SessionState> with ChangeNotifier {
   void checkSession() async {
     print('Checking session...');
     User? user = await LocalStorageHelper.getUserFromLocalStorage();
+    print("User: $user");
 
     if (user == null) {
       print('User not logged');
       emit(
         UserNotLogged(),
       );
-    } else {
-      print('User logged');
-
-      emit(
-        UserLoggedIn(user: user),
-      );
+      notifyListeners();
+      return;
     }
+    print('User auto-logged');
 
+    emit(
+      UserLoggedIn(user: user),
+    );
     notifyListeners();
   }
 

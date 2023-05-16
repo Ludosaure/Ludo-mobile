@@ -57,6 +57,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     );
 
     _sessionCubit.userLogged(user);
+    print("SESSION CUBIT IN BLOC STATE ${_sessionCubit.state}");
   }
 
   void onLogout(event, Emitter emit) async {

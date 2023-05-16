@@ -154,7 +154,6 @@ class _LoginPageState extends State<LoginPage> {
   BlocConsumer _submitButton(BuildContext context) {
     return BlocConsumer<LoginBloc, LoginState>(
       listener: (context, state) {
-        print(state.status);
         if (state.status is FormSubmissionSuccessful) {
           final user = state.loggedUser as User;
 

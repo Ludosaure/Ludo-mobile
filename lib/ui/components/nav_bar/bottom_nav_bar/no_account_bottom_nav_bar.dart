@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:ludo_mobile/utils/local_storage_helper.dart';
 
 class NoAccountBottomNavigationBar extends StatefulWidget {
   const NoAccountBottomNavigationBar({Key? key}) : super(key: key);
@@ -30,10 +30,7 @@ class _NoAccountBottomNavigationBarState extends State<NoAccountBottomNavigation
       onTap: (index) {
         setState(() {
           if(index == 0) {
-            SharedPreferences.getInstance().then((prefs) {
-              prefs.remove('token');
-              prefs.remove('user');
-            });
+            LocalStorageHelper.removeUserFromLocalStorage();
             context.go(Routes.register.path);
           } else {
             context.go(Routes.login.path);

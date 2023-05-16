@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
+import 'package:ludo_mobile/utils/local_storage_helper.dart';
 import 'package:ludo_mobile/utils/menu_items.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AdminBottomNavBar extends StatelessWidget {
+  final User user;
   final int index;
 
   const AdminBottomNavBar({
     Key? key,
     required this.index,
+    required this.user,
   }) : super(key: key);
 
   @override
@@ -42,19 +45,16 @@ class AdminBottomNavBar extends StatelessWidget {
       ],
       onTap: (index) {
         if (index == AdminMenuItems.Messages.index) {
-          context.go(Routes.inbox.path);
+          context.go(Routes.inbox.path, extra: user);
         } else if (index == AdminMenuItems.AddGame.index) {
-          context.go(Routes.addGame.path);
+          context.go(Routes.addGame.path, extra: user);
         } else if (index == AdminMenuItems.Home.index) {
-          context.go(Routes.homeAdmin.path);
+          context.go(Routes.homeAdmin.path, extra: user);
         } else if (index == AdminMenuItems.Dashboard.index) {
-          context.go(Routes.adminDashboard.path);
+          context.go(Routes.adminDashboard.path, extra: user);
         } else if (index == AdminMenuItems.Profile.index) {
-          SharedPreferences.getInstance().then((prefs) {
-            prefs.remove('token');
-            prefs.remove('user');
-            context.go(Routes.landing.path);
-          });
+          LocalStorageHelper.removeUserFromLocalStorage();
+          context.go(Routes.landing.path);
         }
       },
     );
