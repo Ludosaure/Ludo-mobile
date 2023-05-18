@@ -28,6 +28,7 @@ class GameProvider {
     });
 
     if(response.statusCode != HttpCode.OK) {
+      print(response.statusCode);
       throw const InternalServerException('Erreur inconnue');
     }
 
