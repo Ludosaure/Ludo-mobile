@@ -34,6 +34,7 @@ class Game {
     json["category"] != null ? json["categories"].forEach((category) {
       categories.add(GameCategory.fromJson(category).name);
     }) : [];
+
     return Game(
       id: json['id'],
       name: json['name'].toString().titleCase(),
@@ -45,7 +46,7 @@ class Game {
       maxPlayers: json['nbPlayersMax'],
       categories: categories,
       weeklyAmount: json['weeklyAmount'].toDouble(),
-      rating: json['averageRating'].toDouble(),
+      rating: json['averageRating'] != null ? json['averageRating'].toDouble() : 0.0,
     );
   }
 }

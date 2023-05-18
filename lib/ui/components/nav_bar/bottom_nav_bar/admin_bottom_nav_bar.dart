@@ -1,15 +1,22 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ludo_mobile/domain/models/user.dart';
+import 'package:ludo_mobile/domain/use_cases/session/session_cubit.dart';
+import 'package:ludo_mobile/injection.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
 import 'package:ludo_mobile/utils/menu_items.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AdminBottomNavBar extends StatelessWidget {
+  late final SessionCubit _sessionCubit = locator<SessionCubit>();
+  final User user;
   final int index;
 
-  const AdminBottomNavBar({
+  AdminBottomNavBar({
     Key? key,
     required this.index,
+    required this.user,
   }) : super(key: key);
 
   @override
@@ -50,9 +57,8 @@ class AdminBottomNavBar extends StatelessWidget {
         } else if (index == AdminMenuItems.Dashboard.index) {
           context.go(Routes.adminDashboard.path);
         } else if (index == AdminMenuItems.Profile.index) {
-          SharedPreferences.getInstance().then((prefs) {
-            prefs.remove('token');
-            prefs.remove('user');
+          _sessionCubit.logout();
+          scheduleMicrotask(() {
             context.go(Routes.landing.path);
           });
         }

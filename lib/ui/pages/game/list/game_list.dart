@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
+import 'package:ludo_mobile/ui/router/routes.dart';
 
 import 'game_card.dart';
 import 'game_tile.dart';
@@ -37,7 +38,7 @@ class GameList extends StatelessWidget {
         return GestureDetector(
           onTap: () {
             context.push(
-              '/game/${game.id}',
+              '${Routes.game.path}/${game.id}',
               extra: game,
             );
           },
@@ -57,7 +58,7 @@ class GameList extends StatelessWidget {
         return GestureDetector(
           onTap: () {
             context.push(
-              '/game/${game.id}',
+              '${Routes.game.path}/${game.id}',
               extra: game,
             );
           },

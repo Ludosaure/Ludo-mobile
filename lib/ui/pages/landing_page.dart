@@ -106,7 +106,7 @@ class LandingPage extends StatelessWidget {
           ),
           TextButton(
             onPressed: () {
-              context.go(Routes.home.path, extra: null);
+              context.go(Routes.home.path);
             },
             style: TextButton.styleFrom(
               alignment: Alignment.centerRight,

@@ -23,52 +23,7 @@ class _UserHomePageState extends State<UserHomePage> {
   @override
   Widget build(BuildContext context) {
     return HomeScaffold(
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-        child: BlocConsumer<GetGamesCubit, GetGamesState>(
-          listener: (context, state) {
-            if (state is GetGamesError) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.message),
-                ),
-              );
-            }
-          },
-          builder: (context, state) {
-            if (state is GetGamesInitial) {
-              BlocProvider.of<GetGamesCubit>(context).getGames();
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-
-            if (state is GetGamesLoading) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-
-            if (state is GetGamesSuccess) {
-              games = state.games;
-              return GameList(
-                games: state.games,
-                gridView: _gridView,
-              );
-            }
-
-            if (state is GetGamesError) {
-              return const Center(
-                child: Text("Aucun jeu trouvé"),
-              );
-            }
-
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          },
-        ),
-      ),
+      body: _buildGameList(),
       navBarIndex: MenuItems.Home.index,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -85,6 +40,56 @@ class _UserHomePageState extends State<UserHomePage> {
                 Icons.grid_view,
                 color: Colors.white,
               ),
+      ),
+      user: widget.connectedUser,
+    );
+  }
+
+  Widget _buildGameList() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      child: BlocConsumer<GetGamesCubit, GetGamesState>(
+        listener: (context, state) {
+          if (state is GetGamesError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+              ),
+            );
+          }
+        },
+        builder: (context, state) {
+          if (state is GetGamesInitial) {
+            BlocProvider.of<GetGamesCubit>(context).getGames();
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          if (state is GetGamesLoading) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          if (state is GetGamesSuccess) {
+            games = state.games;
+            return GameList(
+              games: state.games,
+              gridView: _gridView,
+            );
+          }
+
+          if (state is GetGamesError) {
+            return const Center(
+              child: Text("Aucun jeu trouvé"),
+            );
+          }
+
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        },
       ),
     );
   }

@@ -21,7 +21,7 @@ class CustomBackButton extends StatelessWidget {
           if(Navigator.canPop(context)) {
             Navigator.pop(context);
           } else {
-            context.go(Routes.landing.path, extra: null);
+            context.go(Routes.landing.path);
           }
         },
         icon: Icon(Icons.arrow_back, color: color),

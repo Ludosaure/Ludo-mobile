@@ -1,13 +1,24 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ludo_mobile/domain/models/user.dart';
+import 'package:ludo_mobile/domain/use_cases/session/session_cubit.dart';
+import 'package:ludo_mobile/injection.dart';
 import 'package:ludo_mobile/ui/components/search_bar.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
 import 'package:ludo_mobile/utils/menu_items.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class CustomBottomNavigationBar extends StatelessWidget {
+  late final SessionCubit _sessionCubit = locator<SessionCubit>();
+  final User user;
   final int index;
-  const CustomBottomNavigationBar({Key? key, required this.index}) : super(key: key);
+
+  CustomBottomNavigationBar({
+    Key? key,
+    required this.index,
+    required this.user,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +51,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
       onTap: (index) {
         if (index == MenuItems.Messages.index) {
           context.go(Routes.inbox.path);
-        }  else if (index == MenuItems.Search.index) {
+        } else if (index == MenuItems.Search.index) {
           showDialog(
             context: context,
             builder: (context) {
@@ -53,10 +64,10 @@ class CustomBottomNavigationBar extends StatelessWidget {
         } else if (index == MenuItems.Home.index) {
           context.go(Routes.home.path);
         } else if (index == MenuItems.Profile.index) {
-          SharedPreferences.getInstance().then((prefs) {
-            prefs.remove('token');
+          _sessionCubit.logout();
+          scheduleMicrotask(() {
+            context.go(Routes.landing.path);
           });
-          context.go(Routes.landing.path);
         } else if (index == MenuItems.Favorites.index) {
           context.go(Routes.favorites.path);
         }

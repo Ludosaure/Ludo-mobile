@@ -158,16 +158,16 @@ class _LoginPageState extends State<LoginPage> {
           final user = state.loggedUser as User;
 
           if(user.isAdmin()){
-            context.go(Routes.homeAdmin.path, extra: user);
+            context.go(Routes.homeAdmin.path);
           } else {
-            context.go(Routes.home.path, extra: user);
+            context.go(Routes.home.path);
           }
         } else if (state.status is FormSubmissionFailed) {
           FormSubmissionFailed status = state.status as FormSubmissionFailed;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(status.message),
-              backgroundColor: Theme.of(context).errorColor,
+              backgroundColor: Theme.of(context).colorScheme.error,
             ),
           );
         }

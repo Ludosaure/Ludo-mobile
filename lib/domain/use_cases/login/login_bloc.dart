@@ -4,8 +4,9 @@ import 'package:ludo_mobile/core/form_status.dart';
 import 'package:ludo_mobile/data/providers/authentication/login/login_request.dart';
 import 'package:ludo_mobile/data/repositories/authentication_repository.dart';
 import 'package:ludo_mobile/domain/models/user.dart';
+import 'package:ludo_mobile/domain/use_cases/session/session_cubit.dart';
+import 'package:ludo_mobile/utils/local_storage_helper.dart';
 import 'package:meta/meta.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 part 'login_event.dart';
 
@@ -14,8 +15,12 @@ part 'login_state.dart';
 @injectable
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final AuthenticationRepository _authenticationRepository;
+  final SessionCubit _sessionCubit;
 
-  LoginBloc(this._authenticationRepository) : super(LoginState()) {
+  LoginBloc(
+    this._authenticationRepository,
+    this._sessionCubit,
+  ) : super(LoginState()) {
     on<LoginSubmitEvent>(onSubmitForm);
     on<EmailChangedEvent>(onEmailChanged);
     on<PasswordChangedEvent>(onPasswordChanged);
@@ -38,22 +43,24 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     try {
       user = await _authenticationRepository.login(req);
     } catch (exception) {
-        emit(state.copyWith(
-          status: FormSubmissionFailed(message: exception.toString()),
-        ));
-        return;
+      emit(state.copyWith(
+        status: FormSubmissionFailed(message: exception.toString()),
+      ));
+      return;
     }
 
-    emit(state.copyWith(
-      status: const FormSubmissionSuccessful(),
-      loggedUser: user,
-    ));
+    emit(
+      state.copyWith(
+        status: const FormSubmissionSuccessful(),
+        loggedUser: user,
+      ),
+    );
+
+    _sessionCubit.userLogged(user);
   }
 
   void onLogout(event, Emitter emit) async {
-    SharedPreferences.getInstance().then((prefs) {
-      prefs.remove('token');
-    });
+    LocalStorageHelper.removeUserFromLocalStorage();
 
     emit(
       state.copyWith(
@@ -63,6 +70,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         loggedUser: null,
       ),
     );
+    _sessionCubit.logout();
   }
 
   void onResendConfirmAccountEmail(event, Emitter emit) async {

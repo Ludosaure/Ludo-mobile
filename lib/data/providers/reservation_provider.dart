@@ -8,16 +8,14 @@ import 'package:ludo_mobile/domain/models/reservation.dart';
 import 'package:ludo_mobile/utils/app_constants.dart';
 
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:ludo_mobile/utils/local_storage_helper.dart';
 
 @injectable
 class ReservationProvider {
   final String endpoint = '${AppConstants.API_URL}/reservation';
 
   Future<List<Reservation>> getReservations() async {
-    String? token;
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    token = prefs.getString('token');
+    String? token = await LocalStorageHelper.getTokenFromLocalStorage();
 
     if(token == null) {
       throw const UserNotLoggedInException("Veuillez vous connecter pour accéder à cette page");
