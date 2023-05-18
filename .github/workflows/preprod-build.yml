@@ -17,7 +17,7 @@ jobs:
       - run: flutter pub get
       - run: flutter pub run build_runner build
       - run: flutter test
-      - run: flutter build web --dart-define=API_URL=https://api-preprod.ludo-mobile.com
+      - run: flutter build web --dart-define=API_URL=http://api-ludosaure-load-balancer-2124171361.eu-west-1.elb.amazonaws.com/
 
   build_apk:
     name: build_apk
