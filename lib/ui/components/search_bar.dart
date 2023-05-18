@@ -53,7 +53,6 @@ class SearchBar extends StatelessWidget {
             if (showFilter)
               IconButton(
                 onPressed: () {
-                  print("search pressed");
                 },
                 icon: const Icon(Icons.filter_list_sharp),
               ),
