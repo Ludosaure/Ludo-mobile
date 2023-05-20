@@ -32,6 +32,7 @@ jobs:
 
   build_web:
     name: build_web
+    needs: [ release ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -69,22 +70,23 @@ jobs:
           path: version1.txt
       - name: Update version in YAML
         run: sed -i 's/99.99.99+99/${{ steps.version.outputs.content }}+${{ github.run_number }}/g' pubspec.yaml
-      - name: Update KeyStore password in gradle properties
-        run: sed -i 's/#{KEYSTORE_PASS}#/${{ secrets.STORE_PASSWORD }}/g' android/key.properties
-      - name: Update KeyStore key password in gradle properties
-        run: sed -i 's/#{KEYSTORE_KEY_PASS}#/${{ secrets.KEY_PASSWORD }}/g' android/key.properties
+      - name: Download Android keystore
+        id: android_keystore
+        uses: timheuer/base64-to-file@v1.2
+        with:
+          fileName: 'upload-keystore.jks'
+          encodedString: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+      - name: Create key.properties
+        run: |
+          echo "storeFile=${{ steps.android_keystore.outputs.filePath }}" > android/key.properties
+          echo "storePassword=${{ secrets.STORE_PASSWORD }}" >> android/key.properties
+          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
+          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
       - run: flutter pub get
       - run: flutter pub run build_runner build
       - run: flutter test
       - run: flutter build apk --release --split-per-abi
       - run: flutter build appbundle --dart-define=API_URL=http://api-ludosaure-load-balancer-2124171361.eu-west-1.elb.amazonaws.com
-      - name: Create a Release in GitHub
-        uses: ncipollo/release-action@v1
-        with:
-          artifacts: "build/app/outputs/apk/release/*.apk,build/app/outputs/bundle/release/app-release.aab"
-          token: ${{ secrets.GH_TOKEN }}
-          tag: ${{ steps.version.outputs.content }}
-          commit: ${{ github.sha }}
       - name: Upload app bundle
         uses: actions/upload-artifact@v3
         with:
@@ -105,12 +107,15 @@ jobs:
         uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJsonPlainText: ${{ secrets.PLAYSTORE_ACCOUNT_KEY }}
-          packageName: com.fluttercicddemo
-          releaseFile: app-release.aab
+          packageName: com.ludosaure.ludo_mobile
+          releaseFiles: app-release.aab
           track: internal
+          whatsNewDirectory: android/release-notes/
+          status: draft # TODO potentiellement à changer quand l'app sera validée
 
   build_ios:
     name: build_ios
+    needs: [ release ]
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
