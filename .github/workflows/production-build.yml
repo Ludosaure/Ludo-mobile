@@ -16,12 +16,12 @@ jobs:
           git config remote.origin.url https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}
           git fetch --prune --depth=10000
       - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v0.9.3
+        uses: gittools/actions/gitversion/setup@v0.9.7
         with:
           versionSpec: '5.x'
       - name: Use GitVersion
         id: gitversion
-        uses: gittools/actions/gitversion/execute@v0.9.3
+        uses: gittools/actions/gitversion/execute@v0.9.7
       - name: Create version.txt with nuGetVersion
         run: echo ${{ steps.gitversion.outputs.nuGetVersion  }} > version.txt
       - name: Upload version.txt
@@ -91,23 +91,23 @@ jobs:
           name: appbundle
           path: build/app/outputs/bundle/release/app-release.aab
 
-#  release:
-#    name: Release app to internal track
-#    needs: [ build_apk ]
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v3
-#      - name: Get appbundle from artifacts
-#        uses: actions/download-artifact@v3
-#        with:
-#          name: appbundle
-#      - name: Release app to internal track
-#        uses: r0adkll/upload-google-play@v1
-#        with:
-#          serviceAccountJsonPlainText: ${{ secrets.PLAYSTORE_ACCOUNT_KEY }}
-#          packageName: com.fluttercicddemo
-#          releaseFile: app-release.aab
-#          track: internal
+  release:
+    name: Release app to internal track
+    needs: [ build_apk ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Get appbundle from artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: appbundle
+      - name: Release app to internal track
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAYSTORE_ACCOUNT_KEY }}
+          packageName: com.fluttercicddemo
+          releaseFile: app-release.aab
+          track: internal
 
   build_ios:
     name: build_ios
