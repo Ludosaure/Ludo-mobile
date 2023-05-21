@@ -1,4 +1,5 @@
 import 'package:injectable/injectable.dart';
+import 'package:ludo_mobile/data/providers/game/game_listing_response.dart';
 import 'package:ludo_mobile/data/providers/game/game_provider.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
 

@@ -9,15 +9,14 @@ import 'package:ludo_mobile/utils/app_constants.dart';
 import 'package:http/http.dart' as http;
 
 import 'game_json.dart';
+import 'game_listing_response.dart';
 
 @injectable
 class GameProvider {
   final String baseUrl = '${AppConstants.API_URL}/game';
 
   Future<GameListingResponse> getGames() async {
-    late http.Response response;
-
-    response = await http.get(
+    final http.Response response = await http.get(
       Uri.parse(baseUrl),
     ).catchError((error) {
       if(error is SocketException) {
@@ -42,13 +41,4 @@ class GameProvider {
       games: games,
     );
   }
-
-}
-
-class GameListingResponse {
-  List<GameJson> games;
-
-  GameListingResponse({
-    required this.games,
-  });
 }

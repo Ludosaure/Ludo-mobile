@@ -44,6 +44,7 @@ class GameCard extends StatelessWidget {
     if(game.imageUrl != null) {
       child = Image.network(game.imageUrl!);
     }
+
     return GridTile(
       footer: GridTileBar(
         backgroundColor: Colors.white,
@@ -64,16 +65,16 @@ class GameCard extends StatelessWidget {
             children: [
               Text(
                 game.categories.join(', '),
-                style: Theme.of(context).textTheme.subtitle1,
+                style: Theme.of(context).textTheme.titleMedium,
               ),
               Text(
                 '${game.minPlayers} - ${game.maxPlayers} joueurs',
-                style: Theme.of(context).textTheme.subtitle1,
+                style: Theme.of(context).textTheme.titleMedium,
               ),
             ]),
         trailing: Text(
           '${game.weeklyAmount} €',
-          style: Theme.of(context).textTheme.subtitle1,
+          style: Theme.of(context).textTheme.titleMedium,
         ),
       ),
       child: child,

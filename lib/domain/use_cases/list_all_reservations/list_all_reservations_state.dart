@@ -26,7 +26,6 @@ class ListAllReservationsError extends ListAllReservationsState {
   const ListAllReservationsError({required this.message}) : super();
 }
 
-//TODO faire mieux
 class UserMustLogError extends ListAllReservationsInitial {
   final String message;
   const UserMustLogError({required this.message}) : super();

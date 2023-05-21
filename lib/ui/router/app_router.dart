@@ -12,8 +12,8 @@ import 'package:ludo_mobile/domain/use_cases/session/session_cubit.dart';
 import 'package:ludo_mobile/injection.dart';
 import 'package:ludo_mobile/ui/pages/game/add_game_page.dart';
 import 'package:ludo_mobile/ui/pages/admin_dashboard_page.dart';
+import 'package:ludo_mobile/ui/pages/game/favorite_games_page.dart';
 import 'package:ludo_mobile/ui/pages/game/game_details_page.dart';
-import 'package:ludo_mobile/ui/pages/game/game_favorites_page.dart';
 import 'package:ludo_mobile/ui/pages/home/admin_home_page.dart';
 import 'package:ludo_mobile/ui/pages/home/user_home_page.dart';
 import 'package:ludo_mobile/ui/pages/inbox_page.dart';
@@ -201,7 +201,7 @@ class AppRouter {
       GoRoute(
         path: Routes.favorites.path,
         pageBuilder: (context, state) => CustomTransitionPage(
-          child: GameFavoritesPage(
+          child: FavoriteGamesPage(
             user: connectedUser!,
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
