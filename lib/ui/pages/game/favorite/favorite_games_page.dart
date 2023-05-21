@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:ludo_mobile/data/repositories/favorite_games_repository.dart';
+import 'package:ludo_mobile/data/repositories/favorite/favorite_game.dart';
 import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:ludo_mobile/domain/use_cases/get_favorite_games/get_favorite_games_cubit.dart';
 import 'package:ludo_mobile/ui/components/scaffold/home_scaffold.dart';
-import 'package:ludo_mobile/ui/pages/game/favorite_games_list.dart';
+import 'package:ludo_mobile/ui/pages/game/favorite/favorite_games_list.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
 import 'package:ludo_mobile/utils/menu_items.dart';
 

@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:injectable/injectable.dart';
-import 'package:ludo_mobile/data/repositories/favorite_games_repository.dart';
+import 'package:ludo_mobile/data/repositories/favorite/favorite_game.dart';
+import 'package:ludo_mobile/data/repositories/favorite/favorite_games_repository.dart';
 import 'package:ludo_mobile/domain/use_cases/session/session_cubit.dart';
 import 'package:meta/meta.dart';
 

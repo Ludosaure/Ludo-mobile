@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:injectable/injectable.dart';
-import 'package:ludo_mobile/data/repositories/favorite_games_repository.dart';
+import 'package:ludo_mobile/data/repositories/favorite/favorite_games_repository.dart';
 import 'package:ludo_mobile/domain/use_cases/session/session_cubit.dart';
 import 'package:meta/meta.dart';
 
@@ -16,7 +16,7 @@ class HandleFavoriteGameCubit extends Cubit<HandleFavoriteGameState> {
     this._favoriteRepository,
   ) : super(HandleFavoriteGameInitial());
 
-  void addToFavorite(int gameId) async {
+  void addToFavorite(String gameId) async {
     emit(OperationInProgress());
     try {
       if (_sessionCubit.state is! UserLoggedIn) {
@@ -35,7 +35,7 @@ class HandleFavoriteGameCubit extends Cubit<HandleFavoriteGameState> {
     }
   }
 
-  void removeFromFavorite(int gameId) async {
+  void removeFromFavorite(String gameId) async {
     emit(OperationInProgress());
     try {
       if (_sessionCubit.state is! UserLoggedIn) {

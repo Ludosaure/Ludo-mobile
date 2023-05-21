@@ -73,7 +73,7 @@ class AdminReservationList extends StatelessWidget {
           child: ListTile(
             leading: const Icon(Icons.person),
             onTap: () {
-              context.go('${Routes.reservations.path}/$index');
+              context.go('${Routes.reservations.path}/${reservation.id}');
             },
             title: Text(
                 "${reservation.createdBy.firstname} ${reservation.createdBy.lastname}"),

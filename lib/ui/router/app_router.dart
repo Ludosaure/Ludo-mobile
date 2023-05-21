@@ -4,7 +4,9 @@ import 'package:go_router/go_router.dart';
 import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
 import 'package:ludo_mobile/domain/models/user.dart';
+import 'package:ludo_mobile/domain/use_cases/get_favorite_games/get_favorite_games_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/get_games/get_games_cubit.dart';
+import 'package:ludo_mobile/domain/use_cases/handle_favorite_game/handle_favorite_game_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/list_all_reservations/list_all_reservations_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/login/login_bloc.dart';
 import 'package:ludo_mobile/domain/use_cases/register/register_bloc.dart';
@@ -12,7 +14,7 @@ import 'package:ludo_mobile/domain/use_cases/session/session_cubit.dart';
 import 'package:ludo_mobile/injection.dart';
 import 'package:ludo_mobile/ui/pages/game/add_game_page.dart';
 import 'package:ludo_mobile/ui/pages/admin_dashboard_page.dart';
-import 'package:ludo_mobile/ui/pages/game/favorite_games_page.dart';
+import 'package:ludo_mobile/ui/pages/game/favorite/favorite_games_page.dart';
 import 'package:ludo_mobile/ui/pages/game/game_details_page.dart';
 import 'package:ludo_mobile/ui/pages/home/admin_home_page.dart';
 import 'package:ludo_mobile/ui/pages/home/user_home_page.dart';
@@ -35,6 +37,11 @@ class AppRouter {
   final GetGamesCubit _getGamesCubit = locator<GetGamesCubit>();
   final ListAllReservationsCubit _listAllReservationsCubit =
       locator<ListAllReservationsCubit>();
+  final GetFavoriteGamesCubit _getFavoriteGamesCubit =
+      locator<GetFavoriteGamesCubit>();
+  final HandleFavoriteGameCubit _handleFavoriteGameCubit =
+      locator<HandleFavoriteGameCubit>();
+
   late User? connectedUser;
 
   AppRouter(this._sessionCubit);
@@ -201,8 +208,18 @@ class AppRouter {
       GoRoute(
         path: Routes.favorites.path,
         pageBuilder: (context, state) => CustomTransitionPage(
-          child: FavoriteGamesPage(
-            user: connectedUser!,
+          child: MultiBlocProvider(
+            providers: [
+              BlocProvider.value(
+                value: _getFavoriteGamesCubit,
+              ),
+              BlocProvider.value(
+                value: _handleFavoriteGameCubit,
+              ),
+            ],
+            child: FavoriteGamesPage(
+              user: connectedUser!,
+            ),
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(
@@ -267,7 +284,7 @@ class AppRouter {
     ],
     redirect: (GoRouterState state) {
       connectedUser = null;
-      if(_sessionCubit.state is UserLoggedIn) {
+      if (_sessionCubit.state is UserLoggedIn) {
         connectedUser = (_sessionCubit.state as UserLoggedIn).user;
 
         final bool isAdminRoute = state.location == Routes.homeAdmin.path ||
@@ -277,7 +294,8 @@ class AppRouter {
 
         // guard admin ou auto-login client
         if (isAdminRoute && !connectedUser!.isAdmin() ||
-            state.location == Routes.landing.path && !connectedUser!.isAdmin()) {
+            state.location == Routes.landing.path &&
+                !connectedUser!.isAdmin()) {
           return Routes.home.path;
         }
 
@@ -289,13 +307,12 @@ class AppRouter {
 
       RegExp gameDetailsRoute = AppConstants.UUID_V4;
       gameDetailsRoute.hasMatch(state.location);
-      final bool isUnauthenticatedRoute =
-          state.location == Routes.login.path ||
-              state.location == Routes.register.path ||
-              state.location == Routes.terms.path ||
-              state.location == Routes.home.path ||
-              state.location == Routes.landing.path ||
-              gameDetailsRoute.hasMatch(state.location);
+      final bool isUnauthenticatedRoute = state.location == Routes.login.path ||
+          state.location == Routes.register.path ||
+          state.location == Routes.terms.path ||
+          state.location == Routes.home.path ||
+          state.location == Routes.landing.path ||
+          gameDetailsRoute.hasMatch(state.location);
 
       if (connectedUser == null && !isUnauthenticatedRoute) {
         return Routes.login.path;
