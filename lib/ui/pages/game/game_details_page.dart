@@ -5,6 +5,7 @@ import 'package:ludo_mobile/domain/models/game.dart';
 import 'package:ludo_mobile/ui/components/custom_back_button.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ludo_mobile/ui/components/expandable_text_widget.dart';
+import 'package:ludo_mobile/ui/components/favorite_button.dart';
 
 //WIP - Not finished yet
 class GameDetailsPage extends StatelessWidget {
@@ -48,9 +49,8 @@ class GameDetailsPage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Icon(
-                    Icons.favorite,
-                    color: Theme.of(context).colorScheme.secondary,
+                  FavoriteButton(
+                    gameId: game.id,
                   ),
                 ],
               ),

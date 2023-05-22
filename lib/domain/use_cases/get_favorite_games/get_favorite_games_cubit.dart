@@ -7,7 +7,7 @@ import 'package:meta/meta.dart';
 
 part 'get_favorite_games_state.dart';
 
-@injectable
+@singleton
 class GetFavoriteGamesCubit extends Cubit<GetFavoriteGamesState> {
   final SessionCubit _sessionCubit;
   final FavoriteGamesRepository _favoriteRepository;
@@ -33,5 +33,19 @@ class GetFavoriteGamesCubit extends Cubit<GetFavoriteGamesState> {
         GetFavoriteGamesError(message: exception.toString()),
       );
     }
+  }
+
+  bool isFavorite(String gameId) {
+    if(state is GetFavoriteGamesInitial) {
+      getFavorites();
+    }
+
+    if (state is GetFavoriteGamesSuccess) {
+      final favorites = (state as GetFavoriteGamesSuccess).favorites;
+
+      return favorites.any((element) => element.gameId == gameId);
+    }
+
+    return false;
   }
 }

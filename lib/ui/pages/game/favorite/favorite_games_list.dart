@@ -41,7 +41,7 @@ class FavoriteGamesList extends StatelessWidget {
                     ),
                   ),
             onTap: () {
-              context.go('${Routes.game}/${favorite.gameId}');
+              context.go('${Routes.game.path}/${favorite.gameId}');
             },
             title: Text(favorite.name),
             trailing: const Text("Retirer des favoris"),
