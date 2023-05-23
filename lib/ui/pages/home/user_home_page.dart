@@ -74,10 +74,14 @@ class _UserHomePageState extends State<UserHomePage> {
 
           if (state is GetGamesSuccess) {
             games = state.games;
-            return GameList(
-              games: state.games,
-              gridView: _gridView,
-            );
+            return RefreshIndicator(
+                child: GameList(
+                  games: state.games,
+                  gridView: _gridView,
+                ),
+                onRefresh: () async {
+                  BlocProvider.of<GetGamesCubit>(context).getGames();
+                });
           }
 
           if (state is GetGamesError) {
