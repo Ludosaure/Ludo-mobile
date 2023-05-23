@@ -15,29 +15,28 @@ class FavoriteButton extends StatelessWidget {
   Widget build(BuildContext context) {
     late bool isFavorite = false;
 
-    return BlocConsumer<FavoriteGamesCubit,FavoriteGamesState>(
+    return BlocConsumer<FavoriteGamesCubit, FavoriteGamesState>(
       builder: (context, state) {
         if (state is GetFavoriteGamesInitial) {
           BlocProvider.of<FavoriteGamesCubit>(context).getFavorites();
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
+          return _buildButton(context, false);
         }
 
-        if(state is GetFavoriteGamesError){
-          return Container();
-        }
-
-        if(state is UserNotLogged){
-          return Container();
-        }
-
-        if (state is GetFavoriteGamesSuccess) {
-          isFavorite = BlocProvider.of<FavoriteGamesCubit>(context).isFavorite(game);
+        if(state is OperationInProgress) {
           return _buildButton(context, isFavorite);
         }
 
-        if(state is OperationSuccess){
+        if (state is GetFavoriteGamesSuccess) {
+          isFavorite =
+              BlocProvider.of<FavoriteGamesCubit>(context).isFavorite(game);
+          return _buildButton(context, isFavorite);
+        }
+
+        if (state is UserNotLogged) {
+          return Container();
+        }
+
+        if (state is OperationSuccess) {
           isFavorite = !isFavorite;
           return _buildButton(context, isFavorite);
         }
@@ -45,8 +44,7 @@ class FavoriteButton extends StatelessWidget {
         return Container();
       },
       listener: (context, state) {
-        if (state is GetFavoriteGamesInitial) {
-        }
+        if (state is UserNotLogged) {}
       },
     );
   }
@@ -55,11 +53,9 @@ class FavoriteButton extends StatelessWidget {
     return IconButton(
       onPressed: () {
         if (isFavorite) {
-          BlocProvider.of<FavoriteGamesCubit>(context)
-              .removeFromFavorite(game);
+          BlocProvider.of<FavoriteGamesCubit>(context).removeFromFavorite(game);
         } else {
-          BlocProvider.of<FavoriteGamesCubit>(context)
-              .addToFavorite(game);
+          BlocProvider.of<FavoriteGamesCubit>(context).addToFavorite(game);
         }
       },
       icon: Icon(
