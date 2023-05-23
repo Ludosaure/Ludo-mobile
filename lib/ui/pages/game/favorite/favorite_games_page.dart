@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/data/repositories/favorite/favorite_game.dart';
 import 'package:ludo_mobile/domain/models/user.dart';
-import 'package:ludo_mobile/domain/use_cases/get_favorite_games/get_favorite_games_cubit.dart';
+import 'package:ludo_mobile/domain/use_cases/favorite_games/favorite_games_cubit.dart';
 import 'package:ludo_mobile/ui/components/scaffold/home_scaffold.dart';
 import 'package:ludo_mobile/ui/pages/game/favorite/favorite_games_list.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
@@ -30,7 +30,7 @@ class FavoriteGamesPage extends StatelessWidget {
   Widget _buildFavoriteList() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
-      child: BlocConsumer<GetFavoriteGamesCubit, GetFavoriteGamesState>(
+      child: BlocConsumer<FavoriteGamesCubit, FavoriteGamesState>(
         listener: (context, state) {
           if (state is GetFavoriteGamesError) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -52,7 +52,7 @@ class FavoriteGamesPage extends StatelessWidget {
         },
         builder: (context, state) {
           if (state is GetFavoriteGamesInitial) {
-            BlocProvider.of<GetFavoriteGamesCubit>(context).getFavorites();
+            BlocProvider.of<FavoriteGamesCubit>(context).getFavorites();
             return const Center(
               child: CircularProgressIndicator(),
             );

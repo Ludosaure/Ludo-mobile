@@ -27,7 +27,7 @@ class GameTile extends StatelessWidget {
 
   Widget _tileCard(BuildContext context) {
     Widget leading = const FaIcon(
-      FontAwesomeIcons.dice,
+      FontAwesomeIcons.diceD20,
       color: Colors.grey,
     );
 
@@ -41,7 +41,7 @@ class GameTile extends StatelessWidget {
       subtitle: Text(game.categories.join(', ')),
       trailing: Text(
         '${game.weeklyAmount} €',
-        style: Theme.of(context).textTheme.subtitle1,
+        style: Theme.of(context).textTheme.titleMedium,
       ),
     );
   }

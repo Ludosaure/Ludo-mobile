@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
+import 'package:ludo_mobile/domain/use_cases/favorite_games/favorite_games_cubit.dart';
 import 'package:ludo_mobile/ui/components/custom_back_button.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ludo_mobile/ui/components/expandable_text_widget.dart';
@@ -29,38 +31,45 @@ class GameDetailsPage extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20),
         child: SingleChildScrollView(
           scrollDirection: Axis.vertical,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.max,
-            verticalDirection: VerticalDirection.down,
-            children: [
-              _buildGameImage(context),
-              const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    game.name,
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  FavoriteButton(
-                    gameId: game.id,
-                  ),
-                ],
-              ),
-              _buildGameDescription(context),
-              _buildGameRating(context),
-            ],
-          ),
+          child: _buildGame(context), //TODO bloc consumer
         ),
       ),
       bottomNavigationBar: _buildGameDetailsBottomBar(context),
+    );
+  }
+
+  Widget _buildGame(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisSize: MainAxisSize.max,
+      verticalDirection: VerticalDirection.down,
+      children: [
+        _buildGameImage(context),
+        const SizedBox(height: 8),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              game.name,
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+            const SizedBox(width: 8),
+            BlocProvider.value(
+                value: context.read<FavoriteGamesCubit>(),
+                child: FavoriteButton(
+                  game: game,
+                )
+            ),
+          ],
+        ),
+        _buildGameDescription(context),
+        _buildGameRating(context),
+      ],
     );
   }
 

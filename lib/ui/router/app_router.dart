@@ -4,9 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
 import 'package:ludo_mobile/domain/models/user.dart';
-import 'package:ludo_mobile/domain/use_cases/get_favorite_games/get_favorite_games_cubit.dart';
+import 'package:ludo_mobile/domain/use_cases/favorite_games/favorite_games_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/get_games/get_games_cubit.dart';
-import 'package:ludo_mobile/domain/use_cases/handle_favorite_game/handle_favorite_game_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/list_all_reservations/list_all_reservations_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/login/login_bloc.dart';
 import 'package:ludo_mobile/domain/use_cases/register/register_bloc.dart';
@@ -37,10 +36,8 @@ class AppRouter {
   final GetGamesCubit _getGamesCubit = locator<GetGamesCubit>();
   final ListAllReservationsCubit _listAllReservationsCubit =
       locator<ListAllReservationsCubit>();
-  final GetFavoriteGamesCubit _getFavoriteGamesCubit =
-      locator<GetFavoriteGamesCubit>();
-  final HandleFavoriteGameCubit _handleFavoriteGameCubit =
-      locator<HandleFavoriteGameCubit>();
+  final FavoriteGamesCubit _getFavoriteGamesCubit =
+      locator<FavoriteGamesCubit>();
 
   late User? connectedUser;
 
@@ -165,8 +162,15 @@ class AppRouter {
       GoRoute(
         path: "${Routes.game.path}/:id",
         pageBuilder: (context, state) => CustomTransitionPage(
-          child: BlocProvider.value(
-            value: _getGamesCubit,
+          child: MultiBlocProvider(
+            providers: [
+              BlocProvider.value(
+                value: _getGamesCubit, // ?
+              ),
+              BlocProvider.value(
+                value: _getFavoriteGamesCubit,
+              ),
+            ],
             child: GameDetailsPage(
               game: state.extra as Game,
             ),
@@ -208,15 +212,8 @@ class AppRouter {
       GoRoute(
         path: Routes.favorites.path,
         pageBuilder: (context, state) => CustomTransitionPage(
-          child: MultiBlocProvider(
-            providers: [
-              BlocProvider.value(
-                value: _getFavoriteGamesCubit,
-              ),
-              BlocProvider.value(
-                value: _handleFavoriteGameCubit,
-              ),
-            ],
+          child: BlocProvider.value(
+            value: _getFavoriteGamesCubit,
             child: FavoriteGamesPage(
               user: connectedUser!,
             ),
@@ -329,5 +326,6 @@ class AppRouter {
     _registerBLoc.close();
     _getGamesCubit.close();
     _listAllReservationsCubit.close();
+    _getFavoriteGamesCubit.close();
   }
 }

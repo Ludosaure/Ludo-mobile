@@ -73,12 +73,15 @@ class FavoriteGamesProvider {
 
       throw const InternalServerException('Erreur inconnue');
     });
-
     if(response.statusCode == HttpCode.NOT_FOUND) {
       throw const NotFoundException('Impossible de trouver le jeu que vous essayer d\'ajouter.');
     }
 
-    if(response.statusCode != HttpCode.OK) {
+    if(response.statusCode == HttpCode.BAD_REQUEST) {
+      throw const BadRequestException('Ce jeu est fait déjà partie de vos favoris.');
+    }
+
+    if(response.statusCode != HttpCode.CREATED) {
       throw const InternalServerException('Erreur inconnue');
     }
   }
