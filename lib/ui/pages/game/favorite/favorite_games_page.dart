@@ -40,7 +40,7 @@ class FavoriteGamesPage extends StatelessWidget {
               ),
             );
           }
-          if (state is GetFavoriteGamesUserNotLogged) {
+          if (state is UserNotLogged) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: const Text(
@@ -62,7 +62,7 @@ class FavoriteGamesPage extends StatelessWidget {
             return const Center(child: Text("Aucun favoris trouvés."));
           }
 
-          if (state is GetFavoriteGamesSuccess) {
+          if (state is GetFavoriteGamesSuccess || state is OperationSuccess) {
             favorites = state.favorites;
 
             return FavoriteGamesList(
@@ -70,7 +70,7 @@ class FavoriteGamesPage extends StatelessWidget {
             );
           }
 
-          if (state is GetFavoriteGamesUserNotLogged) {
+          if (state is UserNotLogged) {
             context.go(Routes.login.path);
           }
 

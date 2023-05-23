@@ -16,13 +16,13 @@ class FavoriteGamesCubit extends Cubit<FavoriteGamesState> {
   FavoriteGamesCubit(
     this._sessionCubit,
     this._favoriteRepository,
-  ) : super(const GetFavoriteGamesInitial());
+  ) : super(GetFavoriteGamesInitial());
 
   Future<void> getFavorites() async {
-    emit(const GetFavoriteGamesLoading());
+    emit(GetFavoriteGamesLoading());
     try {
       if (_sessionCubit.state is! UserLoggedIn) {
-        emit(const GetFavoriteGamesUserNotLogged());
+        emit(UserNotLogged());
         return;
       }
 
@@ -37,18 +37,17 @@ class FavoriteGamesCubit extends Cubit<FavoriteGamesState> {
   }
 
   bool isFavorite(Game game) {
-    if (state is GetFavoriteGamesSuccess) {
-      final favorites = (state as GetFavoriteGamesSuccess).favorites;
-      return favorites.any((element) => element.gameId == game.id);
+    if (state is GetFavoriteGamesSuccess || state is OperationSuccess) {
+      return state.favorites.any((element) => element.gameId == game.id);
     }
     return false;
   }
 
   void addToFavorite(Game game) async {
-    emit(OperationInProgress());
+    emit(OperationInProgress(favorites: state.favorites));
     try {
       if (_sessionCubit.state is! UserLoggedIn) {
-        emit(const UserNotLogged());
+        emit(UserNotLogged());
         return;
       }
 
@@ -56,29 +55,47 @@ class FavoriteGamesCubit extends Cubit<FavoriteGamesState> {
         game.id,
       );
 
-      emit(OperationSuccess());
+      final addedGame = FavoriteGame(
+        gameId: game.id,
+        name: game.name,
+        picture: game.imageUrl,
+      );
+
+      final favorites = [...state.favorites, addedGame];
+
+      emit(OperationSuccess(favorites: favorites));
     } catch (exception) {
       emit(
-        OperationFailure(message: exception.toString()),
+        OperationFailure(
+          message: exception.toString(),
+          favorites: state.favorites,
+        ),
       );
     }
   }
 
   void removeFromFavorite(Game game) async {
-    emit(OperationInProgress());
+    emit(OperationInProgress(favorites: state.favorites));
     try {
       if (_sessionCubit.state is! UserLoggedIn) {
-        emit(const UserNotLogged());
+        emit(UserNotLogged());
         return;
       }
 
       await _favoriteRepository.removeFromFavorite(
         game.id,
       );
-      emit(OperationSuccess());
+
+      final favorites = state.favorites
+          .where((element) => element.gameId != game.id)
+          .toList();
+      emit(
+        OperationSuccess(favorites: favorites),
+      );
     } catch (exception) {
       emit(
-        OperationFailure(message: exception.toString()),
+        OperationFailure(
+            message: exception.toString(), favorites: state.favorites),
       );
     }
   }

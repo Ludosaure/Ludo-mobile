@@ -26,7 +26,7 @@ class FavoriteButton extends StatelessWidget {
           return _buildButton(context, isFavorite);
         }
 
-        if (state is GetFavoriteGamesSuccess) {
+        if (state is GetFavoriteGamesSuccess || state is OperationSuccess){
           isFavorite =
               BlocProvider.of<FavoriteGamesCubit>(context).isFavorite(game);
           return _buildButton(context, isFavorite);
@@ -36,15 +36,17 @@ class FavoriteButton extends StatelessWidget {
           return Container();
         }
 
-        if (state is OperationSuccess) {
-          isFavorite = !isFavorite;
-          return _buildButton(context, isFavorite);
-        }
-
         return Container();
       },
       listener: (context, state) {
-        if (state is UserNotLogged) {}
+        if (state is UserNotLogged) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Vous devez être connecté pour ajouter un jeu aux favoris"),
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+          );
+        }
       },
     );
   }
