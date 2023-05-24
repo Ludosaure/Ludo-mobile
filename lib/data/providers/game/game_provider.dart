@@ -47,7 +47,7 @@ class GameProvider {
 
   Future<GameJson> getGame(String gameId) async {
     final http.Response response =
-        await http.get(Uri.parse("$baseUrl/$gameId")).catchError((error) {
+        await http.get(Uri.parse("$baseUrl/id/$gameId")).catchError((error) {
       if (error is SocketException) {
         throw const ServiceUnavailableException(
             'Service indisponible. Veuillez réessayer ultérieurement');
@@ -56,16 +56,30 @@ class GameProvider {
       throw const InternalServerException('Erreur inconnue');
     });
 
-    return Future((() => GameJson(
-        id: 'id',
-        name: 'name',
-        averageDuration: 45,
-        ageMin: 10,
-        nbPlayersMin: 12,
-        nbPlayersMax: 12,
-        category: List.empty(),
-        weeklyAmount: 10.0,
-        rating: 1,
-        isArchived: false)));
+    if (response.statusCode == HttpCode.NOT_FOUND) {
+      throw const NotFoundException(
+        "Erreur lors de la récupération du jeu, ce jeu n'existe pas ou n'existe plus",
+      );
+    }
+
+    if(response.statusCode != HttpCode.OK) {
+      throw const InternalServerException("Erreur lors de la récupération du jeu.");
+    }
+
+    final decodedResponse = jsonDecode(response.body);
+
+    return GameJson.fromJson(decodedResponse["game"]);
+
+    // return Future((() => GameJson(
+    //     id: 'id',
+    //     name: 'name',
+    //     averageDuration: 45,
+    //     ageMin: 10,
+    //     nbPlayersMin: 12,
+    //     nbPlayersMax: 12,
+    //     category: List.empty(),
+    //     weeklyAmount: 10.0,
+    //     rating: 1,
+    //     isArchived: false)));
   }
 }

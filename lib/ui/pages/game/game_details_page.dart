@@ -11,9 +11,9 @@ import 'package:ludo_mobile/ui/components/favorite_button.dart';
 
 //WIP - Not finished yet
 class GameDetailsPage extends StatelessWidget {
-  final Game game;
+  // final Game game; // TODO récupération du jeu
 
-  const GameDetailsPage({Key? key, required this.game}) : super(key: key);
+  const GameDetailsPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

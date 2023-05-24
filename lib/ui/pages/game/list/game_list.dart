@@ -39,7 +39,6 @@ class GameList extends StatelessWidget {
           onTap: () {
             context.push(
               '${Routes.game.path}/${game.id}',
-              extra: game,
             );
           },
           child: GameCard(
@@ -59,7 +58,6 @@ class GameList extends StatelessWidget {
           onTap: () {
             context.push(
               '${Routes.game.path}/${game.id}',
-              extra: game,
             );
           },
           child: GameTile(
