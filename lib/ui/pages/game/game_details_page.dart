@@ -4,16 +4,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
 import 'package:ludo_mobile/domain/use_cases/favorite_games/favorite_games_cubit.dart';
-import 'package:ludo_mobile/ui/components/custom_back_button.dart';
+import 'package:ludo_mobile/domain/use_cases/get_game/get_game_cubit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:ludo_mobile/ui/components/custom_back_button.dart';
 import 'package:ludo_mobile/ui/components/expandable_text_widget.dart';
 import 'package:ludo_mobile/ui/components/favorite_button.dart';
 
-//WIP - Not finished yet
 class GameDetailsPage extends StatelessWidget {
-  // final Game game; // TODO récupération du jeu
+  final String gameId;
+  late Game game;
 
-  const GameDetailsPage({Key? key}) : super(key: key);
+  GameDetailsPage({Key? key, required this.gameId}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -27,14 +28,56 @@ class GameDetailsPage extends StatelessWidget {
         ),
         leadingWidth: MediaQuery.of(context).size.width * 0.20,
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20),
-        child: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: _buildGame(context), //TODO bloc consumer
-        ),
+      body: BlocConsumer<GetGameCubit, GetGameState>(
+        builder: (context, state) {
+          if (state is GetGameInitial) {
+            BlocProvider.of<GetGameCubit>(context).getGame(gameId);
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          if (state is GetGameLoading) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          if (state is GetGameSuccess) {
+            game = state.game;
+
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              verticalDirection: VerticalDirection.down,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
+                    child: _buildGame(context),
+                  ),
+                ),
+                _buildGameDetailsBottomBar(context),
+              ],
+            );
+          }
+
+          return Container();
+        },
+        listener: (context, state) {
+          if (state is GetGameError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: Theme.of(context).colorScheme.error,
+              ),
+            );
+          }
+        },
       ),
-      bottomNavigationBar: _buildGameDetailsBottomBar(context),
     );
   }
 
@@ -60,10 +103,10 @@ class GameDetailsPage extends StatelessWidget {
             ),
             const SizedBox(width: 8),
             BlocProvider.value(
-                value: context.read<FavoriteGamesCubit>(),
-                child: FavoriteButton(
-                  game: game,
-                )
+              value: context.read<FavoriteGamesCubit>(),
+              child: FavoriteButton(
+                game: game,
+              ),
             ),
           ],
         ),

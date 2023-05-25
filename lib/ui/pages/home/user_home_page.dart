@@ -85,8 +85,22 @@ class _UserHomePageState extends State<UserHomePage> {
           }
 
           if (state is GetGamesError) {
-            return const Center(
-              child: Text("Aucun jeu trouvé"),
+            return Column(
+              verticalDirection: VerticalDirection.down,
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Center(
+                  child: Text("Aucun jeu trouvé"),
+                ),
+                TextButton(
+                  onPressed: () {
+                    BlocProvider.of<GetGamesCubit>(context).getGames();
+                  },
+                  child: const Text("Réessayer"),
+                ),
+              ],
             );
           }
 

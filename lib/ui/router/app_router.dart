@@ -166,13 +166,15 @@ class AppRouter {
           child: MultiBlocProvider(
             providers: [
               BlocProvider.value(
-                value: _getGameCubit,
+                value: locator<GetGameCubit>(), //TODO vérifier les fuites mémoire -> close
               ),
               BlocProvider.value(
                 value: _getFavoriteGamesCubit,
               ),
             ],
-            child: const GameDetailsPage(),
+            child: GameDetailsPage(
+              gameId: state.params['id']!,
+            ),
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(
