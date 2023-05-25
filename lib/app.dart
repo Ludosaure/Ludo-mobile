@@ -16,6 +16,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final AppRouter _appRouter = locator<AppRouter>();
+  // https://pub.dev/packages/easy_localization/example
 
   @override
   Widget build(BuildContext context) {
