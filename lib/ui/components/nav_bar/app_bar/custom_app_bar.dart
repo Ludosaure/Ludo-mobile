@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:ludo_mobile/utils/app_constants.dart';
 
@@ -22,14 +23,14 @@ class CustomAppBar extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: Center(
           child: Text(
-            '2 Bis Boulevard Cahours 35150 Janzé',
+            'shop-address',
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.bold,
               color: Theme.of(context).colorScheme.primary,
             ),
             textAlign: TextAlign.center,
-          ),
+          ).tr(),
         ),
       ),
       leadingWidth: MediaQuery.of(context).size.width * 0.35,
@@ -38,20 +39,21 @@ class CustomAppBar extends StatelessWidget {
           width: MediaQuery.of(context).size.width * 0.35,
           child: Center(
               child: RichText(
-                textAlign: TextAlign.center,
-                text: TextSpan(
-                    text: "Du Lun. Au Sam.",
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    children: const <TextSpan>[
-                      TextSpan(
-                        text: "\n9H30 - 19H",
-                      ),
-                    ]),
-              )),
+            textAlign: TextAlign.center,
+            text: TextSpan(
+              text: 'shop-opening-hours-1'.tr(),
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              children: <TextSpan>[
+                TextSpan(
+                  text: 'shop-opening-hours-2'.tr(),
+                ),
+              ],
+            ),
+          )),
         ),
       ],
     );

@@ -41,19 +41,20 @@ dev_dependencies:
 flutter_icons:
   android: true
   ios: true
-  image_path: "assets/ludosaure_icn.png"
+  image_path: "assets/images/ludosaure_icn.png"
   min_sdk_android: 21
   web:
     generate: true
-    image_path: "assets/ludosaure_icn.png"
+    image_path: "assets/images/ludosaure_icn.png"
     background_color: "#ffffff"
   windows:
     generate: true
-    image_path: "assets/ludosaure_icn.png"
+    image_path: "assets/images/ludosaure_icn.png"
     background_color: "#ffffff"
 
 # The following section is specific to Flutter packages.
 flutter:
   uses-material-design: true
   assets:
-    - assets/
+    - assets/images/
+    - assets/translations/

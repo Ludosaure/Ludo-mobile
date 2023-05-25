@@ -1,6 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:ludo_mobile/ui/router/app_router.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'domain/use_cases/session/session_cubit.dart';
@@ -16,7 +16,6 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final AppRouter _appRouter = locator<AppRouter>();
-  // https://pub.dev/packages/easy_localization/example
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +37,7 @@ class _MyAppState extends State<MyApp> {
             ],
           );
         },
-        title: 'Ludosaure',
+        title: 'app-title'.tr(),
         theme: ThemeData(
           colorScheme: ColorScheme.fromSwatch().copyWith(
             background: Colors.white,
@@ -47,15 +46,9 @@ class _MyAppState extends State<MyApp> {
           ),
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
-        supportedLocales: const [
-          Locale('en', 'US'),
-          Locale('fr', 'FR'),
-        ],
-        localizationsDelegates: const [
-          GlobalMaterialLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-        ],
+        supportedLocales: context.supportedLocales,
+        localizationsDelegates: context.localizationDelegates,
+        locale: context.locale,
         debugShowCheckedModeBanner: false,
       ),
     );
