@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -219,19 +220,24 @@ class GameDetailsPage extends StatelessWidget {
                 color: Colors.white,
               ),
               const Text(
-                "Nombre de joueurs",
+                "nb-players-label-long",
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 12,
                 ),
-              ),
+              ).tr(),
               const SizedBox(height: 8),
-              Text(
-                "${game.minPlayers} - ${game.maxPlayers}",
-                style: const TextStyle(
+              const Text(
+                "min-max-players-label",
+                style: TextStyle(
                   color: Colors.white,
                   fontSize: 12,
                 ),
+              ).tr(
+                namedArgs: {
+                  "minPlayers": game.minPlayers.toString(),
+                  "maxPlayers": game.maxPlayers.toString(),
+                }
               ),
             ],
           ),
@@ -248,19 +254,23 @@ class GameDetailsPage extends StatelessWidget {
                 ),
               ),
               const Text(
-                "Age minimum",
+                "min-age-label",
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 12,
                 ),
-              ),
+              ).tr(),
               const SizedBox(height: 8),
-              Text(
-                "${game.minAge} ans",
-                style: const TextStyle(
+              const Text(
+                "min-age",
+                style: TextStyle(
                   color: Colors.white,
                   fontSize: 12,
                 ),
+              ).tr(
+                namedArgs: {
+                  "age": game.minAge.toString(),
+                }
               ),
             ],
           ),
@@ -277,19 +287,23 @@ class GameDetailsPage extends StatelessWidget {
                 ),
               ),
               const Text(
-                "Durée d'une partie",
+                "game-duration-label",
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 12,
                 ),
-              ),
+              ).tr(),
               const SizedBox(height: 8),
-              Text(
-                "${game.averageDuration} min",
-                style: const TextStyle(
+              const Text(
+                "game-duration",
+                style: TextStyle(
                   color: Colors.white,
                   fontSize: 12,
                 ),
+              ).tr(
+                namedArgs: {
+                  "duration": game.averageDuration.toString(),
+                }
               ),
             ],
           ),
@@ -320,20 +334,24 @@ class GameDetailsPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
-                "Prix à la semaine",
+                "weekly-amount-label",
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 12,
                 ),
-              ),
+              ).tr(),
               const SizedBox(height: 8),
-              Text(
-                "${game.weeklyAmount} €",
-                style: const TextStyle(
+              const Text(
+                "weekly-amount",
+                style: TextStyle(
                   color: Colors.white,
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
                 ),
+              ).tr(
+                namedArgs: {
+                  "amount": game.weeklyAmount.toString(),
+                }
               ),
             ],
           ),
@@ -352,7 +370,7 @@ class GameDetailsPage extends StatelessWidget {
                 ),
               ),
               onPressed: () {},
-              child: const Text("Réserver"),
+              child: const Text("book-game-label").tr(),
             ),
           ),
         ],

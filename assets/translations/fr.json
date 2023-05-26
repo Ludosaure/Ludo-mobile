@@ -2,5 +2,22 @@
   "app-title": "Ludosaure",
   "shop-address": "2 Bis Boulevard Cahours 35150 Janzé",
   "shop-opening-hours-1": "Du Lun. Au Sam.",
-  "shop-opening-hours-2": "\n9H30 - 19H"
+  "shop-opening-hours-2": "\n9H30 - 19H",
+  "create-account-label": "Créer un compte",
+  "login-label": "Se connecter",
+  "see-more-label": "Voir plus",
+  "user-must-log-for-action": "Vous devez être connecté pour effectuer cette action",
+  "user-must-log-for-access": "Vous devez être connecté pour accéder à cette page",
+  "remove-from-favorites": "Retirer des favoris",
+  "no-favorites-found": "Aucun favoris trouvé.",
+  "min-max-players-label": "{minPlayers} - {maxPlayers}",
+  "nb-players-label": "@:min-max-players-label joueurs",
+  "nb-players-label-long": "Nombre de joueurs",
+  "weekly-amount-label": "Prix à la semaine",
+  "weekly-amount": "{amount} €",
+  "min-age-label": "Âge minimum",
+  "min-age": "{age} ans",
+  "game-duration-label": "Durée d'une partie",
+  "game-duration": "{duration} min",
+  "book-game-label": "Réserver"
 }

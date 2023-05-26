@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
@@ -17,14 +18,14 @@ class _NoAccountBottomNavigationBarState extends State<NoAccountBottomNavigation
       currentIndex: 0,
       selectedItemColor: Colors.grey[800],
       unselectedItemColor: Colors.grey[800],
-      items: const [
+      items: [
         BottomNavigationBarItem(
-          icon: Icon(Icons.app_registration),
-          label: 'Créer un compte',
+          icon: const Icon(Icons.app_registration),
+          label: 'create-account-label'.tr(),
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.login),
-          label: 'Se connecter',
+          icon: const Icon(Icons.login),
+          label: 'login-label'.tr(),
         ),
       ],
       onTap: (index) {

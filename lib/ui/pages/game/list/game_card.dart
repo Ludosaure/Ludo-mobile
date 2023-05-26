@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
@@ -41,7 +42,7 @@ class GameCard extends StatelessWidget {
       ),
     );
 
-    if(game.imageUrl != null) {
+    if (game.imageUrl != null) {
       child = Image.network(game.imageUrl!);
     }
 
@@ -58,23 +59,33 @@ class GameCard extends StatelessWidget {
           ),
         ),
         subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            verticalDirection: VerticalDirection.down,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Text(
-                game.categories.join(', '),
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              Text(
-                '${game.minPlayers} - ${game.maxPlayers} joueurs',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-            ]),
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          verticalDirection: VerticalDirection.down,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Text(
+              game.categories.join(', '),
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            Text(
+              'nb-players-label',
+              style: Theme.of(context).textTheme.titleMedium,
+            ).tr(
+              namedArgs: {
+                'minPlayers': game.minPlayers.toString(),
+                'maxPlayers': game.maxPlayers.toString(),
+              },
+            ),
+          ],
+        ),
         trailing: Text(
-          '${game.weeklyAmount} €',
+          'weekly-amount',
           style: Theme.of(context).textTheme.titleMedium,
+        ).tr(
+          namedArgs: {
+            'amount': game.weeklyAmount.toString(),
+          },
         ),
       ),
       child: child,

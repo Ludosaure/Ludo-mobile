@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -44,7 +45,8 @@ class FavoriteGamesPage extends StatelessWidget {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: const Text(
-                    "Vous devez être connecté pour voir vos favoris"),
+                  "user-must-log-for-access",
+                ).tr(),
                 backgroundColor: Theme.of(context).colorScheme.error,
               ),
             );
@@ -59,7 +61,9 @@ class FavoriteGamesPage extends StatelessWidget {
           }
 
           if (state is GetFavoriteGamesError) {
-            return const Center(child: Text("Aucun favoris trouvés."));
+            return Center(
+              child: const Text("no-favorites-found").tr()
+            );
           }
 
           if (state is GetFavoriteGamesSuccess || state is OperationSuccess) {

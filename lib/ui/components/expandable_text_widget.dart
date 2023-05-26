@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class ExpandableTextWidget extends StatefulWidget {
@@ -63,12 +64,12 @@ class _ExpandableTextState extends State<ExpandableTextWidget> {
                   child: Row(
                     children: [
                       Text(
-                        "Voir plus",
+                        "see-more-label",
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.primary,
                           fontWeight: FontWeight.bold,
                         ),
-                      ),
+                      ).tr(),
                       Icon(
                         hiddenText
                             ? Icons.arrow_drop_down

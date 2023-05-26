@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
@@ -42,7 +43,7 @@ class FavoriteButton extends StatelessWidget {
         if (state is UserNotLogged) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text("Vous devez être connecté pour ajouter un jeu aux favoris"),
+              content: const Text("user-must-log-for-action").tr(),
               backgroundColor: Theme.of(context).colorScheme.error,
             ),
           );
