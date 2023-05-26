@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
@@ -91,14 +92,14 @@ class _UserHomePageState extends State<UserHomePage> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const Center(
-                  child: Text("Aucun jeu trouvé"),
+                Center(
+                  child: const Text("no-game-found").tr(),
                 ),
                 TextButton(
                   onPressed: () {
                     BlocProvider.of<GetGamesCubit>(context).getGames();
                   },
-                  child: const Text("Réessayer"),
+                  child: const Text("try-again-label").tr(),
                 ),
               ],
             );

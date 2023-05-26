@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
@@ -38,25 +39,25 @@ class RegisterSuccessPage extends StatelessWidget {
                 ),
               ),
               const Text(
-                "Votre compte a bien été créé.",
+                "register-success-msg",
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
                 textAlign: TextAlign.center,
-              ),
+              ).tr(),
               const Flexible(
                 child: SizedBox(
                   height: 50,
                 ),
               ),
               const Text(
-                "Veuillez consulter vos mails pour confirmer votre adresse email.",
+                "confirm-email-msg",
                 style: TextStyle(
                   fontSize: 15,
                 ),
                 textAlign: TextAlign.center,
-              ),
+              ).tr(),
               const Flexible(
                 child: SizedBox(
                   height: 50,
@@ -73,7 +74,7 @@ class RegisterSuccessPage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10.0),
                   ),
                 ),
-                child: const Text("Se connecter"),
+                child: const Text("login-label").tr(),
               ),
             ],
           ),

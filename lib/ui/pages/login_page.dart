@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -83,7 +84,7 @@ class _LoginPageState extends State<LoginPage> {
           validator: RequiredValidator(
             errorText: "Veuillez saisir votre email",
           ),
-          decoration: FormFieldDecoration.textField("Email"),
+          decoration: FormFieldDecoration.textField("email-label".tr()),
           onChanged: (value) {
             context.read<LoginBloc>().add(EmailChangedEvent(value));
           },
@@ -96,7 +97,7 @@ class _LoginPageState extends State<LoginPage> {
             errorText: "Veuillez saisir votre mot de passe",
           ),
           decoration: FormFieldDecoration.passwordField(
-            "Mot de passe",
+            "password-label".tr(),
             _togglePasswordVisibility,
             _hidePassword,
           ),
@@ -123,8 +124,8 @@ class _LoginPageState extends State<LoginPage> {
                 );
               },
               child: const Text(
-                "Mot de passe oublié ?",
-              ),
+                "password-forgotten-label",
+              ).tr(),
             ),
             TextButton(
               style: TextButton.styleFrom(
@@ -190,12 +191,12 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
           child: const Text(
-            "Se connecter",
+            "login-label",
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.bold,
             ),
-          ),
+          ).tr(),
         );
       },
     );
@@ -204,18 +205,18 @@ class _LoginPageState extends State<LoginPage> {
   Widget _titleRow() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: const [
-        CustomBackButton(),
-        Spacer(),
-        Text(
-          "Connexion",
+      children: [
+        const CustomBackButton(),
+        const Spacer(),
+        const Text(
+          "login-title",
           style: TextStyle(
             fontSize: 25,
             fontWeight: FontWeight.bold,
           ),
           textAlign: TextAlign.center,
-        ),
-        Spacer(),
+        ).tr(),
+        const Spacer(),
       ],
     );
   }
@@ -230,7 +231,7 @@ class _LoginPageState extends State<LoginPage> {
         ),
         children: <TextSpan>[
           TextSpan(
-            text: "S'inscrire",
+            text: "register-label".tr(),
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.bold,
@@ -262,8 +263,8 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
           TextFormField(
-            decoration: const InputDecoration(
-              labelText: "Email",
+            decoration: InputDecoration(
+              labelText: "email-label".tr(),
               hintText: "john.doe@gmail.com",
             ),
           ),
@@ -312,8 +313,8 @@ class _LoginPageState extends State<LoginPage> {
                   errorText: "Veuillez saisir un email valide",
                 ),
               ]),
-              decoration: const InputDecoration(
-                labelText: "Email",
+              decoration: InputDecoration(
+                labelText: "email-label".tr(),
                 hintText: "john.doe@gmail.com",
               ),
             ),

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -77,17 +78,17 @@ class _RegisterPageState extends State<RegisterPage> {
         mainAxisSize: MainAxisSize.min,
         children: [
           TextFormField(
-            validator: RequiredValidator(errorText: 'Ce champ est requis'),
+            validator: RequiredValidator(errorText: 'form.field-required-msg'.tr()),
             onChanged: (value) {
               context.read<RegisterBloc>().add(LastnameChangedEvent(value));
             },
             autocorrect: false,
-            decoration: FormFieldDecoration.textField("Nom"),
+            decoration: FormFieldDecoration.textField("name-label".tr()),
           ),
           const SizedBox20(),
           TextFormField(
-            validator: RequiredValidator(errorText: 'Ce champ est requis'),
-            decoration: FormFieldDecoration.textField("Prénom"),
+            validator: RequiredValidator(errorText: 'form.field-required-msg'.tr()),
+            decoration: FormFieldDecoration.textField("firstname-label".tr()),
             onChanged: (value) {
               context.read<RegisterBloc>().add(FirstnameChangedEvent(value));
             },
@@ -95,13 +96,13 @@ class _RegisterPageState extends State<RegisterPage> {
           const SizedBox20(),
           TextFormField(
             validator: MultiValidator([
-              RequiredValidator(errorText: 'Ce champ est requis'),
-              EmailValidator(errorText: 'Email invalide'),
+              RequiredValidator(errorText: 'form.field-required-msg'.tr()),
+              EmailValidator(errorText: 'form.invalid-email-msg'.tr()),
             ]),
             onChanged: (value) {
               context.read<RegisterBloc>().add(EmailChangedEvent(value));
             },
-            decoration: FormFieldDecoration.textField("Email"),
+            decoration: FormFieldDecoration.textField("email-label".tr()),
           ),
           const SizedBox20(),
           TextFormField(
@@ -109,31 +110,31 @@ class _RegisterPageState extends State<RegisterPage> {
             onChanged: (value) {
               context.read<RegisterBloc>().add(PhoneChangedEvent(value));
             },
-            decoration: FormFieldDecoration.textField("Téléphone"),
+            decoration: FormFieldDecoration.textField("phone-label".tr()),
           ),
           const SizedBox20(),
           TextFormField(
             controller: _passwordController,
             validator: MultiValidator([
-              RequiredValidator(errorText: 'Ce champ est requis'),
-              MinLengthValidator(8, errorText: '8 caractères minimum'),
+              RequiredValidator(errorText: 'form.field-required-msg'.tr()),
+              MinLengthValidator(8, errorText: 'form.password-min-length-msg'.tr(args: ['8'])),
               //regex for at least one special character
               PatternValidator(
                 r'[!@#$%^&*(),.?":{}|<>]',
-                errorText: 'doit contenir au moins un caractère spécial',
+                errorText: 'form.password-special-char-msg'.tr(),
               ),
               PatternValidator(r'(?=.*?[A-Z])',
-                  errorText: 'doit contenir au moins une majuscule'),
+                  errorText: 'form.password-uppercase-msg'.tr()),
               PatternValidator(r'(?=.*?[a-z])',
-                  errorText: 'doit contenir au moins une minuscule'),
+                  errorText: 'form.password-lowercase-msg'.tr()),
               PatternValidator(r'(?=.*?[0-9])',
-                  errorText: 'doit contenir au moins un chiffre'),
+                  errorText: 'form.password-number-msg'.tr()),
             ]),
             onChanged: (value) {
               context.read<RegisterBloc>().add(PasswordChangedEvent(value));
             },
             decoration: FormFieldDecoration.passwordField(
-              "Mot de passe",
+              "password-label".tr(),
               _togglePasswordVisibility,
               _hidePassword,
             ),
@@ -144,7 +145,7 @@ class _RegisterPageState extends State<RegisterPage> {
             controller: _confirmPasswordController,
             validator: (String? value) {
               if (value != _passwordController.text) {
-                return 'Le mot de passe et la confirmation ne correspondent pas';
+                return 'form.password-not-matching-msg'.tr();
               }
               return null;
             },
@@ -154,7 +155,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   .add(PasswordConfirmationChangedEvent(value));
             },
             decoration: FormFieldDecoration.passwordField(
-              "Confirmer le mot de passe",
+              "password-confirm-label".tr(),
               _toggleConfirmPasswordVisibility,
               _hideConfirmPassword,
             ),
@@ -214,12 +215,12 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
           ),
           child: const Text(
-            "S'inscrire",
+            "register-label",
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.bold,
             ),
-          ),
+          ).tr(),
         );
       },
     );
@@ -227,17 +228,17 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Widget _titleRow() {
     return Row(
-      children: const [
-        CustomBackButton(),
-        Spacer(),
-        Text(
-          "Inscription",
+      children: [
+        const CustomBackButton(),
+        const Spacer(),
+        const Text(
+          "register-title",
           style: TextStyle(
             fontSize: 25,
             fontWeight: FontWeight.bold,
           ),
-        ),
-        Spacer(),
+        ).tr(),
+        const Spacer(),
       ],
     );
   }
@@ -246,14 +247,14 @@ class _RegisterPageState extends State<RegisterPage> {
     return RichText(
       textAlign: TextAlign.center,
       text: TextSpan(
-        text: "Vous avez déjà un compte ? ",
+        text: "already-have-account-msg".tr(),
         style: const TextStyle(
           fontSize: 15,
           color: Color(0xFF838486),
         ),
         children: <TextSpan>[
           TextSpan(
-            text: "Se connecter.",
+            text: "login-label".tr(),
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.bold,
@@ -273,14 +274,14 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget _acceptTermsText(BuildContext context) {
     return RichText(
       text: TextSpan(
-        text: "En vous inscrivant vous acceptez les ",
+        text: "register-agreement-msg".tr(),
         style: const TextStyle(
           fontSize: 15,
           color: Color(0xFF838486),
         ),
         children: <TextSpan>[
           TextSpan(
-            text: "Conditions générales d'utilisation.",
+            text: "terms-of-use".tr(),
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.bold,
@@ -299,14 +300,14 @@ class _RegisterPageState extends State<RegisterPage> {
   //TODO voir pour mettre dans un fichier à part et pouvoir le réutiliser
   String? _validatePhoneNumber(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Veuillez entrer votre numéro de téléphone';
+      return 'phone-number-required-msg'.tr();
     }
     if (value.length != 10) {
-      return 'Veuillez entrer un numéro de téléphone valide';
+      return 'phone-number-invalid-msg'.tr();
     }
 
     if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
-      return 'Veuillez entrer un numéro de téléphone valide';
+      return 'phone-number-invalid-msg'.tr();
     }
 
     return null;
