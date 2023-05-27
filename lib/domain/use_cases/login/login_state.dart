@@ -27,7 +27,6 @@ class LoginState {
     );
   }
 
-  //TODO utiliser equatable
   @override
   String toString() {
     return 'LoginState(email: $email, password: $password, status: $status, loggedUser: $loggedUser)';

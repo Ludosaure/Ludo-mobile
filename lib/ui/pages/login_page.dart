@@ -82,7 +82,7 @@ class _LoginPageState extends State<LoginPage> {
       child: Column(children: [
         TextFormField(
           validator: RequiredValidator(
-            errorText: "Veuillez saisir votre email",
+            errorText: "form.email-required-msg".tr(),
           ),
           decoration: FormFieldDecoration.textField("email-label".tr()),
           onChanged: (value) {
@@ -94,7 +94,7 @@ class _LoginPageState extends State<LoginPage> {
         ),
         TextFormField(
           validator: RequiredValidator(
-            errorText: "Veuillez saisir votre mot de passe",
+            errorText: "form.password-required-msg".tr(),
           ),
           decoration: FormFieldDecoration.passwordField(
             "password-label".tr(),
@@ -139,8 +139,8 @@ class _LoginPageState extends State<LoginPage> {
                 );
               },
               child: const Text(
-                "Vous n'avez pas reçu votre mail de confirmation ?",
-              ),
+                "confirm-email-not-received-msg",
+              ).tr(),
             ),
           ],
         ),
@@ -224,7 +224,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget _registerText(BuildContext context) {
     return RichText(
       text: TextSpan(
-        text: "Vous n'avez pas encore de compte ? ",
+        text: "no-account-yet-label".tr(),
         style: const TextStyle(
           fontSize: 15,
           color: Color(0xFF838486),
@@ -249,23 +249,23 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _forgottenPasswordDialog(BuildContext context) {
     return AlertDialog(
-      title: const Text("Mot de passe oublié"),
+      title: const Text("password-forgotten-title").tr(),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            "Veuillez saisir votre adresse email pour réinitialiser votre mot de passe.",
+            "password-forgotten-subtitle",
             style: TextStyle(
               fontSize: 15,
               color: Color(0xFF838486),
             ),
-          ),
+          ).tr(),
           TextFormField(
             decoration: InputDecoration(
               labelText: "email-label".tr(),
-              hintText: "john.doe@gmail.com",
+              hintText: "email-placeholder".tr(),
             ),
           ),
         ],
@@ -286,19 +286,19 @@ class _LoginPageState extends State<LoginPage> {
     String email = "";
 
     return AlertDialog(
-      title: const Text("Confirmer mon compte"),
+      title: const Text("confirm-account-title").tr(),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            "Renseignez votre adresse mail pour recevoir le mail de confirmation à nouveau.",
+            "confirm-account-subtitle",
             style: TextStyle(
               fontSize: 15,
               color: Color(0xFF838486),
             ),
-          ),
+          ).tr(),
           Form(
             key: confirmAccountFormKey,
             child: TextFormField(
@@ -307,15 +307,15 @@ class _LoginPageState extends State<LoginPage> {
               },
               validator: MultiValidator([
                 RequiredValidator(
-                  errorText: "Veuillez saisir votre email",
+                  errorText: "form.email-required-msg".tr(),
                 ),
                 EmailValidator(
-                  errorText: "Veuillez saisir un email valide",
+                  errorText: "form.email-invalid-msg".tr(),
                 ),
               ]),
               decoration: InputDecoration(
                 labelText: "email-label".tr(),
-                hintText: "john.doe@gmail.com",
+                hintText: "email-placeholder".tr(),
               ),
             ),
           ),
@@ -329,7 +329,7 @@ class _LoginPageState extends State<LoginPage> {
               Navigator.of(context, rootNavigator: true).pop();
             }
           },
-          child: const Text("Envoyer"),
+          child: const Text("send-label").tr(),
         ),
       ],
     );

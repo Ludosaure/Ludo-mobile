@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/core/exception.dart';
 import 'package:ludo_mobile/core/http_code.dart';
@@ -19,7 +20,7 @@ class FavoriteGamesProvider {
   Future<GetFavoriteGamesResponse> getFavorites(String userId) async {
     final String? userToken = await LocalStorageHelper.getTokenFromLocalStorage();
     if(userToken == null) {
-      throw const UserNotLoggedInException('Vous devez être connecté pour accéder à vos favoris');
+      throw UserNotLoggedInException('errors.user-must-log-for-action'.tr());
     }
 
     final http.Response response = await http.get(
@@ -29,18 +30,18 @@ class FavoriteGamesProvider {
       },
     ).catchError((error) {
       if(error is SocketException) {
-        throw const ServiceUnavailableException('Service indisponible. Veuillez réessayer ultérieurement');
+        throw ServiceUnavailableException('errors.service-unavailable'.tr());
       }
 
-      throw const InternalServerException('Erreur inconnue');
+      throw InternalServerException('errors.unknown'.tr());
     });
 
     if(response.statusCode == HttpCode.UNAUTHORIZED) {
-      throw const UserNotLoggedInException('Vous devez être connecté pour accéder à vos favoris');
+      throw UserNotLoggedInException('errors.user-must-log-for-action'.tr());
     }
 
     if(response.statusCode != HttpCode.OK) {
-      throw const InternalServerException('Erreur inconnue');
+      throw InternalServerException('errors.unknown'.tr());
     }
 
     List<FavoriteJson> games = [];
@@ -58,7 +59,7 @@ class FavoriteGamesProvider {
   Future<void> addToFavorite(String gameId) async {
     final String? userToken = await LocalStorageHelper.getTokenFromLocalStorage();
     if(userToken == null) {
-      throw const UserNotLoggedInException('Vous devez être connecté pour ajouter un jeu à vos favoris');
+      throw UserNotLoggedInException('errors.user-must-log-for-action'.tr());
     }
 
     final http.Response response = await http.post(
@@ -68,28 +69,28 @@ class FavoriteGamesProvider {
       },
     ).catchError((error) {
       if(error is SocketException) {
-        throw const ServiceUnavailableException('Service indisponible. Veuillez réessayer ultérieurement');
+        throw ServiceUnavailableException('errors.service-unavailable'.tr());
       }
 
-      throw const InternalServerException('Erreur inconnue');
+      throw InternalServerException('errors.unknown'.tr());
     });
     if(response.statusCode == HttpCode.NOT_FOUND) {
-      throw const NotFoundException('Impossible de trouver le jeu que vous essayer d\'ajouter.');
+      throw NotFoundException('errors.game-not-found'.tr());
     }
 
     if(response.statusCode == HttpCode.BAD_REQUEST) {
-      throw const BadRequestException('Ce jeu est fait déjà partie de vos favoris.');
+      throw BadRequestException('errors.favorite-already-exists'.tr());
     }
 
     if(response.statusCode != HttpCode.CREATED) {
-      throw const InternalServerException('Erreur inconnue');
+      throw InternalServerException('errors.unknown'.tr());
     }
   }
 
   Future<void> removeFromFavorite(String gameId) async {
     final String? userToken = await LocalStorageHelper.getTokenFromLocalStorage();
     if(userToken == null) {
-      throw const UserNotLoggedInException('Vous devez être connecté pour ajouter un jeu à vos favoris');
+      throw UserNotLoggedInException('errors.user-must-log-for-action'.tr());
     }
 
     final http.Response response = await http.delete(
@@ -99,18 +100,18 @@ class FavoriteGamesProvider {
       },
     ).catchError((error) {
       if(error is SocketException) {
-        throw const ServiceUnavailableException('Service indisponible. Veuillez réessayer ultérieurement');
+        throw ServiceUnavailableException('errors.service-unavailable'.tr());
       }
 
-      throw const InternalServerException('Erreur inconnue');
+      throw InternalServerException('errors.unknown'.tr());
     });
 
     if(response.statusCode == HttpCode.NOT_FOUND) {
-      throw const NotFoundException('Ce jeu n\'existe pas ou n\'est pas dans vos favoris');
+      throw NotFoundException('errors.game-not-found'.tr());
     }
 
     if(response.statusCode != HttpCode.OK) {
-      throw const InternalServerException('Erreur inconnue');
+      throw InternalServerException('errors.unknown'.tr());
     }
   }
 

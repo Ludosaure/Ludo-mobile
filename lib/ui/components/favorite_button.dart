@@ -43,7 +43,7 @@ class FavoriteButton extends StatelessWidget {
         if (state is UserNotLogged) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text("user-must-log-for-action").tr(),
+              content: const Text("errors.user-must-log-for-action").tr(),
               backgroundColor: Theme.of(context).colorScheme.error,
             ),
           );

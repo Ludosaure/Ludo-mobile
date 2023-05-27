@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/core/exception.dart';
 import 'package:ludo_mobile/core/http_code.dart';
@@ -27,14 +28,14 @@ class LoginProvider {
         jsonDecode(response.body),
       );
     } else if (response.statusCode == HttpCode.BAD_REQUEST) {
-      throw const BadCredentialsException(
-        "Erreur d'authentification, votre email ou votre mot de passe sont invalides",
+      throw BadCredentialsException(
+        "errors.authentication-failed".tr(),
       );
     } else if (response.statusCode == HttpCode.FORBIDDEN) {
-      throw const UnverifiedAccountException(
-          "Vous n'avez pas encore vérifié votre compte");
+      throw UnverifiedAccountException(
+          "errors.unverified-account".tr());
     } else {
-      throw Exception('Erreur inconnue');
+      throw Exception('errors.unknown'.tr());
     }
   }
 }

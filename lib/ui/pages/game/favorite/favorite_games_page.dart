@@ -45,7 +45,7 @@ class FavoriteGamesPage extends StatelessWidget {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: const Text(
-                  "user-must-log-for-access",
+                  "errors.user-must-log-for-access",
                 ).tr(),
                 backgroundColor: Theme.of(context).colorScheme.error,
               ),

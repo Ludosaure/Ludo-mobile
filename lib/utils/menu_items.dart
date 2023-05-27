@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 enum MenuItems {
@@ -12,15 +13,15 @@ extension MenuItemsExtension on MenuItems {
   String get label {
     switch (this) {
       case MenuItems.Home:
-        return 'Accueil';
+        return 'home-title'.tr();
       case MenuItems.Messages:
-        return 'Mes messages';
+        return 'messages-title'.tr();
       case MenuItems.Search:
-        return 'Rechercher';
+        return 'search-title'.tr();
       case MenuItems.Profile:
-        return 'Mon Compte';
+        return 'account-title'.tr();
       case MenuItems.Favorites:
-        return 'Mes Favoris';
+        return 'favorites-title'.tr();
     }
   }
 
@@ -52,15 +53,15 @@ extension AdminMenuItemsExtension on AdminMenuItems {
   String get label {
     switch (this) {
       case AdminMenuItems.Messages:
-        return 'Mes messages';
+        return 'messages-title'.tr();
       case AdminMenuItems.AddGame:
-        return 'Ajouter un jeu';
+        return 'add-game-title'.tr();
       case AdminMenuItems.Home:
-        return 'Réservations';
+        return 'reservation-title'.tr();
       case AdminMenuItems.Dashboard:
-        return 'Administration';
+        return 'administration-title'.tr();
       case AdminMenuItems.Profile:
-        return 'Mon Compte';
+        return 'account-title'.tr();
     }
   }
 

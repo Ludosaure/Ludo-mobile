@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/core/exception.dart';
 import 'package:ludo_mobile/core/http_code.dart';
@@ -22,15 +23,14 @@ class GameProvider {
     )
         .catchError((error) {
       if (error is SocketException) {
-        throw const ServiceUnavailableException(
-            'Service indisponible. Veuillez réessayer ultérieurement');
+        throw ServiceUnavailableException('errors.service-unavailable'.tr());
       }
 
-      throw const InternalServerException('Erreur inconnue');
+      throw InternalServerException('errors.unknown'.tr());
     });
 
     if (response.statusCode != HttpCode.OK) {
-      throw const InternalServerException('Erreur inconnue');
+      throw InternalServerException('errors.unknown'.tr());
     }
 
     List<GameJson> games = [];
@@ -49,37 +49,28 @@ class GameProvider {
     final http.Response response =
         await http.get(Uri.parse("$baseUrl/id/$gameId")).catchError((error) {
       if (error is SocketException) {
-        throw const ServiceUnavailableException(
-            'Service indisponible. Veuillez réessayer ultérieurement');
+        throw ServiceUnavailableException(
+          'errors.service-unavailable'.tr(),
+        );
       }
 
-      throw const InternalServerException('Erreur inconnue');
+      throw InternalServerException('errors.unknown'.tr());
     });
 
     if (response.statusCode == HttpCode.NOT_FOUND) {
-      throw const NotFoundException(
-        "Erreur lors de la récupération du jeu, ce jeu n'existe pas ou n'existe plus",
+      throw NotFoundException(
+        "errors.game-not-found".tr(),
       );
     }
 
-    if(response.statusCode != HttpCode.OK) {
-      throw const InternalServerException("Erreur lors de la récupération du jeu.");
+    if (response.statusCode != HttpCode.OK) {
+      throw InternalServerException(
+        "errors.unknown".tr(),
+      );
     }
 
     final decodedResponse = jsonDecode(response.body);
 
     return GameJson.fromJson(decodedResponse["game"]);
-
-    // return Future((() => GameJson(
-    //     id: 'id',
-    //     name: 'name',
-    //     averageDuration: 45,
-    //     ageMin: 10,
-    //     nbPlayersMin: 12,
-    //     nbPlayersMax: 12,
-    //     category: List.empty(),
-    //     weeklyAmount: 10.0,
-    //     rating: 1,
-    //     isArchived: false)));
   }
 }
