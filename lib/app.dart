@@ -37,7 +37,7 @@ class _MyAppState extends State<MyApp> {
             ],
           );
         },
-        title: 'app-title'.tr(),
+        title: 'La Ludosaure',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSwatch().copyWith(
             background: Colors.white,
@@ -46,9 +46,9 @@ class _MyAppState extends State<MyApp> {
           ),
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
+        locale: context.locale,
         supportedLocales: context.supportedLocales,
         localizationsDelegates: context.localizationDelegates,
-        locale: context.locale,
         debugShowCheckedModeBanner: false,
       ),
     );
