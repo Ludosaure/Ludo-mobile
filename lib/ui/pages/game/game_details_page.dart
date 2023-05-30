@@ -9,6 +9,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ludo_mobile/ui/components/custom_back_button.dart';
 import 'package:ludo_mobile/ui/components/expandable_text_widget.dart';
 import 'package:ludo_mobile/ui/components/favorite_button.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 
 class GameDetailsPage extends StatelessWidget {
   final String gameId;
@@ -19,15 +20,7 @@ class GameDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: const Padding(
-          padding: EdgeInsets.all(8.0),
-          child: CustomBackButton(),
-        ),
-        leadingWidth: MediaQuery.of(context).size.width * 0.20,
-      ),
+      appBar: _buildAppBar(context),
       body: BlocConsumer<GetGameCubit, GetGameState>(
         builder: (context, state) {
           if (state is GetGameInitial) {
@@ -53,6 +46,7 @@ class GameDetailsPage extends StatelessWidget {
               mainAxisSize: MainAxisSize.max,
               children: [
                 Padding(
+
                   padding:
                       const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20),
                   child: SingleChildScrollView(
@@ -79,6 +73,21 @@ class GameDetailsPage extends StatelessWidget {
         },
       ),
     );
+  }
+
+  PreferredSizeWidget? _buildAppBar(BuildContext context) {
+    if (ResponsiveWrapper.of(context).isSmallerThan(DESKTOP)) {
+      return AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: const Padding(
+          padding: EdgeInsets.all(8.0),
+          child: CustomBackButton(),
+        ),
+        leadingWidth: MediaQuery.of(context).size.width * 0.20,
+      );
+    }
+    return null;
   }
 
   Widget _buildGame(BuildContext context) {
@@ -196,7 +205,16 @@ class GameDetailsPage extends StatelessWidget {
 
   Widget _buildGameDetailsBottomBar(BuildContext context) {
     return Container(
-      height: MediaQuery.of(context).size.height * 0.23,
+      height: ResponsiveValue(
+        context,
+        defaultValue: 150.0,
+        valueWhen: [
+          const Condition.largerThan(name: MOBILE, value: 250.0),
+          const Condition.smallerThan(name: TABLET, value: 150.0),
+          const Condition.smallerThan(name: DESKTOP, value: 200.0),
+          //TODO changer de layout ici
+        ],
+      ).value,
       width: MediaQuery.of(context).size.width,
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.primary.withOpacity(0.88),
@@ -205,9 +223,17 @@ class GameDetailsPage extends StatelessWidget {
         ),
       ),
       child: GridView(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 3,
-          childAspectRatio: 1.5,
+          childAspectRatio: ResponsiveValue(
+            context,
+            defaultValue: 1.5,
+            valueWhen: [
+              const Condition.largerThan(name: MOBILE, value: 2.5),
+              const Condition.smallerThan(name: TABLET, value: 2.0),
+              const Condition.smallerThan(name: MOBILE, value: 1.5),
+            ],
+          ).value!,
         ),
         children: [
           Column(
@@ -233,12 +259,10 @@ class GameDetailsPage extends StatelessWidget {
                   color: Colors.white,
                   fontSize: 12,
                 ),
-              ).tr(
-                namedArgs: {
-                  "minPlayers": game.minPlayers.toString(),
-                  "maxPlayers": game.maxPlayers.toString(),
-                }
-              ),
+              ).tr(namedArgs: {
+                "minPlayers": game.minPlayers.toString(),
+                "maxPlayers": game.maxPlayers.toString(),
+              }),
             ],
           ),
           Column(
@@ -267,11 +291,9 @@ class GameDetailsPage extends StatelessWidget {
                   color: Colors.white,
                   fontSize: 12,
                 ),
-              ).tr(
-                namedArgs: {
-                  "age": game.minAge.toString(),
-                }
-              ),
+              ).tr(namedArgs: {
+                "age": game.minAge.toString(),
+              }),
             ],
           ),
           Column(
@@ -300,11 +322,9 @@ class GameDetailsPage extends StatelessWidget {
                   color: Colors.white,
                   fontSize: 12,
                 ),
-              ).tr(
-                namedArgs: {
-                  "duration": game.averageDuration.toString(),
-                }
-              ),
+              ).tr(namedArgs: {
+                "duration": game.averageDuration.toString(),
+              }),
             ],
           ),
           Column(
@@ -348,23 +368,22 @@ class GameDetailsPage extends StatelessWidget {
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
                 ),
-              ).tr(
-                namedArgs: {
-                  "amount": game.weeklyAmount.toString(),
-                }
-              ),
+              ).tr(namedArgs: {
+                "amount": game.weeklyAmount.toString(),
+              }),
             ],
           ),
           Padding(
             padding:
-                const EdgeInsets.symmetric(vertical: 22.0, horizontal: 10.0),
+                const EdgeInsets.symmetric(vertical: 30.0, horizontal: 20.0),
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                minimumSize: const Size(100, 40),
-                maximumSize: const Size(100, 40),
+                minimumSize: const Size(75, 20),
+                maximumSize: const Size(75, 40),
                 padding: const EdgeInsets.symmetric(horizontal: 1, vertical: 1),
                 visualDensity: VisualDensity.compact,
-                backgroundColor: Theme.of(context).colorScheme.primary,
+                backgroundColor:
+                    Theme.of(context).colorScheme.primary.withOpacity(0.88),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
