@@ -46,8 +46,11 @@ class GameProvider {
   }
 
   Future<GameJson> getGame(String gameId) async {
-    final http.Response response =
-        await http.get(Uri.parse("$baseUrl/id/$gameId")).catchError((error) {
+    final http.Response response = await http
+        .get(
+      Uri.parse("$baseUrl/id/$gameId"),
+    )
+        .catchError((error) {
       if (error is SocketException) {
         throw ServiceUnavailableException(
           'errors.service-unavailable'.tr(),

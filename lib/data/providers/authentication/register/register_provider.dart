@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/core/exception.dart';
@@ -22,14 +24,18 @@ class RegisterProvider {
         'lastname': request.lastname,
         'phone': request.phone,
       },
-    );
+    ).catchError((error) {
+      if (error is SocketException) {
+        throw ServiceUnavailableException('errors.service-unavailable'.tr());
+      }
+
+      throw InternalServerException('errors.unknown'.tr());
+    });
 
     if (response.statusCode == HttpCode.CREATED) {
       return RegisterResponse();
     } else if (response.statusCode == HttpCode.CONFLICT) {
-      throw EmailAlreadyUsedException(
-          'errors.email-already-used'.tr()
-      );
+      throw EmailAlreadyUsedException('errors.email-already-used'.tr());
     } else {
       throw Exception('errors.unknown'.tr());
     }
@@ -41,7 +47,13 @@ class RegisterProvider {
       body: {
         'email': email,
       },
-    );
+    ).catchError((error) {
+      if (error is SocketException) {
+        throw ServiceUnavailableException('errors.service-unavailable'.tr());
+      }
+
+      throw InternalServerException('errors.unknown'.tr());
+    });
 
     if (response.statusCode == HttpCode.OK) {
       return RegisterResponse();

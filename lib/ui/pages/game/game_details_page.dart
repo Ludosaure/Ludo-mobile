@@ -210,7 +210,7 @@ class GameDetailsPage extends StatelessWidget {
         defaultValue: 150.0,
         valueWhen: [
           const Condition.largerThan(name: MOBILE, value: 250.0),
-          const Condition.smallerThan(name: TABLET, value: 150.0),
+          const Condition.smallerThan(name: TABLET, value: 175.0),
           const Condition.smallerThan(name: DESKTOP, value: 200.0),
           //TODO changer de layout ici
         ],

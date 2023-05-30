@@ -41,11 +41,11 @@ class GameTile extends StatelessWidget {
       title: Text(game.name),
       subtitle: Text(game.categories.join(', ')),
       trailing: Text(
-        'weekly-amount-label',
+        'weekly-amount',
         style: Theme.of(context).textTheme.titleMedium,
       ).tr(
         namedArgs: {
-          'weeklyAmount': game.weeklyAmount.toString(),
+          'amount': game.weeklyAmount.toString(),
         },
       ),
     );

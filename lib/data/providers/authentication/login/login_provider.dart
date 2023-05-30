@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:injectable/injectable.dart';
@@ -21,7 +22,13 @@ class LoginProvider {
         'email': request.email,
         'password': request.password,
       },
-    );
+    ).catchError((error) {
+      if (error is SocketException) {
+        throw ServiceUnavailableException('errors.service-unavailable'.tr());
+      }
+
+      throw InternalServerException('errors.unknown'.tr());
+    });
 
     if (response.statusCode == HttpCode.OK) {
       return LoginResponse.fromJson(
@@ -33,7 +40,8 @@ class LoginProvider {
       );
     } else if (response.statusCode == HttpCode.FORBIDDEN) {
       throw UnverifiedAccountException(
-          "errors.unverified-account".tr());
+        "errors.unverified-account".tr(),
+      );
     } else {
       throw Exception('errors.unknown'.tr());
     }
