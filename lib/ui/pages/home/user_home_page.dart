@@ -48,7 +48,7 @@ class _UserHomePageState extends State<UserHomePage> {
 
   Widget _buildGameList() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
       child: BlocConsumer<GetGamesCubit, GetGamesState>(
         listener: (context, state) {
           if (state is GetGamesError) {

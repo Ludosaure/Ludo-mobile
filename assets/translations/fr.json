@@ -8,6 +8,7 @@
   "login-title": "Connexion",
   "proceed-as-guest-label": "Continuer sans compte",
   "see-more-label": "Voir plus",
+  "see-less-label": "Voir moins",
   "remove-from-favorites": "Retirer des favoris",
   "min-max-players-label": "{minPlayers} - {maxPlayers}",
   "nb-players-label": "@:min-max-players-label joueurs",

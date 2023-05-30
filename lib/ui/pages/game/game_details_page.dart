@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
@@ -9,6 +10,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ludo_mobile/ui/components/custom_back_button.dart';
 import 'package:ludo_mobile/ui/components/expandable_text_widget.dart';
 import 'package:ludo_mobile/ui/components/favorite_button.dart';
+import 'package:ludo_mobile/utils/app_dimensions.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
 class GameDetailsPage extends StatelessWidget {
@@ -39,24 +41,9 @@ class GameDetailsPage extends StatelessWidget {
           if (state is GetGameSuccess) {
             game = state.game;
 
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              verticalDirection: VerticalDirection.down,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Padding(
-
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.vertical,
-                    child: _buildGame(context),
-                  ),
-                ),
-                _buildGameDetailsBottomBar(context),
-              ],
-            );
+            return ResponsiveWrapper.of(context).isSmallerThan(DESKTOP)
+                ? _buildMobileGameContent(context)
+                : _buildDesktopGameContent(context);
           }
 
           return Container();
@@ -71,6 +58,74 @@ class GameDetailsPage extends StatelessWidget {
             );
           }
         },
+      ),
+    );
+  }
+
+  Widget _buildDesktopGameContent(BuildContext context) {
+    final Size size = MediaQuery.of(context).size;
+    return Stack(
+      children: [
+        Positioned(
+          top: 0,
+          left: 0,
+          child: SizedBox(
+            width: size.width * 0.30,
+            height: size.height * 0.70,
+            child: _buildGameImage(context),
+          ),
+        ),
+        Positioned(
+          top: size.height * 0.15,
+          left: size.width * 0.30,
+          child: SizedBox(
+            width: size.width * 0.65,
+            child: _buildNameAndFavorite(context),
+          ),
+        ),
+        Positioned(
+          top: size.height * 0.20,
+          left: size.width * 0.30,
+          child: SizedBox(
+            width: size.width * 0.65,
+            child: _buildGameDescription(context),
+          ),
+        ),
+        Positioned(
+          top: size.height * 0.40,
+          left: size.width * 0.30,
+          child: _buildGameRating(context),
+        ),
+        Positioned(
+          top: size.height * 0.50,
+          left: size.width * 0.30,
+          child: _buildGameDetailsBottomBar(context),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMobileGameContent(BuildContext context) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.vertical,
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height -
+            MediaQuery.of(context).size.height * 0.06,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.max,
+          verticalDirection: VerticalDirection.down,
+          children: [
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
+              child: _buildGame(context),
+            ),
+            const Spacer(),
+            _buildGameDetailsBottomBar(context),
+          ],
+        ),
       ),
     );
   }
@@ -99,28 +154,43 @@ class GameDetailsPage extends StatelessWidget {
       children: [
         _buildGameImage(context),
         const SizedBox(height: 8),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              game.name,
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-            ),
-            const SizedBox(width: 8),
-            BlocProvider.value(
-              value: context.read<FavoriteGamesCubit>(),
-              child: FavoriteButton(
-                game: game,
-              ),
-            ),
-          ],
-        ),
+        _buildNameAndFavorite(context),
         _buildGameDescription(context),
         _buildGameRating(context),
+      ],
+    );
+  }
+
+  Widget _buildNameAndFavorite(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.max,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      verticalDirection: VerticalDirection.down,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          game.name,
+          style: TextStyle(
+            fontSize: ResponsiveValue(
+              context,
+              defaultValue: 16.0,
+              valueWhen: [
+                const Condition.smallerThan(name: TABLET, value: 16.0),
+                const Condition.largerThan(name: TABLET, value: 20.0),
+                const Condition.largerThan(name: DESKTOP, value: 24.0),
+              ],
+            ).value,
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+        ),
+        const SizedBox(width: 8),
+        BlocProvider.value(
+          value: context.read<FavoriteGamesCubit>(),
+          child: FavoriteButton(
+            game: game,
+          ),
+        ),
       ],
     );
   }
@@ -209,17 +279,34 @@ class GameDetailsPage extends StatelessWidget {
         context,
         defaultValue: 150.0,
         valueWhen: [
-          const Condition.largerThan(name: MOBILE, value: 250.0),
-          const Condition.smallerThan(name: TABLET, value: 175.0),
-          const Condition.smallerThan(name: DESKTOP, value: 200.0),
-          //TODO changer de layout ici
+          const Condition.smallerThan(name: TABLET, value: 175.0), //mobile
+          const Condition.largerThan(name: MOBILE, value: 225.0), //tablet
+          const Condition.largerThan(name: TABLET, value: 250.0), //desktop
+          const Condition.largerThan(name: DESKTOP, value: 300.0), //large desktop
+          Condition.largerThan(name: AppDimensions.LARGE_DESKTOP, value: 350.0), //4k
         ],
       ).value,
-      width: MediaQuery.of(context).size.width,
+      width: ResponsiveValue(
+        context,
+        defaultValue: MediaQuery.of(context).size.width,
+        valueWhen: [
+          Condition.smallerThan(
+            name: DESKTOP,
+            value: MediaQuery.of(context).size.width,
+          ),
+          Condition.largerThan(
+            name: TABLET,
+            value: MediaQuery.of(context).size.width * 0.60,
+          ),
+        ],
+      ).value,
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.primary.withOpacity(0.88),
-        borderRadius: const BorderRadius.vertical(
-          top: Radius.circular(30),
+        borderRadius: BorderRadius.vertical(
+          top: const Radius.circular(30),
+          bottom: ResponsiveWrapper.of(context).isSmallerThan(DESKTOP)
+              ? const Radius.circular(0)
+              : const Radius.circular(30),
         ),
       ),
       child: GridView(
@@ -229,9 +316,11 @@ class GameDetailsPage extends StatelessWidget {
             context,
             defaultValue: 1.5,
             valueWhen: [
-              const Condition.largerThan(name: MOBILE, value: 2.5),
-              const Condition.smallerThan(name: TABLET, value: 2.0),
-              const Condition.smallerThan(name: MOBILE, value: 1.5),
+              const Condition.smallerThan(name: TABLET, value: 1.5), // mobile
+              const Condition.largerThan(name: MOBILE, value: 2.5), // tablet
+              const Condition.largerThan(name: TABLET, value: 2.0), // desktop
+              const Condition.largerThan(name: DESKTOP, value: 2.7), // large desktop
+              Condition.largerThan(name: AppDimensions.LARGE_DESKTOP, value: 3.0), // 4k
             ],
           ).value!,
         ),

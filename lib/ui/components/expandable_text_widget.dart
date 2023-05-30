@@ -64,12 +64,12 @@ class _ExpandableTextState extends State<ExpandableTextWidget> {
                   child: Row(
                     children: [
                       Text(
-                        "see-more-label",
+                        hiddenText ? "see-more-label".tr() : "see-less-label".tr(),
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.primary,
                           fontWeight: FontWeight.bold,
                         ),
-                      ).tr(),
+                      ),
                       Icon(
                         hiddenText
                             ? Icons.arrow_drop_down

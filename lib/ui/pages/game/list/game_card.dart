@@ -20,7 +20,7 @@ class GameCard extends StatelessWidget {
         ),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.only(bottom: 10.0),
         child: _gridTile(context),
       ),
     );
@@ -32,6 +32,7 @@ class GameCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.primary.withOpacity(0.88),
         borderRadius: BorderRadius.circular(10),
+        shape: BoxShape.rectangle,
       ),
       child: const Center(
         child: FaIcon(
@@ -88,7 +89,10 @@ class GameCard extends StatelessWidget {
           },
         ),
       ),
-      child: child,
+      child: Padding(
+        padding: const EdgeInsets.all(0.75),
+        child: child,
+      ),
     );
   }
 }
