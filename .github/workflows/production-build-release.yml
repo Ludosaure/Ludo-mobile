@@ -92,7 +92,7 @@ jobs:
           path: build/app/outputs/bundle/release/app-release.aab
 
   release:
-    name: Release app to internal track
+    name: Release app to production track
     needs: [ build_apk ]
     runs-on: ubuntu-latest
     steps:
@@ -107,7 +107,7 @@ jobs:
           serviceAccountJsonPlainText: ${{ secrets.PLAYSTORE_ACCOUNT_KEY }}
           packageName: com.ludosaure.ludo_mobile
           releaseFiles: app-release.aab
-          debugSymbols: app/intermediates/merged_native_libs/release/out/lib
+          debugSymbols: build/app/intermediates/merged_native_libs/release/out/lib
           track: production
           whatsNewDirectory: android/release-notes/
           status: completed
