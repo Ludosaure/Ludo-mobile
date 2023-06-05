@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -23,7 +24,7 @@ class AdminReservationList extends StatelessWidget {
       children: [
         _buildListHeader(
           context,
-          "Toutes",
+          "all.fem".tr(),
         ),
         Flexible(
           fit: FlexFit.loose,
@@ -73,7 +74,7 @@ class AdminReservationList extends StatelessWidget {
           child: ListTile(
             leading: const Icon(Icons.person),
             onTap: () {
-              context.go('${Routes.reservations.path}/$index');
+              context.go('${Routes.reservations.path}/${reservation.id}');
             },
             title: Text(
                 "${reservation.createdBy.firstname} ${reservation.createdBy.lastname}"),
@@ -87,9 +88,11 @@ class AdminReservationList extends StatelessWidget {
 
   String _getPeriod(Reservation reservation) {
     String period = "";
-    period =
-        "Du ${DateFormat('d MMMM', 'FR').format(reservation.startDate)} au "
-        "${DateFormat('d MMMM yyyy', 'FR').format(reservation.endDate)}";
+    period = "date-period".tr(namedArgs: {
+      "startDate": DateFormat('d MMMM', 'FR').format(reservation.startDate),
+      "endDate": DateFormat('d MMMM yyyy', 'FR').format(reservation.endDate)
+    });
+
     return period;
   }
 }

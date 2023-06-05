@@ -1,7 +1,8 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:ludo_mobile/ui/router/app_router.dart';
+import 'package:ludo_mobile/utils/app_dimensions.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'domain/use_cases/session/session_cubit.dart';
 import 'injection.dart';
@@ -29,15 +30,16 @@ class _MyAppState extends State<MyApp> {
         builder: (context, widget) {
           return ResponsiveWrapper.builder(
             ClampingScrollWrapper.builder(context, widget!),
-            breakpoints: const [
-              ResponsiveBreakpoint.resize(450, name: MOBILE),
-              ResponsiveBreakpoint.autoScale(800, name: TABLET),
-              ResponsiveBreakpoint.resize(1000, name: DESKTOP),
-              ResponsiveBreakpoint.autoScale(2460, name: "4K"),
+            breakpoints: [
+              const ResponsiveBreakpoint.resize(450, name: MOBILE),
+              const ResponsiveBreakpoint.autoScale(800, name: TABLET),
+              const ResponsiveBreakpoint.resize(1000, name: DESKTOP),
+              ResponsiveBreakpoint.resize(1328, name: AppDimensions.LARGE_DESKTOP),
+              const ResponsiveBreakpoint.autoScale(2460, name: "4K"),
             ],
           );
         },
-        title: 'Ludosaure',
+        title: 'La Ludosaure',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSwatch().copyWith(
             background: Colors.white,
@@ -46,15 +48,9 @@ class _MyAppState extends State<MyApp> {
           ),
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
-        supportedLocales: const [
-          Locale('en', 'US'),
-          Locale('fr', 'FR'),
-        ],
-        localizationsDelegates: const [
-          GlobalMaterialLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-        ],
+        locale: context.locale,
+        supportedLocales: context.supportedLocales,
+        localizationsDelegates: context.localizationDelegates,
         debugShowCheckedModeBanner: false,
       ),
     );

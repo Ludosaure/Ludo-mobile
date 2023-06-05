@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/core/exception.dart';
 import 'package:ludo_mobile/core/http_code.dart';
@@ -18,7 +19,7 @@ class ReservationProvider {
     String? token = await LocalStorageHelper.getTokenFromLocalStorage();
 
     if(token == null) {
-      throw const UserNotLoggedInException("Veuillez vous connecter pour accéder à cette page");
+      throw UserNotLoggedInException("errors.user-must-log-for-access".tr());
     }
 
     late http.Response response;
@@ -32,15 +33,15 @@ class ReservationProvider {
       },
     ).catchError((error) {
       if(error is SocketException) {
-        throw const ServiceUnavailableException('Service indisponible. Veuillez réessayer ultérieurement');
+        throw ServiceUnavailableException('errors.service-unavailable'.tr());
       }
-      throw const InternalServerException('Erreur inconnue');
+      throw InternalServerException('errors.unknown'.tr());
     });
 
     if(response.statusCode == HttpCode.UNAUTHORIZED) {
-      throw const ForbiddenException("Vous n'avez pas accès à cette page");
+      throw ForbiddenException('errors.forbidden-access'.tr());
     } else if(response.statusCode != HttpCode.OK) {
-      throw const InternalServerException('Erreur inconnue');
+      throw InternalServerException('errors.unknown'.tr());
     }
 
     List<Reservation> reservations = [];

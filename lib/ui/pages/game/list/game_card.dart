@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
@@ -19,7 +20,7 @@ class GameCard extends StatelessWidget {
         ),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.only(bottom: 10.0),
         child: _gridTile(context),
       ),
     );
@@ -31,6 +32,7 @@ class GameCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.primary.withOpacity(0.88),
         borderRadius: BorderRadius.circular(10),
+        shape: BoxShape.rectangle,
       ),
       child: const Center(
         child: FaIcon(
@@ -41,9 +43,10 @@ class GameCard extends StatelessWidget {
       ),
     );
 
-    if(game.imageUrl != null) {
+    if (game.imageUrl != null) {
       child = Image.network(game.imageUrl!);
     }
+
     return GridTile(
       footer: GridTileBar(
         backgroundColor: Colors.white,
@@ -57,26 +60,39 @@ class GameCard extends StatelessWidget {
           ),
         ),
         subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            verticalDirection: VerticalDirection.down,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Text(
-                game.categories.join(', '),
-                style: Theme.of(context).textTheme.subtitle1,
-              ),
-              Text(
-                '${game.minPlayers} - ${game.maxPlayers} joueurs',
-                style: Theme.of(context).textTheme.subtitle1,
-              ),
-            ]),
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          verticalDirection: VerticalDirection.down,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Text(
+              game.categories.join(', '),
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            Text(
+              'nb-players-label',
+              style: Theme.of(context).textTheme.titleMedium,
+            ).tr(
+              namedArgs: {
+                'minPlayers': game.minPlayers.toString(),
+                'maxPlayers': game.maxPlayers.toString(),
+              },
+            ),
+          ],
+        ),
         trailing: Text(
-          '${game.weeklyAmount} €',
-          style: Theme.of(context).textTheme.subtitle1,
+          'weekly-amount',
+          style: Theme.of(context).textTheme.titleMedium,
+        ).tr(
+          namedArgs: {
+            'amount': game.weeklyAmount.toString(),
+          },
         ),
       ),
-      child: child,
+      child: Padding(
+        padding: const EdgeInsets.all(0.75),
+        child: child,
+      ),
     );
   }
 }

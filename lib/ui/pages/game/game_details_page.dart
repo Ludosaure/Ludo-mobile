@@ -1,21 +1,138 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
-import 'package:ludo_mobile/ui/components/custom_back_button.dart';
+import 'package:ludo_mobile/domain/use_cases/favorite_games/favorite_games_cubit.dart';
+import 'package:ludo_mobile/domain/use_cases/get_game/get_game_cubit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:ludo_mobile/ui/components/custom_back_button.dart';
 import 'package:ludo_mobile/ui/components/expandable_text_widget.dart';
+import 'package:ludo_mobile/ui/components/favorite_button.dart';
+import 'package:ludo_mobile/utils/app_dimensions.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 
-//WIP - Not finished yet
 class GameDetailsPage extends StatelessWidget {
-  final Game game;
+  final String gameId;
+  late Game game;
 
-  const GameDetailsPage({Key? key, required this.game}) : super(key: key);
+  GameDetailsPage({Key? key, required this.gameId}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: _buildAppBar(context),
+      body: BlocConsumer<GetGameCubit, GetGameState>(
+        builder: (context, state) {
+          if (state is GetGameInitial) {
+            BlocProvider.of<GetGameCubit>(context).getGame(gameId);
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          if (state is GetGameLoading) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          if (state is GetGameSuccess) {
+            game = state.game;
+
+            return ResponsiveWrapper.of(context).isSmallerThan(DESKTOP)
+                ? _buildMobileGameContent(context)
+                : _buildDesktopGameContent(context);
+          }
+
+          return Container();
+        },
+        listener: (context, state) {
+          if (state is GetGameError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: Theme.of(context).colorScheme.error,
+              ),
+            );
+          }
+        },
+      ),
+    );
+  }
+
+  Widget _buildDesktopGameContent(BuildContext context) {
+    final Size size = MediaQuery.of(context).size;
+    return Stack(
+      children: [
+        Positioned(
+          top: 0,
+          left: 0,
+          child: SizedBox(
+            width: size.width * 0.30,
+            height: size.height * 0.70,
+            child: _buildGameImage(context),
+          ),
+        ),
+        Positioned(
+          top: size.height * 0.15,
+          left: size.width * 0.30,
+          child: SizedBox(
+            width: size.width * 0.65,
+            child: _buildNameAndFavorite(context),
+          ),
+        ),
+        Positioned(
+          top: size.height * 0.20,
+          left: size.width * 0.30,
+          child: SizedBox(
+            width: size.width * 0.65,
+            child: _buildGameDescription(context),
+          ),
+        ),
+        Positioned(
+          top: size.height * 0.40,
+          left: size.width * 0.30,
+          child: _buildGameRating(context),
+        ),
+        Positioned(
+          top: size.height * 0.50,
+          left: size.width * 0.30,
+          child: _buildGameDetailsBottomBar(context),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMobileGameContent(BuildContext context) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.vertical,
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height -
+            MediaQuery.of(context).size.height * 0.06,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.max,
+          verticalDirection: VerticalDirection.down,
+          children: [
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
+              child: _buildGame(context),
+            ),
+            const Spacer(),
+            _buildGameDetailsBottomBar(context),
+          ],
+        ),
+      ),
+    );
+  }
+
+  PreferredSizeWidget? _buildAppBar(BuildContext context) {
+    if (ResponsiveWrapper.of(context).isSmallerThan(DESKTOP)) {
+      return AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: const Padding(
@@ -23,44 +140,58 @@ class GameDetailsPage extends StatelessWidget {
           child: CustomBackButton(),
         ),
         leadingWidth: MediaQuery.of(context).size.width * 0.20,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20),
-        child: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.max,
-            verticalDirection: VerticalDirection.down,
-            children: [
-              _buildGameImage(context),
-              const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    game.name,
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Icon(
-                    Icons.favorite,
-                    color: Theme.of(context).colorScheme.secondary,
-                  ),
-                ],
-              ),
-              _buildGameDescription(context),
-              _buildGameRating(context),
-            ],
+      );
+    }
+    return null;
+  }
+
+  Widget _buildGame(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisSize: MainAxisSize.max,
+      verticalDirection: VerticalDirection.down,
+      children: [
+        _buildGameImage(context),
+        const SizedBox(height: 8),
+        _buildNameAndFavorite(context),
+        _buildGameDescription(context),
+        _buildGameRating(context),
+      ],
+    );
+  }
+
+  Widget _buildNameAndFavorite(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.max,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      verticalDirection: VerticalDirection.down,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          game.name,
+          style: TextStyle(
+            fontSize: ResponsiveValue(
+              context,
+              defaultValue: 16.0,
+              valueWhen: [
+                const Condition.smallerThan(name: TABLET, value: 16.0),
+                const Condition.largerThan(name: TABLET, value: 20.0),
+                const Condition.largerThan(name: DESKTOP, value: 24.0),
+              ],
+            ).value,
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).colorScheme.primary,
           ),
         ),
-      ),
-      bottomNavigationBar: _buildGameDetailsBottomBar(context),
+        const SizedBox(width: 8),
+        BlocProvider.value(
+          value: context.read<FavoriteGamesCubit>(),
+          child: FavoriteButton(
+            game: game,
+          ),
+        ),
+      ],
     );
   }
 
@@ -144,18 +275,54 @@ class GameDetailsPage extends StatelessWidget {
 
   Widget _buildGameDetailsBottomBar(BuildContext context) {
     return Container(
-      height: MediaQuery.of(context).size.height * 0.23,
-      width: MediaQuery.of(context).size.width,
+      height: ResponsiveValue(
+        context,
+        defaultValue: 150.0,
+        valueWhen: [
+          const Condition.smallerThan(name: TABLET, value: 175.0), //mobile
+          const Condition.largerThan(name: MOBILE, value: 225.0), //tablet
+          const Condition.largerThan(name: TABLET, value: 250.0), //desktop
+          const Condition.largerThan(name: DESKTOP, value: 300.0), //large desktop
+          Condition.largerThan(name: AppDimensions.LARGE_DESKTOP, value: 350.0), //4k
+        ],
+      ).value,
+      width: ResponsiveValue(
+        context,
+        defaultValue: MediaQuery.of(context).size.width,
+        valueWhen: [
+          Condition.smallerThan(
+            name: DESKTOP,
+            value: MediaQuery.of(context).size.width,
+          ),
+          Condition.largerThan(
+            name: TABLET,
+            value: MediaQuery.of(context).size.width * 0.60,
+          ),
+        ],
+      ).value,
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.primary.withOpacity(0.88),
-        borderRadius: const BorderRadius.vertical(
-          top: Radius.circular(30),
+        borderRadius: BorderRadius.vertical(
+          top: const Radius.circular(30),
+          bottom: ResponsiveWrapper.of(context).isSmallerThan(DESKTOP)
+              ? const Radius.circular(0)
+              : const Radius.circular(30),
         ),
       ),
       child: GridView(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 3,
-          childAspectRatio: 1.5,
+          childAspectRatio: ResponsiveValue(
+            context,
+            defaultValue: 1.5,
+            valueWhen: [
+              const Condition.smallerThan(name: TABLET, value: 1.5), // mobile
+              const Condition.largerThan(name: MOBILE, value: 2.5), // tablet
+              const Condition.largerThan(name: TABLET, value: 2.0), // desktop
+              const Condition.largerThan(name: DESKTOP, value: 2.7), // large desktop
+              Condition.largerThan(name: AppDimensions.LARGE_DESKTOP, value: 3.0), // 4k
+            ],
+          ).value!,
         ),
         children: [
           Column(
@@ -168,20 +335,23 @@ class GameDetailsPage extends StatelessWidget {
                 color: Colors.white,
               ),
               const Text(
-                "Nombre de joueurs",
+                "nb-players-label-long",
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 12,
                 ),
-              ),
+              ).tr(),
               const SizedBox(height: 8),
-              Text(
-                "${game.minPlayers} - ${game.maxPlayers}",
-                style: const TextStyle(
+              const Text(
+                "min-max-players-label",
+                style: TextStyle(
                   color: Colors.white,
                   fontSize: 12,
                 ),
-              ),
+              ).tr(namedArgs: {
+                "minPlayers": game.minPlayers.toString(),
+                "maxPlayers": game.maxPlayers.toString(),
+              }),
             ],
           ),
           Column(
@@ -197,20 +367,22 @@ class GameDetailsPage extends StatelessWidget {
                 ),
               ),
               const Text(
-                "Age minimum",
+                "min-age-label",
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 12,
                 ),
-              ),
+              ).tr(),
               const SizedBox(height: 8),
-              Text(
-                "${game.minAge} ans",
-                style: const TextStyle(
+              const Text(
+                "min-age",
+                style: TextStyle(
                   color: Colors.white,
                   fontSize: 12,
                 ),
-              ),
+              ).tr(namedArgs: {
+                "age": game.minAge.toString(),
+              }),
             ],
           ),
           Column(
@@ -226,20 +398,22 @@ class GameDetailsPage extends StatelessWidget {
                 ),
               ),
               const Text(
-                "Durée d'une partie",
+                "game-duration-label",
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 12,
                 ),
-              ),
+              ).tr(),
               const SizedBox(height: 8),
-              Text(
-                "${game.averageDuration} min",
-                style: const TextStyle(
+              const Text(
+                "game-duration",
+                style: TextStyle(
                   color: Colors.white,
                   fontSize: 12,
                 ),
-              ),
+              ).tr(namedArgs: {
+                "duration": game.averageDuration.toString(),
+              }),
             ],
           ),
           Column(
@@ -269,39 +443,42 @@ class GameDetailsPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
-                "Prix à la semaine",
+                "weekly-amount-label",
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 12,
                 ),
-              ),
+              ).tr(),
               const SizedBox(height: 8),
-              Text(
-                "${game.weeklyAmount} €",
-                style: const TextStyle(
+              const Text(
+                "weekly-amount",
+                style: TextStyle(
                   color: Colors.white,
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
                 ),
-              ),
+              ).tr(namedArgs: {
+                "amount": game.weeklyAmount.toString(),
+              }),
             ],
           ),
           Padding(
             padding:
-                const EdgeInsets.symmetric(vertical: 22.0, horizontal: 10.0),
+                const EdgeInsets.symmetric(vertical: 30.0, horizontal: 20.0),
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                minimumSize: const Size(100, 40),
-                maximumSize: const Size(100, 40),
+                minimumSize: const Size(75, 20),
+                maximumSize: const Size(75, 40),
                 padding: const EdgeInsets.symmetric(horizontal: 1, vertical: 1),
                 visualDensity: VisualDensity.compact,
-                backgroundColor: Theme.of(context).colorScheme.primary,
+                backgroundColor:
+                    Theme.of(context).colorScheme.primary.withOpacity(0.88),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
               onPressed: () {},
-              child: const Text("Réserver"),
+              child: const Text("book-game-label").tr(),
             ),
           ),
         ],

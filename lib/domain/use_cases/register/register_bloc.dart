@@ -1,10 +1,9 @@
 import 'package:bloc/bloc.dart';
 import 'package:injectable/injectable.dart';
+import 'package:ludo_mobile/core/form_status.dart';
 import 'package:ludo_mobile/data/providers/authentication/register/register_request.dart';
 import 'package:ludo_mobile/data/repositories/authentication_repository.dart';
 import 'package:meta/meta.dart';
-
-import '../../../core/form_status.dart';
 
 part 'register_event.dart';
 part 'register_state.dart';

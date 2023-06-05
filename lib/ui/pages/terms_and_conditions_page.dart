@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:ludo_mobile/data/repositories/administration/terms_and_conditions_repository.dart';
@@ -160,7 +161,11 @@ class TermsAndConditionsPage extends StatelessWidget {
 
   String getLastModified() {
     initializeDateFormatting();
-    return "Modifié le ${DateFormat('dd MMMM yyyy', 'FR').format(_termsAndConditions.lastUpdatedAt)}";
+    return "edited-at-label".tr(
+      namedArgs: {
+        "date": DateFormat('dd MMMM yyyy', 'FR').format(_termsAndConditions.lastUpdatedAt),
+      },
+    );
   }
 
 }

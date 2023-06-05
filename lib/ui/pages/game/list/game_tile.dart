@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
@@ -27,7 +28,7 @@ class GameTile extends StatelessWidget {
 
   Widget _tileCard(BuildContext context) {
     Widget leading = const FaIcon(
-      FontAwesomeIcons.dice,
+      FontAwesomeIcons.diceD20,
       color: Colors.grey,
     );
 
@@ -40,8 +41,12 @@ class GameTile extends StatelessWidget {
       title: Text(game.name),
       subtitle: Text(game.categories.join(', ')),
       trailing: Text(
-        '${game.weeklyAmount} €',
-        style: Theme.of(context).textTheme.subtitle1,
+        'weekly-amount',
+        style: Theme.of(context).textTheme.titleMedium,
+      ).tr(
+        namedArgs: {
+          'amount': game.weeklyAmount.toString(),
+        },
       ),
     );
   }

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
@@ -50,7 +51,7 @@ class LandingPage extends StatelessWidget {
             ),
           ),
           Text(
-            "Retrouvez tous vos jeux de société préférés",
+            "landing-page-subtitle",
             style: TextStyle(
               fontSize: ResponsiveValue(
                 context,
@@ -63,7 +64,7 @@ class LandingPage extends StatelessWidget {
               color: const Color(0xFF838486),
             ),
             textAlign: TextAlign.center,
-          ),
+          ).tr(),
           Flexible(
             child: SizedBox(
               height: size.height * 0.03,
@@ -81,8 +82,8 @@ class LandingPage extends StatelessWidget {
               ),
             ),
             child: const Text(
-              'Se connecter',
-            ),
+              'login-label',
+            ).tr(),
           ),
           const SizedBox(
             height: 5,
@@ -100,9 +101,9 @@ class LandingPage extends StatelessWidget {
               backgroundColor: Colors.grey[300],
             ),
             child: const Text(
-              'Créer un compte',
+              'create-account-label',
               style: TextStyle(color: Colors.black),
-            ),
+            ).tr(),
           ),
           TextButton(
             onPressed: () {
@@ -114,7 +115,7 @@ class LandingPage extends StatelessWidget {
               maximumSize: AppDimensions.largeButtonSize,
             ),
             child: Text(
-              'Continuer sans compte',
+              'proceed-as-guest-label',
               style: TextStyle(
                 fontSize: ResponsiveValue(
                   context,
@@ -125,7 +126,7 @@ class LandingPage extends StatelessWidget {
                   ],
                 ).value,
               ),
-            ),
+            ).tr(),
           ),
         ],
       ),

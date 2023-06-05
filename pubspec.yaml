@@ -28,6 +28,7 @@ dependencies:
   go_router: 3.0.0
   font_awesome_flutter: ^10.4.0
   flutter_rating_bar: ^4.0.1
+  easy_localization: ^3.0.2
 
 dev_dependencies:
   flutter_test:
@@ -40,19 +41,20 @@ dev_dependencies:
 flutter_icons:
   android: true
   ios: true
-  image_path: "assets/ludosaure_icn.png"
+  image_path: "assets/images/ludosaure_icn.png"
   min_sdk_android: 21
   web:
     generate: true
-    image_path: "assets/ludosaure_icn.png"
+    image_path: "assets/images/ludosaure_icn.png"
     background_color: "#ffffff"
   windows:
     generate: true
-    image_path: "assets/ludosaure_icn.png"
+    image_path: "assets/images/ludosaure_icn.png"
     background_color: "#ffffff"
 
 # The following section is specific to Flutter packages.
 flutter:
   uses-material-design: true
   assets:
-    - assets/
+    - assets/images/
+    - assets/translations/

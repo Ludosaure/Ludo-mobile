@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -81,9 +82,9 @@ class _LoginPageState extends State<LoginPage> {
       child: Column(children: [
         TextFormField(
           validator: RequiredValidator(
-            errorText: "Veuillez saisir votre email",
+            errorText: "form.email-required-msg".tr(),
           ),
-          decoration: FormFieldDecoration.textField("Email"),
+          decoration: FormFieldDecoration.textField("email-label".tr()),
           onChanged: (value) {
             context.read<LoginBloc>().add(EmailChangedEvent(value));
           },
@@ -93,10 +94,10 @@ class _LoginPageState extends State<LoginPage> {
         ),
         TextFormField(
           validator: RequiredValidator(
-            errorText: "Veuillez saisir votre mot de passe",
+            errorText: "form.password-required-msg".tr(),
           ),
           decoration: FormFieldDecoration.passwordField(
-            "Mot de passe",
+            "password-label".tr(),
             _togglePasswordVisibility,
             _hidePassword,
           ),
@@ -123,8 +124,8 @@ class _LoginPageState extends State<LoginPage> {
                 );
               },
               child: const Text(
-                "Mot de passe oublié ?",
-              ),
+                "password-forgotten-label",
+              ).tr(),
             ),
             TextButton(
               style: TextButton.styleFrom(
@@ -138,8 +139,8 @@ class _LoginPageState extends State<LoginPage> {
                 );
               },
               child: const Text(
-                "Vous n'avez pas reçu votre mail de confirmation ?",
-              ),
+                "confirm-email-not-received-msg",
+              ).tr(),
             ),
           ],
         ),
@@ -190,12 +191,12 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
           child: const Text(
-            "Se connecter",
+            "login-label",
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.bold,
             ),
-          ),
+          ).tr(),
         );
       },
     );
@@ -204,18 +205,18 @@ class _LoginPageState extends State<LoginPage> {
   Widget _titleRow() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: const [
-        CustomBackButton(),
-        Spacer(),
-        Text(
-          "Connexion",
+      children: [
+        const CustomBackButton(),
+        const Spacer(),
+        const Text(
+          "login-title",
           style: TextStyle(
             fontSize: 25,
             fontWeight: FontWeight.bold,
           ),
           textAlign: TextAlign.center,
-        ),
-        Spacer(),
+        ).tr(),
+        const Spacer(),
       ],
     );
   }
@@ -223,14 +224,14 @@ class _LoginPageState extends State<LoginPage> {
   Widget _registerText(BuildContext context) {
     return RichText(
       text: TextSpan(
-        text: "Vous n'avez pas encore de compte ? ",
+        text: "no-account-yet-label".tr(),
         style: const TextStyle(
           fontSize: 15,
           color: Color(0xFF838486),
         ),
         children: <TextSpan>[
           TextSpan(
-            text: "S'inscrire",
+            text: "register-label".tr(),
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.bold,
@@ -248,23 +249,23 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _forgottenPasswordDialog(BuildContext context) {
     return AlertDialog(
-      title: const Text("Mot de passe oublié"),
+      title: const Text("password-forgotten-title").tr(),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            "Veuillez saisir votre adresse email pour réinitialiser votre mot de passe.",
+            "password-forgotten-subtitle",
             style: TextStyle(
               fontSize: 15,
               color: Color(0xFF838486),
             ),
-          ),
+          ).tr(),
           TextFormField(
-            decoration: const InputDecoration(
-              labelText: "Email",
-              hintText: "john.doe@gmail.com",
+            decoration: InputDecoration(
+              labelText: "email-label".tr(),
+              hintText: "email-placeholder".tr(),
             ),
           ),
         ],
@@ -285,19 +286,19 @@ class _LoginPageState extends State<LoginPage> {
     String email = "";
 
     return AlertDialog(
-      title: const Text("Confirmer mon compte"),
+      title: const Text("confirm-account-title").tr(),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            "Renseignez votre adresse mail pour recevoir le mail de confirmation à nouveau.",
+            "confirm-account-subtitle",
             style: TextStyle(
               fontSize: 15,
               color: Color(0xFF838486),
             ),
-          ),
+          ).tr(),
           Form(
             key: confirmAccountFormKey,
             child: TextFormField(
@@ -306,15 +307,15 @@ class _LoginPageState extends State<LoginPage> {
               },
               validator: MultiValidator([
                 RequiredValidator(
-                  errorText: "Veuillez saisir votre email",
+                  errorText: "form.email-required-msg".tr(),
                 ),
                 EmailValidator(
-                  errorText: "Veuillez saisir un email valide",
+                  errorText: "form.email-invalid-msg".tr(),
                 ),
               ]),
-              decoration: const InputDecoration(
-                labelText: "Email",
-                hintText: "john.doe@gmail.com",
+              decoration: InputDecoration(
+                labelText: "email-label".tr(),
+                hintText: "email-placeholder".tr(),
               ),
             ),
           ),
@@ -328,7 +329,7 @@ class _LoginPageState extends State<LoginPage> {
               Navigator.of(context, rootNavigator: true).pop();
             }
           },
-          child: const Text("Envoyer"),
+          child: const Text("send-label").tr(),
         ),
       ],
     );

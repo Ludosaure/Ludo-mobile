@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
@@ -47,7 +48,7 @@ class _UserHomePageState extends State<UserHomePage> {
 
   Widget _buildGameList() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
       child: BlocConsumer<GetGamesCubit, GetGamesState>(
         listener: (context, state) {
           if (state is GetGamesError) {
@@ -74,15 +75,33 @@ class _UserHomePageState extends State<UserHomePage> {
 
           if (state is GetGamesSuccess) {
             games = state.games;
-            return GameList(
-              games: state.games,
-              gridView: _gridView,
-            );
+            return RefreshIndicator(
+                child: GameList(
+                  games: state.games,
+                  gridView: _gridView,
+                ),
+                onRefresh: () async {
+                  BlocProvider.of<GetGamesCubit>(context).getGames();
+                });
           }
 
           if (state is GetGamesError) {
-            return const Center(
-              child: Text("Aucun jeu trouvé"),
+            return Column(
+              verticalDirection: VerticalDirection.down,
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Center(
+                  child: const Text("no-game-found").tr(),
+                ),
+                TextButton(
+                  onPressed: () {
+                    BlocProvider.of<GetGamesCubit>(context).getGames();
+                  },
+                  child: const Text("try-again-label").tr(),
+                ),
+              ],
             );
           }
 
