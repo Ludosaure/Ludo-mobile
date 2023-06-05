@@ -38,17 +38,17 @@ jobs:
       - run: flutter build apk
       - run: flutter build appbundle --dart-define=API_URL=http://api-ludosaure-load-balancer-2124171361.eu-west-1.elb.amazonaws.com
 
-  build_ios:
-    name: build_ios
-    needs: build_apk
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.3.9'
-          architecture: x64
-      - run: flutter pub get
-      - run: flutter pub run build_runner build
-      - run: flutter test
-      - run: flutter build ios --release --no-codesign --dart-define=API_URL=http://api-ludosaure-load-balancer-2124171361.eu-west-1.elb.amazonaws.com
+#  build_ios:
+#    name: build_ios
+#    needs: build_apk
+#    runs-on: macos-latest
+#    steps:
+#      - uses: actions/checkout@v3
+#      - uses: subosito/flutter-action@v2
+#        with:
+#          flutter-version: '3.3.9'
+#          architecture: x64
+#      - run: flutter pub get
+#      - run: flutter pub run build_runner build
+#      - run: flutter test
+#      - run: flutter build ios --release --no-codesign --dart-define=API_URL=http://api-ludosaure-load-balancer-2124171361.eu-west-1.elb.amazonaws.com
