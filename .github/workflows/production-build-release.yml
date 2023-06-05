@@ -31,6 +31,7 @@ jobs:
 
   build_web:
     name: build_web
+    needs: [ release ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -107,7 +108,7 @@ jobs:
           serviceAccountJsonPlainText: ${{ secrets.PLAYSTORE_ACCOUNT_KEY }}
           packageName: com.ludosaure.ludo_mobile
           releaseFiles: app-release.aab
-          debugSymbols: build/app/intermediates/merged_native_libs/release/out/lib
+          debugSymbols: build/app/intermediates/merged_native_libs/release/out/lib/ # NE FONCTIONNE PAS :(
           track: production
           whatsNewDirectory: android/release-notes/
           status: completed
