@@ -31,6 +31,7 @@ jobs:
 
   build_web:
     name: build_web
+    needs: [ release ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -83,7 +84,7 @@ jobs:
       - run: flutter pub get
       - run: flutter pub run build_runner build
       - run: flutter test
-      - run: flutter build apk --release --split-per-abi
+      - run: flutter build apk --release --split-per-abi --build-number=${{ steps.version.outputs.content }}
       - run: flutter build appbundle --dart-define=API_URL=http://api-ludosaure-load-balancer-2124171361.eu-west-1.elb.amazonaws.com
       - name: Upload app bundle
         uses: actions/upload-artifact@v3
@@ -107,7 +108,6 @@ jobs:
           serviceAccountJsonPlainText: ${{ secrets.PLAYSTORE_ACCOUNT_KEY }}
           packageName: com.ludosaure.ludo_mobile
           releaseFiles: app-release.aab
-          debugSymbols: build/app/intermediates/merged_native_libs/release/out/lib
           track: production
           whatsNewDirectory: android/release-notes/
           status: completed
