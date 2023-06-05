@@ -111,7 +111,7 @@ jobs:
           releaseFiles: app-release.aab
           track: internal
           whatsNewDirectory: android/release-notes/
-          status: draft # TODO potentiellement à changer quand l'app sera validée
+          status: completed
 
   build_ios:
     name: build_ios
