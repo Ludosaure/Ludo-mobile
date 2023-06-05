@@ -3,33 +3,8 @@ name: CI/CD PROD Ludo-mobile - BUILD
 on:
   push:
     branches: [main]
-  pull_request:
-    branches: [main]
-jobs:
-  version:
-    name: Create version number
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Fetch all history for all tags and branches
-        run: |
-          git config remote.origin.url https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}
-          git fetch --unshallow
-      - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v0.9.7
-        with:
-          versionSpec: '5.x'
-      - name: Use GitVersion
-        id: gitversion
-        uses: gittools/actions/gitversion/execute@v0.9.7
-      - name: Create version.txt with nuGetVersion
-        run: echo ${{ steps.gitversion.outputs.nuGetVersion  }} > version.txt
-      - name: Upload version.txt
-        uses: actions/upload-artifact@v3
-        with:
-          name: gitversion
-          path: version.txt
 
+jobs:
   build_web:
     name: build_web
     needs: [ release ]
@@ -46,7 +21,6 @@ jobs:
 
   build_apk:
     name: build_apk
-    needs: [ version ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -57,19 +31,6 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.3.9'
-      - name: Get version.txt
-        uses: actions/download-artifact@v3
-        with:
-          name: gitversion
-      - name: Create new file without newline char from version.txt
-        run: tr -d '\n' < version.txt > version1.txt
-      - name: Read version
-        id: version
-        uses: juliangruber/read-file-action@v1
-        with:
-          path: version1.txt
-      - name: Update version in YAML
-        run: sed -i 's/99.99.99+99/${{ steps.version.outputs.content }}+${{ github.run_number }}/g' pubspec.yaml
       - name: Download Android keystore
         id: android_keystore
         uses: timheuer/base64-to-file@v1.2
@@ -94,7 +55,7 @@ jobs:
           path: build/app/outputs/bundle/release/app-release.aab
 
   release:
-    name: Release app to internal track
+    name: Release app to production track
     needs: [ build_apk ]
     runs-on: ubuntu-latest
     steps:
@@ -109,21 +70,21 @@ jobs:
           serviceAccountJsonPlainText: ${{ secrets.PLAYSTORE_ACCOUNT_KEY }}
           packageName: com.ludosaure.ludo_mobile
           releaseFiles: app-release.aab
-          track: internal
+          track: production
           whatsNewDirectory: android/release-notes/
           status: completed
 
-  build_ios:
-    name: build_ios
-    needs: [ release ]
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.3.9'
-          architecture: x64
-      - run: flutter pub get
-      - run: flutter pub run build_runner build
-      - run: flutter test
-      - run: flutter build ios --release --no-codesign --dart-define=API_URL=http://api-ludosaure-load-balancer-2124171361.eu-west-1.elb.amazonaws.com
+#  build_ios:
+#    name: build_ios
+#    needs: [ release ]
+#    runs-on: macos-latest
+#    steps:
+#      - uses: actions/checkout@v3
+#      - uses: subosito/flutter-action@v2
+#        with:
+#          flutter-version: '3.3.9'
+#          architecture: x64
+#      - run: flutter pub get
+#      - run: flutter pub run build_runner build
+#      - run: flutter test
+#      - run: flutter build ios --release --no-codesign --dart-define=API_URL=http://api-ludosaure-load-balancer-2124171361.eu-west-1.elb.amazonaws.com
