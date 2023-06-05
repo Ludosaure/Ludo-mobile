@@ -40,14 +40,6 @@ class FavoriteButton extends StatelessWidget {
         return Container();
       },
       listener: (context, state) {
-        if (state is UserNotLogged) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Text("errors.user-must-log-for-action").tr(),
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
-          );
-        }
       },
     );
   }

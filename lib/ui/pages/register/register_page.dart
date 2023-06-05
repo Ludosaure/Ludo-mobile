@@ -247,7 +247,7 @@ class _RegisterPageState extends State<RegisterPage> {
     return RichText(
       textAlign: TextAlign.center,
       text: TextSpan(
-        text: "already-have-account-msg".tr(),
+        text: "${"already-have-account-msg".tr()} ",
         style: const TextStyle(
           fontSize: 15,
           color: Color(0xFF838486),
