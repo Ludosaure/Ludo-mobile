@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/core/exception.dart';
-import 'package:ludo_mobile/data/repositories/reservation_repository.dart';
+import 'package:ludo_mobile/data/repositories/reservation/reservation_repository.dart';
 import 'package:ludo_mobile/domain/models/reservation.dart';
 import 'package:meta/meta.dart';
 

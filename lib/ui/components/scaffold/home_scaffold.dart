@@ -27,7 +27,7 @@ class HomeScaffold extends StatelessWidget {
     return Scaffold(
       body: _buildBody(context),
       appBar: CustomAppBar(
-
+        user: user,
       ).build(context),
       bottomNavigationBar: _buildBottomNavigationBar(context),
       floatingActionButton: floatingActionButton,

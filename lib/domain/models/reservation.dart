@@ -4,6 +4,7 @@ import 'package:ludo_mobile/domain/reservation_status.dart';
 
 
 class Reservation {
+  static const Duration MAX_DURATION = Duration(days: 7);
   String id;
   int reservationNumber;
   User createdBy;
