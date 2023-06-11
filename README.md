@@ -22,3 +22,6 @@ Créer une classe abstraite (c'est une interface) du service à injecter
 Ajouter l'annotation @Injectable(as: nom_de_la_classe_abstraite) et faire implémenter la classe abstraite
 
 Lancer la commande suivante dans le terminal : flutter pub run build_runner build --delete-conflicting-outputs
+
+## Stripe
+Cartes de test : https://stripe.com/docs/testing#cards
