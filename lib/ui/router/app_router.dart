@@ -319,7 +319,6 @@ class AppRouter {
       if (isAdminRoute && !connectedUser!.isAdmin() ||
           state.location == Routes.landing.path &&
               !connectedUser!.isAdmin()) {
-        print("redirecting to home");
         return Routes.home.path;
       }
 

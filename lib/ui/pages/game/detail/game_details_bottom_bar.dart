@@ -3,7 +3,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
-import 'package:ludo_mobile/domain/models/reservation.dart';
 import 'package:ludo_mobile/domain/use_cases/cart/cart_cubit.dart';
 import 'package:ludo_mobile/utils/app_dimensions.dart';
 import 'package:responsive_framework/responsive_value.dart';
@@ -23,6 +22,7 @@ class GameDetailsBottomBar extends StatefulWidget {
 
 class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
   final _formKey = GlobalKey<FormState>();
+  late DateTimeRange _bookingPeriod;
   late bool _isInCart = false;
 
   get _game => widget.game;
@@ -30,6 +30,7 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
   @override
   void initState() {
     _isInCart = context.read<CartCubit>().isGameInCart(_game.id);
+    _bookingPeriod = context.read<CartCubit>().getBookingPeriod();
     super.initState();
   }
 
@@ -210,7 +211,7 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
               ).tr(),
               const SizedBox(height: 8),
               const Text(
-                "weekly-amount",
+                "amount",
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 12,
@@ -241,28 +242,25 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
           const Duration(days: 365),
         ),
         initialEntryMode: DatePickerEntryMode.input,
-        initialValue: DateTimeRange(
-          start: DateTime.now(),
-          end: DateTime.now().add(
-            const Duration(days: 7),
-          ),
-        ),
+        initialValue: _bookingPeriod,
         validator: (value) {
-          // doit être un datetimerange
           if (value == null) {
             return "date-range-required-label".tr();
           }
 
           DateTimeRange range =
               DateTimeRange(start: value.start, end: value.end);
-          Duration duration = range.end.difference(range.start);
-          if (duration > Reservation.MAX_DURATION ||
-              duration < Reservation.MAX_DURATION) {
-            //La durée de la réservation doit être de 7 jours
-            return "date-range-max-7-days-label".tr();
-          }
 
           return null;
+        },
+        onChanged: (value) {
+          if (value != null) {
+            setState(() {
+              _bookingPeriod = value;
+            });
+
+            context.read<CartCubit>().onChangeDate(_bookingPeriod);
+          }
         },
       ),
     );
@@ -271,8 +269,7 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
   BlocConsumer _buildAddToCartButton(BuildContext context) {
     return BlocConsumer<CartCubit, CartState>(
       builder: (BuildContext context, CartState state) {
-        print(state);
-        if (state is AddToCartLoading) {
+        if (state is BookingOperationLoading) {
           return _button(
             context,
             null,
@@ -284,9 +281,7 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
           return _button(
             context,
             () {
-              context
-                  .read<CartCubit>()
-                  .removeFromCart(_game.id);
+              context.read<CartCubit>().removeFromCart(_game.id);
 
               setState(() {
                 _isInCart = false;
@@ -300,9 +295,7 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
           return _button(
             context,
             () {
-              context
-                  .read<CartCubit>()
-                  .addToCart(_game);
+              context.read<CartCubit>().addToCart(_game, _bookingPeriod);
               setState(() {
                 _isInCart = true;
               });
@@ -314,7 +307,10 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
         return _button(
           context,
           () {
-            context.read<CartCubit>().addToCart(_game);
+            context.read<CartCubit>().addToCart(
+                  _game,
+                  _bookingPeriod,
+                );
             setState(() {
               _isInCart = true;
             });
@@ -323,7 +319,7 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
         );
       },
       listener: (BuildContext context, CartState state) {
-        if (state is AddToCartSuccess) {
+        if (state is BookingOperationSuccess && _isInCart) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: const Text("add-to-cart-success-label").tr(),
@@ -332,7 +328,7 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
           );
         }
 
-        if (state is RemoveFromCartSuccess) {
+        if (state is BookingOperationSuccess && !_isInCart) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: const Text("remove-from-cart-success-label").tr(),
@@ -341,7 +337,7 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
           );
         }
 
-        if (state is AddToCartFailure) {
+        if (state is BookingOperationFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.message),

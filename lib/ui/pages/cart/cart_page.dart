@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
@@ -43,9 +44,9 @@ class _CartPageState extends State<CartPage> {
               )
             : null,
         title: const Text(
-          'Mes Commandes',
+          'cart-title',
           style: TextStyle(color: Colors.black),
-        ),
+        ).tr(),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
@@ -57,112 +58,162 @@ class _CartPageState extends State<CartPage> {
   Widget? _buildMobileCartContent(BuildContext context) {
     return paymentSheetDisplayed
         ? null
-        : Column(
-            mainAxisSize: MainAxisSize.min,
-            verticalDirection: VerticalDirection.down,
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.75,
-                child: BlocConsumer<CartCubit, CartState>(
-                  listener: (context, state) {
-                    if (state is CartContentLoaded) {
-                      setState(() {
-                        cartContent = state.cartContent;
-                      });
-                    }
+        : BlocConsumer<CartCubit, CartState>(
+          listener: (context, state) {
+            if (state is CartContentLoaded) {
+              setState(() {
+                cartContent = state.cartContent;
+              });
+            }
 
-                    if(state is PaymentCompleted) {
-                      setState(() {
-                        cartContent = state.cartContent;
-                      });
-                    }
-                  },
-                  builder: (context, state) {
-                    if (state is CartContentLoaded ||
-                        state is PaymentCanceled ||
-                        state is PaymentPresentFailed) {
-                      if (cartContent.isEmpty) {
-                        return const Center(
-                          child: Text("Votre panier est vide"),
-                        );
-                      }
-                      final totalAmount =
-                          context.read<CartCubit>().getCartTotalAmount();
+            if (state is PaymentCompleted) {
+              setState(() {
+                cartContent = state.cartContent;
+              });
+            }
 
-                      return CartContent(
-                        cartContent: cartContent,
-                        totalAmount: totalAmount,
-                      );
-                    }
-
-                    if (state is PaymentCompleted) {
-                      return Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: const [
-                          Icon(
-                            Icons.check_circle,
-                            color: Colors.green,
-                            size: 75,
-                          ),
-                          SizedBox(height: 40),
-                          Text(
-                            "Votre paiement a bien été pris en compte.",
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          SizedBox(height: 40),
-                          Text(
-                            "Il ne vous reste plus qu'à venir chercher votre jeu !",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.normal,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      );
-                    }
-
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  },
+            if (state is LoadCartContentError) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.error),
+                  backgroundColor: Colors.red,
                 ),
-              ),
-              _buildValidateReservationButton(context),
-            ],
-          );
+              );
+            }
+
+            if (state is PaymentPresentFailed) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.error),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
+
+            if (state is PaymentFailed) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.error),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
+          },
+          builder: (context, state) {
+            if (state is CartContentLoaded ||
+                state is PaymentCanceled) {
+              if (cartContent.isEmpty) {
+                return Center(
+                  child: const Text("cart-empty-label").tr(),
+                );
+              }
+              final totalAmount =
+                  context.read<CartCubit>().getCartTotalAmount();
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                verticalDirection: VerticalDirection.down,
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.75,
+                    child: CartContent(
+                      cartContent: cartContent,
+                      totalAmount: totalAmount,
+                      bookingPeriod: context.read<CartCubit>().getBookingPeriod(),
+                    ),
+                  ),
+                  _buildBookingPeriodInformation(context),
+                  _buildValidateReservationButton(context),
+                ]);
+            }
+
+            if (state is PaymentCompleted) {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.check_circle,
+                    color: Colors.green,
+                    size: 75,
+                  ),
+                  const SizedBox(height: 40),
+                  const Text(
+                    "payment-success-label",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ).tr(),
+                  const SizedBox(height: 40),
+                  const Text(
+                    "payment-success-subtitle",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.normal,
+                    ),
+                    textAlign: TextAlign.center,
+                  ).tr(),
+                ],
+              );
+            }
+
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          },
+        );
+  }
+
+  Widget _buildBookingPeriodInformation(context) {
+    if (cartContent.isNotEmpty) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width,
+          child: const Text(
+            "booking-nb-weeks-information",
+            style: TextStyle(
+              fontSize: 16,
+              fontStyle: FontStyle.italic,
+            ),
+            textAlign: TextAlign.end,
+          ).tr(),
+        ),
+      );
+    }
+
+    return const SizedBox();
   }
 
   Widget _buildValidateReservationButton(BuildContext context) {
     if (cartContent.isNotEmpty) {
-      return ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          alignment: Alignment.center,
-        ),
-        onPressed: () async {
-          setState(() {
-            paymentSheetDisplayed = true;
-          });
-          try {
-            await context.read<CartCubit>().displayPaymentSheet();
-          } catch (e) {
-            //TODO
-            print(e);
-          }
+      return SizedBox(
+        width: MediaQuery.of(context).size.width,
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            alignment: Alignment.center,
+          ),
+          onPressed: () async {
+            setState(() {
+              paymentSheetDisplayed = true;
+            });
+            try {
+              await context.read<CartCubit>().displayPaymentSheet();
+            } catch (e) {
+              //TODO
+              print(e);
+            }
 
-          setState(() {
-            paymentSheetDisplayed = false;
-          });
-        },
-        child: const Text('Valider la commande'),
+            setState(() {
+              paymentSheetDisplayed = false;
+            });
+          },
+          child: const Text('payment-validate-button').tr(),
+        ),
       );
     }
 

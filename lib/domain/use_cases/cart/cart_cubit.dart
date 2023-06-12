@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:injectable/injectable.dart';
@@ -13,45 +14,82 @@ part 'cart_state.dart';
 class CartCubit extends Cubit<CartState> {
   final PaymentProvider _paymentProvider;
 
-  //TODO mettre dans le state de ses morts
-  final int _nbWeek = 2;
-
   CartCubit(this._paymentProvider) : super(AddToCartInitial());
 
   bool isGameInCart(String gameId) {
     return state.cartContent.any((game) => game.id == gameId);
   }
 
-  void addToCart(Game game) async {
-    emit(AddToCartLoading(content: state.cartContent));
+  DateTimeRange getBookingPeriod() {
+    return state.bookingPeriod;
+  }
+
+  void addToCart(Game game, DateTimeRange selectedPeriod) async {
+    emit(
+      BookingOperationLoading(
+        content: state.cartContent,
+        bookingPeriod: selectedPeriod,
+      ),
+    );
     await Future.delayed(const Duration(seconds: 2), () {
-      emit(AddToCartSuccess(content: state.cartContent + [game]));
+      emit(
+        BookingOperationSuccess(
+          content: state.cartContent + [game],
+          bookingPeriod: selectedPeriod,
+        ),
+      );
     });
   }
 
   void removeFromCart(String gameId) async {
-    emit(AddToCartLoading(content: state.cartContent));
+    emit(
+      BookingOperationLoading(
+        content: state.cartContent,
+        bookingPeriod: state.bookingPeriod,
+      ),
+    );
     await Future.delayed(const Duration(seconds: 2), () {
-      final content =
-          state.cartContent.where((element) => element.id != gameId).toList();
-      emit(RemoveFromCartSuccess(content: content));
+      final content = state.cartContent.where((element) {
+        return element.id != gameId;
+      }).toList();
+
+      emit(
+        BookingOperationSuccess(
+          content: content,
+          bookingPeriod: state.bookingPeriod,
+        ),
+      );
     });
   }
 
-  // ?
-  void onChangeDate(event, Emitter emit) async {
+  void onChangeDate(DateTimeRange bookingPeriod) async {
     print('loading');
-    emit(AddToCartLoading(content: state.cartContent));
-    await Future.delayed(const Duration(seconds: 2), () {
+    emit(
+      BookingOperationLoading(
+        content: state.cartContent,
+        bookingPeriod: bookingPeriod,
+      ),
+    );
+    await Future.delayed(const Duration(seconds: 0), () {
       print('success');
-      emit(RemoveFromCartSuccess(content: state.cartContent + [event.gameId]));
+      emit(
+        BookingDateUpdated(
+          content: state.cartContent,
+          bookingPeriod: bookingPeriod,
+        ),
+      );
     });
   }
 
   void getCartContent() async {
     if (state.cartContent.isEmpty) {
       Future.delayed(const Duration(seconds: 0), () {
-        emit(CartContentLoaded(content: state.cartContent));
+        emit(
+          CartContentLoaded(
+            content: state.cartContent,
+            bookingPeriod: state.bookingPeriod,
+          ),
+        );
       });
 
       return;
@@ -59,22 +97,71 @@ class CartCubit extends Cubit<CartState> {
 
     _initPaymentSheet().then((void value) {
       Future.delayed(const Duration(seconds: 0), () {
-        emit(CartContentLoaded(content: state.cartContent));
+        emit(
+          CartContentLoaded(
+            content: state.cartContent,
+            bookingPeriod: state.bookingPeriod,
+          ),
+        );
       });
     }).catchError((error) {
-      emit(LoadCartContentError(
-          error: "Erreur lors de la récupération du panier",
-          content: state.cartContent));
+      print(error);
+      emit(
+        LoadCartContentError(
+          error: "errors.cart-loading".tr(),
+          content: state.cartContent,
+          bookingPeriod: state.bookingPeriod,
+        ),
+      );
     });
   }
 
   double getCartTotalAmount() {
     double amount = 0;
-    state.cartContent.forEach((element) {
-      amount += element.weeklyAmount;
-    });
+    state.cartContent.forEach((element) => amount += element.weeklyAmount);
 
-    return amount * _nbWeek;
+    int nbWeek = (state.bookingPeriod.duration.inDays / 7).ceil();
+    nbWeek == 0 ? nbWeek = 1 : nbWeek = nbWeek;
+
+    return amount * nbWeek;
+  }
+
+  Future<void> displayPaymentSheet() async {
+    Stripe.instance
+        .presentPaymentSheet(
+      options: const PaymentSheetPresentOptions(),
+    )
+        // Cas de succès
+        .then((void value) async {
+      emit(
+        PaymentSheetDisplayed(
+          content: state.cartContent,
+          bookingPeriod: state.bookingPeriod,
+        ),
+      );
+      await _confirmPayment();
+    }, onError: (e) {
+      if (e is StripeException && e.error.code == FailureCode.Canceled) {
+        emit(
+          PaymentCanceled(
+            content: state.cartContent,
+            bookingPeriod: state.bookingPeriod,
+          ),
+        );
+        return;
+      }
+      emit(
+        PaymentPresentFailed(
+          error: "errors.payment-sheet-display".tr(),
+          content: state.cartContent,
+          bookingPeriod: state.bookingPeriod,
+        ),
+      );
+    }).whenComplete(
+      () {
+        Stripe.instance.resetPaymentSheetCustomer();
+      },
+    );
   }
 
   Future<void> _initPaymentSheet() async {
@@ -104,48 +191,25 @@ class CartCubit extends Cubit<CartState> {
     );
   }
 
-  Future<void> displayPaymentSheet() async {
-    Stripe.instance
-        .presentPaymentSheet(
-      options: const PaymentSheetPresentOptions(),
-    )
-        // Cas de succès
-        .then((void value) async {
-      emit(PaymentSheetDisplayed(content: state.cartContent));
-      await _confirmPayment();
-    }, onError: (e) {
-      if (e is StripeException && e.error.code == FailureCode.Canceled) {
-        emit(PaymentCanceled(content: state.cartContent));
-        return;
-      }
+  Future<void> _confirmPayment() async {
+    Stripe.instance.confirmPaymentSheetPayment().then((value) {
       emit(
-        PaymentPresentFailed(
-          message: "Erreur lors de l'affichage du paiement",
-          content: state.cartContent,
+        PaymentCompleted(
+          content: List.empty(),
+          bookingPeriod: DateTimeRange(
+            start: DateTime.now(),
+            end: DateTime.now().add(const Duration(days: 7)),
+          ),
         ),
       );
-    }).whenComplete(
-      () {
-        Stripe.instance.resetPaymentSheetCustomer();
-      },
-    );
-  }
-
-  Future<void> _confirmPayment() async {
-    Stripe.instance
-        .confirmPaymentSheetPayment()
-        .then((value) {
-          emit(
-            PaymentCompleted(content: List.empty()),
-          );
-        })
-        .catchError((error) {
-          emit(
-            PaymentFailed(
-              message: "Erreur lors de la confirmation du paiement",
-              content: state.cartContent,
-            ),
-          );
-        });
+    }).catchError((error) {
+      emit(
+        PaymentFailed(
+          error: "errors.payment-sheet-submit".tr(),
+          content: state.cartContent,
+          bookingPeriod: state.bookingPeriod,
+        ),
+      );
+    });
   }
 }
