@@ -34,7 +34,8 @@ extension MenuItemsExtension on MenuItems {
       case MenuItems.Search:
         return Icons.search;
       case MenuItems.Profile:
-        return Icons.account_circle;
+        return Icons.logout;
+        // return Icons.account_circle;
       case MenuItems.Favorites:
         return Icons.favorite;
     }
@@ -76,7 +77,8 @@ extension AdminMenuItemsExtension on AdminMenuItems {
       case AdminMenuItems.Dashboard:
         return Icons.dashboard_outlined;
       case AdminMenuItems.Profile:
-        return Icons.account_circle;
+        // return Icons.account_circle;
+        return Icons.logout;
     }
   }
 }

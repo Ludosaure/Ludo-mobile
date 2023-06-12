@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/domain/models/user.dart';
-import 'package:ludo_mobile/domain/use_cases/add_to_cart/add_to_cart_bloc.dart';
+import 'package:ludo_mobile/domain/use_cases/cart/cart_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/favorite_games/favorite_games_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/get_game/get_game_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/get_games/get_games_cubit.dart';
@@ -12,7 +12,7 @@ import 'package:ludo_mobile/domain/use_cases/login/login_bloc.dart';
 import 'package:ludo_mobile/domain/use_cases/register/register_bloc.dart';
 import 'package:ludo_mobile/domain/use_cases/session/session_cubit.dart';
 import 'package:ludo_mobile/injection.dart';
-import 'package:ludo_mobile/ui/pages/cart_page.dart';
+import 'package:ludo_mobile/ui/pages/cart/cart_page.dart';
 import 'package:ludo_mobile/ui/pages/game/add_game_page.dart';
 import 'package:ludo_mobile/ui/pages/admin_dashboard_page.dart';
 import 'package:ludo_mobile/ui/pages/game/favorite/favorite_games_page.dart';
@@ -37,7 +37,7 @@ class AppRouter {
   final RegisterBloc _registerBLoc = locator<RegisterBloc>();
   final GetGameCubit _getGameCubit = locator<GetGameCubit>();
   final GetGamesCubit _getGamesCubit = locator<GetGamesCubit>();
-  final AddToCartBloc _addToCartBloc = locator<AddToCartBloc>();
+  final CartCubit _cartBloc = locator<CartCubit>();
   final ListAllReservationsCubit _listAllReservationsCubit =
       locator<ListAllReservationsCubit>();
   final FavoriteGamesCubit _getFavoriteGamesCubit =
@@ -172,7 +172,7 @@ class AppRouter {
                     GetGameCubit>(), //TODO vérifier les fuites mémoire -> close
               ),
               BlocProvider.value(
-                value: _addToCartBloc,
+                value: _cartBloc,
               ),
               BlocProvider.value(
                 value: _getFavoriteGamesCubit,
@@ -288,7 +288,10 @@ class AppRouter {
       GoRoute(
         path: Routes.cart.path,
         pageBuilder: (context, state) => CustomTransitionPage(
-          child: const CartPage(),
+          child: BlocProvider.value(
+            value: _cartBloc,
+            child: const CartPage(),
+          ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(
               opacity: animation,
@@ -350,6 +353,6 @@ class AppRouter {
     _listAllReservationsCubit.close();
     _getFavoriteGamesCubit.close();
     _getGameCubit.close();
-    _addToCartBloc.close();
+    _cartBloc.close();
   }
 }

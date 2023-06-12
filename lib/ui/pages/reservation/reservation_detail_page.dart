@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:ludo_mobile/ui/router/routes.dart';
 
 class ReservationDetailsPage extends StatelessWidget {
   const ReservationDetailsPage({Key? key}) : super(key: key);
@@ -7,14 +9,19 @@ class ReservationDetailsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 1.5,
+        backgroundColor: Colors.white,
         leading: BackButton(
+          color: Colors.black,
           onPressed: () {
-            Navigator.pop(context);
+            context.go(Routes.homeAdmin.path);
           },
         ),
       ),
       body: const Center(
-        child: Text("Reservation details page"),
+        child: Text(
+          "Reservation details page",
+        ),
       ),
     );
   }

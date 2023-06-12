@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
 import 'package:ludo_mobile/domain/models/reservation.dart';
-import 'package:ludo_mobile/domain/use_cases/add_to_cart/add_to_cart_bloc.dart';
+import 'package:ludo_mobile/domain/use_cases/cart/cart_cubit.dart';
 import 'package:ludo_mobile/utils/app_dimensions.dart';
 import 'package:responsive_framework/responsive_value.dart';
 import 'package:responsive_framework/responsive_wrapper.dart';
@@ -23,8 +23,15 @@ class GameDetailsBottomBar extends StatefulWidget {
 
 class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
   final _formKey = GlobalKey<FormState>();
+  late bool _isInCart = false;
 
   get _game => widget.game;
+
+  @override
+  void initState() {
+    _isInCart = context.read<CartCubit>().isGameInCart(_game.id);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -262,8 +269,8 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
   }
 
   BlocConsumer _buildAddToCartButton(BuildContext context) {
-    return BlocConsumer<AddToCartBloc, AddToCartState>(
-      builder: (BuildContext context, AddToCartState state) {
+    return BlocConsumer<CartCubit, CartState>(
+      builder: (BuildContext context, CartState state) {
         print(state);
         if (state is AddToCartLoading) {
           return _button(
@@ -273,25 +280,32 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
           );
         }
 
-        if (state is AddToCartSuccess) {
+        if (_isInCart) {
           return _button(
             context,
             () {
               context
-                  .read<AddToCartBloc>()
-                  .add(RemoveFromCartSubmitEvent(gameId: _game.id));
+                  .read<CartCubit>()
+                  .removeFromCart(_game.id);
+
+              setState(() {
+                _isInCart = false;
+              });
             },
             "remove-from-cart-label".tr(),
           );
         }
 
-        if (state is RemoveFromCartSuccess) {
+        if (!_isInCart) {
           return _button(
             context,
             () {
               context
-                  .read<AddToCartBloc>()
-                  .add(AddToCartSubmitEvent(gameId: _game.id));
+                  .read<CartCubit>()
+                  .addToCart(_game);
+              setState(() {
+                _isInCart = true;
+              });
             },
             "add-to-cart-label".tr(),
           );
@@ -300,18 +314,16 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
         return _button(
           context,
           () {
-            context.read<AddToCartBloc>().add(AddToCartSubmitEvent(gameId: _game.id));
+            context.read<CartCubit>().addToCart(_game);
+            setState(() {
+              _isInCart = true;
+            });
           },
           "add-to-cart-label".tr(),
         );
       },
-      listener: (BuildContext context, AddToCartState state) {
-        if (state is AddToCartInitial) {
-          //Vérifie si le jeu est déjà dans le panier -> Gérer la réception de l'event
-          context.read<AddToCartBloc>().isGameInCart(_game.id);
-        }
-
-        if (state is AddToCartSuccess /*|| state is GameIsInCart*/) {
+      listener: (BuildContext context, CartState state) {
+        if (state is AddToCartSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: const Text("add-to-cart-success-label").tr(),

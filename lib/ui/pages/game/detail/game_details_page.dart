@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
-import 'package:ludo_mobile/domain/use_cases/add_to_cart/add_to_cart_bloc.dart';
+import 'package:ludo_mobile/domain/use_cases/cart/cart_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/favorite_games/favorite_games_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/get_game/get_game_cubit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -98,7 +99,7 @@ class GameDetailsPage extends StatelessWidget {
           top: size.height * 0.50,
           left: size.width * 0.30,
           child: BlocProvider.value(
-            value: context.read<AddToCartBloc>(),
+            value: context.read<CartCubit>(),
             child: GameDetailsBottomBar(
               game: game,
             ),
@@ -127,7 +128,7 @@ class GameDetailsPage extends StatelessWidget {
             ),
             const Spacer(),
             BlocProvider.value(
-              value: context.read<AddToCartBloc>(),
+              value: context.read<CartCubit>(),
               child: GameDetailsBottomBar(
                 game: game,
               ),
@@ -145,8 +146,11 @@ class GameDetailsPage extends StatelessWidget {
           : Theme.of(context).colorScheme.secondary,
       elevation: 0,
       leading: ResponsiveWrapper.of(context).isSmallerThan(DESKTOP)
-          ? const BackButton(
+          ? BackButton(
               color: Colors.black,
+              onPressed: () {
+                context.pop();
+              },
             )
           : null,
       leadingWidth: MediaQuery.of(context).size.width * 0.20,

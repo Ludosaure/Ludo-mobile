@@ -1,5 +1,5 @@
 import 'package:injectable/injectable.dart';
-import 'package:ludo_mobile/data/providers/reservation_provider.dart';
+import 'package:ludo_mobile/data/providers/reservation/reservation_provider.dart';
 import 'package:ludo_mobile/domain/models/reservation.dart';
 
 @injectable

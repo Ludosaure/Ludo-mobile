@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:ludo_mobile/domain/models/game.dart';
 
 class NewReservation {
   final String userId;
   final DateTimeRange rentPeriod;
-  final List<String> games;
+  final List<Game> games;
 
   NewReservation({
     required this.userId,
