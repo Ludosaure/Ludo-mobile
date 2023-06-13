@@ -3,7 +3,10 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:injectable/injectable.dart';
+import 'package:ludo_mobile/core/exception.dart';
 import 'package:ludo_mobile/data/providers/payment_provider.dart';
+import 'package:ludo_mobile/data/repositories/reservation/new_reservation.dart';
+import 'package:ludo_mobile/data/repositories/reservation/reservation_repository.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
 import 'package:ludo_mobile/utils/app_constants.dart';
 import 'package:meta/meta.dart';
@@ -13,8 +16,12 @@ part 'cart_state.dart';
 @singleton
 class CartCubit extends Cubit<CartState> {
   final PaymentProvider _paymentProvider;
+  final ReservationRepository _reservationRepository;
 
-  CartCubit(this._paymentProvider) : super(AddToCartInitial());
+  CartCubit(
+    this._paymentProvider,
+    this._reservationRepository,
+  ) : super(AddToCartInitial());
 
   bool isGameInCart(String gameId) {
     return state.cartContent.any((game) => game.id == gameId);
@@ -63,7 +70,6 @@ class CartCubit extends Cubit<CartState> {
   }
 
   void onChangeDate(DateTimeRange bookingPeriod) async {
-    print('loading');
     emit(
       BookingOperationLoading(
         content: state.cartContent,
@@ -71,7 +77,6 @@ class CartCubit extends Cubit<CartState> {
       ),
     );
     await Future.delayed(const Duration(seconds: 0), () {
-      print('success');
       emit(
         BookingDateUpdated(
           content: state.cartContent,
@@ -105,7 +110,6 @@ class CartCubit extends Cubit<CartState> {
         );
       });
     }).catchError((error) {
-      print(error);
       emit(
         LoadCartContentError(
           error: "errors.cart-loading".tr(),
@@ -127,41 +131,63 @@ class CartCubit extends Cubit<CartState> {
   }
 
   Future<void> displayPaymentSheet() async {
-    Stripe.instance
-        .presentPaymentSheet(
-      options: const PaymentSheetPresentOptions(),
-    )
-        // Cas de succès
-        .then((void value) async {
-      emit(
-        PaymentSheetDisplayed(
-          content: state.cartContent,
-          bookingPeriod: state.bookingPeriod,
-        ),
+    try {
+      NewReservation reservation = await _reservationRepository
+          .createReservation(
+        state.bookingPeriod,
+        state.cartContent,
       );
-      await _confirmPayment();
-    }, onError: (e) {
-      if (e is StripeException && e.error.code == FailureCode.Canceled) {
+
+      Stripe.instance
+          .presentPaymentSheet(
+        options: const PaymentSheetPresentOptions(),
+      )
+      // Cas de succès
+          .then((void value) async {
         emit(
-          PaymentCanceled(
+          PaymentSheetDisplayed(
             content: state.cartContent,
             bookingPeriod: state.bookingPeriod,
           ),
         );
+        await _confirmPayment(reservation);
+      }, onError: (e) {
+        if (e is StripeException && e.error.code == FailureCode.Canceled) {
+          emit(
+            PaymentCanceled(
+              content: state.cartContent,
+              bookingPeriod: state.bookingPeriod,
+            ),
+          );
+          return;
+        }
+        emit(
+          PaymentPresentFailed(
+            error: "errors.payment-sheet-display".tr(),
+            content: state.cartContent,
+            bookingPeriod: state.bookingPeriod,
+          ),
+        );
+      }).whenComplete(
+            () {
+          Stripe.instance.resetPaymentSheetCustomer();
+        },
+      );
+
+    } catch (error) {
+      if(error is UserNotLoggedInException) {
+        emit(UserNotLogged());
         return;
       }
       emit(
         PaymentPresentFailed(
-          error: "errors.payment-sheet-display".tr(),
+          error: error.toString(),
           content: state.cartContent,
           bookingPeriod: state.bookingPeriod,
         ),
       );
-    }).whenComplete(
-      () {
-        Stripe.instance.resetPaymentSheetCustomer();
-      },
-    );
+    }
+
   }
 
   Future<void> _initPaymentSheet() async {
@@ -191,8 +217,20 @@ class CartCubit extends Cubit<CartState> {
     );
   }
 
-  Future<void> _confirmPayment() async {
+  Future<void> _confirmPayment(NewReservation reservation) async {
     Stripe.instance.confirmPaymentSheetPayment().then((value) {
+      try {
+        _reservationRepository.confirmReservationPayment(reservation);
+      } catch (error) {
+        emit(
+          PaymentFailed(
+            error: "errors.payment-sheet-submit".tr(),
+            content: state.cartContent,
+            bookingPeriod: state.bookingPeriod,
+          ),
+        );
+      }
+
       emit(
         PaymentCompleted(
           content: List.empty(),

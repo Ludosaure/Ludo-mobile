@@ -108,5 +108,8 @@
   "cart-empty-label": "Votre panier est vide",
   "payment-success-label": "Votre paiement a bien été pris en compte.",
   "payment-success-subtitle": "Il ne vous reste plus qu'à venir chercher votre jeu !",
-  "payment-validate-button": "Valider la commande"
+  "payment-validate-button": "Valider la commande",
+  "game-unavailable-label": "Indisponible",
+  "pick-booking-date-label": "Choisissez une date de réservation",
+  "validate-label": "Valider"
 }

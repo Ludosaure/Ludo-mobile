@@ -75,8 +75,8 @@ class CartContent extends StatelessWidget {
     if(nbWeeks == 0) {
       nbWeeks = 1;
     }
-    final String start = DateFormat(AppConstants.DATE_TIME_FORMAT, 'FR').format(bookingPeriod.start);
-    final String end = DateFormat(AppConstants.DATE_TIME_FORMAT, 'FR').format(bookingPeriod.end);
+    final String start = DateFormat(AppConstants.DATE_TIME_FORMAT_LONG, 'FR').format(bookingPeriod.start);
+    final String end = DateFormat(AppConstants.DATE_TIME_FORMAT_LONG, 'FR').format(bookingPeriod.end);
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,

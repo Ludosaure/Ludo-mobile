@@ -14,6 +14,8 @@ class Game {
   final List<String> categories;
   final double weeklyAmount;
   final double rating;
+  final bool isArchived;
+  final bool isAvailable;
 
   Game({
     required this.id,
@@ -27,6 +29,8 @@ class Game {
     required this.categories,
     required this.weeklyAmount,
     required this.rating,
+    required this.isArchived,
+    required this.isAvailable,
   });
 
   factory Game.fromJson(Map<String, dynamic> json) {
@@ -47,6 +51,8 @@ class Game {
       categories: categories,
       weeklyAmount: json['weeklyAmount'].toDouble(),
       rating: json['averageRating'] != null ? json['averageRating'].toDouble() : 0.0,
+      isArchived: json['isArchived'],
+      isAvailable: json['isAvailable'],
     );
   }
 }

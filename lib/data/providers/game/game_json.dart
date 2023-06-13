@@ -14,6 +14,7 @@ class GameJson {
   final double weeklyAmount;
   final double rating;
   final bool isArchived;
+  final bool isAvailable;
 
   GameJson({
     required this.id,
@@ -28,6 +29,7 @@ class GameJson {
     required this.weeklyAmount,
     required this.rating,
     required this.isArchived,
+    required this.isAvailable,
   });
 
   factory GameJson.fromJson(Map<String, dynamic> json) => GameJson(
@@ -43,6 +45,7 @@ class GameJson {
     weeklyAmount: json["weeklyAmount"].toDouble(),
     rating: json["averageRating"].toDouble(),
     isArchived: json["isArchived"],
+    isAvailable: json["isAvailable"],
   );
 
   toGame() {
@@ -58,6 +61,8 @@ class GameJson {
       categories: category,
       weeklyAmount: weeklyAmount,
       rating: rating,
+      isArchived: isArchived,
+      isAvailable: isAvailable,
     );
   }
 }

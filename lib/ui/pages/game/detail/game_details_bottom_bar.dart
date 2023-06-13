@@ -1,9 +1,10 @@
-import 'package:date_range_form_field/date_range_form_field.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_date_pickers/flutter_date_pickers.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
 import 'package:ludo_mobile/domain/use_cases/cart/cart_cubit.dart';
+import 'package:ludo_mobile/utils/app_constants.dart';
 import 'package:ludo_mobile/utils/app_dimensions.dart';
 import 'package:responsive_framework/responsive_value.dart';
 import 'package:responsive_framework/responsive_wrapper.dart';
@@ -24,8 +25,9 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
   final _formKey = GlobalKey<FormState>();
   late DateTimeRange _bookingPeriod;
   late bool _isInCart = false;
+  late bool _showDatePicker = false;
 
-  get _game => widget.game;
+  Game get _game => widget.game;
 
   @override
   void initState() {
@@ -36,6 +38,10 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
 
   @override
   Widget build(BuildContext context) {
+    if (_showDatePicker) {
+      return _showReservationCalendar(context);
+    }
+
     return Container(
       height: ResponsiveValue(
         context,
@@ -194,7 +200,16 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _buildReservationIcon(context), //TODO réservation
+              _buildReservationIcon(context),
+              Text(
+                _bookingPeriodText(),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
             ],
           ),
           Column(
@@ -225,7 +240,17 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
           Padding(
             padding:
                 const EdgeInsets.symmetric(vertical: 27.0, horizontal: 5.0),
-            child: _buildAddToCartButton(context),
+            child: _game.isAvailable
+                ? _buildAddToCartButton(context)
+                : const Text(
+                    "game-unavailable-label",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontStyle: FontStyle.italic,
+                      fontWeight: FontWeight.w400,
+                    ),
+                    textAlign: TextAlign.center,
+                  ).tr(),
           ),
         ],
       ),
@@ -233,35 +258,76 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
   }
 
   Widget _buildReservationIcon(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: DateRangeField(
-        enabled: true,
-        firstDate: DateTime.now(),
-        lastDate: DateTime.now().add(
-          const Duration(days: 365),
-        ),
-        initialEntryMode: DatePickerEntryMode.input,
-        initialValue: _bookingPeriod,
-        validator: (value) {
-          if (value == null) {
-            return "date-range-required-label".tr();
-          }
+    return IconButton(
+      padding: const EdgeInsets.all(2.0),
+      visualDensity: VisualDensity.compact,
+      onPressed: () {
+        setState(() {
+          _showDatePicker = true;
+        });
+      },
+      icon: const Icon(
+        Icons.calendar_month_outlined,
+        color: Colors.white,
+      ),
+    );
+  }
 
-          DateTimeRange range =
-              DateTimeRange(start: value.start, end: value.end);
-
-          return null;
-        },
-        onChanged: (value) {
-          if (value != null) {
-            setState(() {
-              _bookingPeriod = value;
-            });
-
-            context.read<CartCubit>().onChangeDate(_bookingPeriod);
-          }
-        },
+  Widget _showReservationCalendar(BuildContext parentContext) {
+    return Center(
+      child: Column(
+        verticalDirection: VerticalDirection.down,
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text(
+            "pick-booking-date-label",
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 16,
+            ),
+          ).tr(),
+          const SizedBox(height: 8),
+          Form(
+            key: _formKey,
+            child: RangePicker(
+              initiallyShowDate: DateTime.now(),
+              firstDate: DateTime.now(),
+              lastDate: DateTime.now().add(
+                const Duration(days: 365),
+              ),
+              selectedPeriod: DatePeriod(
+                _bookingPeriod.start,
+                _bookingPeriod.end,
+              ),
+              onChanged: (value) {
+                setState(() {
+                  _bookingPeriod =
+                      DateTimeRange(start: value.start, end: value.end);
+                });
+                parentContext.read<CartCubit>().onChangeDate(_bookingPeriod);
+              },
+              onSelectionError: (error) {
+              },
+            ),
+          ),
+          SizedBox(
+            width: MediaQuery.of(context).size.width * 0.75,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                visualDensity: VisualDensity.compact,
+              ),
+              onPressed: () {
+                setState(() {
+                  _showDatePicker = false;
+                });
+              },
+              child: const Text("validate-label").tr(),
+            ),
+          ),
+          const SizedBox(height: 12),
+        ],
       ),
     );
   }
@@ -366,5 +432,15 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
         textAlign: TextAlign.center,
       ),
     );
+  }
+
+  String _bookingPeriodText() {
+    final String start =
+        DateFormat(AppConstants.DATE_TIME_FORMAT_DAY_MONTH, 'FR')
+            .format(_bookingPeriod.start);
+    final String end = DateFormat(AppConstants.DATE_TIME_FORMAT_DAY_MONTH, 'FR')
+        .format(_bookingPeriod.end);
+
+    return "$start - $end";
   }
 }

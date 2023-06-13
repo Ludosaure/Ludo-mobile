@@ -163,7 +163,7 @@ class TermsAndConditionsPage extends StatelessWidget {
     initializeDateFormatting();
     return "edited-at-label".tr(
       namedArgs: {
-        "date": DateFormat(AppConstants.DATE_TIME_FORMAT, 'FR').format(_termsAndConditions.lastUpdatedAt),
+        "date": DateFormat(AppConstants.DATE_TIME_FORMAT_LONG, 'FR').format(_termsAndConditions.lastUpdatedAt),
       },
     );
   }
