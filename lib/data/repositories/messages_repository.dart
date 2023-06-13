@@ -1,5 +1,6 @@
 import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/data/providers/reservation_provider.dart';
+import 'package:ludo_mobile/domain/models/message.dart';
 import 'package:ludo_mobile/domain/models/reservation.dart';
 
 import '../../domain/models/conversation.dart';
@@ -13,5 +14,9 @@ class MessagesRepository {
 
   Future<List<Conversation>> getMyConversations() async {
     return await _messageProvider.getMyConversations();
+  }
+
+  Future<Conversation> getConversationByUserId(String userId) async {
+    return await _messageProvider.getConversationByUserId(userId);
   }
 }

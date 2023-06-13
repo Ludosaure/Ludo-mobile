@@ -1,16 +1,23 @@
+import 'message.dart';
+
 class Conversation {
   UserConversation otherUser;
-  LastMessage lastMessage;
+  List<Message> messages;
 
   Conversation({
     required this.otherUser,
-    required this.lastMessage,
+    required this.messages,
   });
 
   factory Conversation.fromJson(Map<String, dynamic> json) {
+    final List<Message> messages = [];
+    json["messages"] != null ? json["messages"].forEach((message) {
+      messages.add(Message.fromJson(message));
+    }) : [];
+
     return Conversation(
       otherUser: UserConversation.fromJson(json["otherUser"]),
-      lastMessage: LastMessage.fromJson(json["lastMessage"]),
+      messages: messages,
     );
   }
 }
@@ -34,26 +41,5 @@ class UserConversation {
         firstname: json["firstname"],
         lastname: json["lastname"],
         profilePicturePath: json["profilePicture"] != null ? json["profilePicture"]["url"] : "",
-      );
-}
-
-class LastMessage {
-  String id;
-  String content;
-  DateTime sendDate;
-  bool isRead;
-
-  LastMessage({
-    required this.id,
-    required this.content,
-    required this.sendDate,
-    required this.isRead,
-  });
-
-  factory LastMessage.fromJson(Map<String, dynamic> json) => LastMessage(
-        id: json["id"],
-        content: json["content"],
-        sendDate: DateTime.parse(json["sendDate"]),
-        isRead: json["isRead"],
       );
 }

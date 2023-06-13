@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:ludo_mobile/domain/use_cases/cart/cart_cubit.dart';
+import 'package:ludo_mobile/domain/use_cases/conversations/get_conversation/get_conversation_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/favorite_games/favorite_games_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/get_game/get_game_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/get_games/get_games_cubit.dart';
@@ -33,7 +34,8 @@ import 'package:ludo_mobile/ui/pages/terms_and_conditions_page.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
 import 'package:ludo_mobile/utils/app_constants.dart';
 
-import '../../domain/use_cases/conversations/list_conversations_cubit.dart';
+import '../../domain/use_cases/conversations/list_conversations/list_conversations_cubit.dart';
+import '../pages/messages/conversation_page.dart';
 
 @injectable
 class AppRouter {
@@ -257,6 +259,27 @@ class AppRouter {
             value: _listConversationsCubit,
             child: InboxPage(
               user: connectedUser!,
+            ),
+          ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+        ),
+      ),
+      GoRoute(
+        path: "${Routes.inbox.path}/:userId",
+        pageBuilder: (context, state) => CustomTransitionPage(
+          child: MultiBlocProvider(
+            providers: [
+              BlocProvider.value(
+                value: locator<GetConversationCubit>(),
+              ),
+            ],
+            child: ConversationPage(
+              userId: state.params['userId']!,
             ),
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {

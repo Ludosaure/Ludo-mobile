@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:ludo_mobile/domain/models/message.dart';
+import 'package:ludo_mobile/ui/router/routes.dart';
 
 import '../../../domain/models/conversation.dart';
 
@@ -35,6 +38,7 @@ class ConversationsList extends StatelessWidget {
       scrollDirection: Axis.vertical,
       itemBuilder: (context, index) {
         Conversation conversation = conversations[index];
+        Message lastMessage = conversation.messages[0];
         return Card(
           color: Colors.white,
           shape: RoundedRectangleBorder(
@@ -48,20 +52,19 @@ class ConversationsList extends StatelessWidget {
                         conversation.otherUser.profilePicturePath!),
                   )
                 : const Icon(Icons.person),
-            // TODO aller sur la page de la conv
-            // onTap: () {
-            //   context.go('${Routes.reservations.path}/${conversation.id}');
-            // },
+            onTap: () {
+              context.go('${Routes.inbox.path}/${conversation.otherUser.id}');
+            },
             title: Text(
               "${conversation.otherUser.firstname} ${conversation.otherUser.lastname}",
-              style: _getTextStyle(conversation),
+              style: _getTextStyle(lastMessage),
             ),
             subtitle: RichText(
               overflow: TextOverflow.ellipsis,
               strutStyle: const StrutStyle(fontSize: 12.0),
               text: TextSpan(
-                style: _getTextStyle(conversation),
-                text: conversation.lastMessage.content,
+                style: _getTextStyle(lastMessage),
+                text: lastMessage.content,
               ),
             ),
           ),
@@ -70,9 +73,9 @@ class ConversationsList extends StatelessWidget {
     );
   }
 
-  TextStyle _getTextStyle(Conversation conversation) {
+  TextStyle _getTextStyle(Message lastMessage) {
     return TextStyle(
-        fontWeight: conversation.lastMessage.isRead
+        fontWeight: lastMessage.isRead
             ? FontWeight.normal
             : FontWeight.bold,
         color: Colors.black);

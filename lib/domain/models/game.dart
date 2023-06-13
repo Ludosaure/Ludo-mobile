@@ -50,7 +50,7 @@ class Game {
       id: json['id'],
       name: json['name'].toString().titleCase(),
       description: json['description'],
-      imageUrl: json['imageUrl'],
+      imageUrl: json['picture'] != null ? json['picture']['url'] : null,
       averageDuration: json['averageDuration'],
       minAge: json['ageMin'],
       minPlayers: json['nbPlayersMin'],

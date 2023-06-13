@@ -7,8 +7,8 @@ import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/core/form_status.dart';
 import 'package:ludo_mobile/domain/use_cases/register/register_bloc.dart';
 import 'package:ludo_mobile/ui/components/custom_back_button.dart';
-import 'package:ludo_mobile/ui/components/sized_box_20.dart';
 import 'package:ludo_mobile/ui/components/form_field_decoration.dart';
+import 'package:ludo_mobile/ui/components/sized_box_20.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
 import 'package:ludo_mobile/utils/app_dimensions.dart';
 
@@ -22,8 +22,7 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
 
   bool _hidePassword = true;
   bool _hideConfirmPassword = true;
@@ -300,14 +299,14 @@ class _RegisterPageState extends State<RegisterPage> {
   //TODO voir pour mettre dans un fichier à part et pouvoir le réutiliser
   String? _validatePhoneNumber(String? value) {
     if (value == null || value.isEmpty) {
-      return 'phone-number-required-msg'.tr();
+      return 'form.phone-number-required-msg'.tr();
     }
     if (value.length != 10) {
-      return 'phone-number-invalid-msg'.tr();
+      return 'form.phone-number-invalid-msg'.tr();
     }
 
     if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
-      return 'phone-number-invalid-msg'.tr();
+      return 'form.phone-number-invalid-msg'.tr();
     }
 
     return null;

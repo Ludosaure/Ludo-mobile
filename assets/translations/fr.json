@@ -27,6 +27,7 @@
   "try-again-label": "Réessayer",
   "no-favorites-found": "Aucun favoris trouvé.",
   "no-reservation-found": "Aucune réservation trouvées.",
+  "no-messages-found": "Aucuns messages trouvés.",
   "no-game-found": "Aucun jeu trouvé.",
   "form": {
     "field-required-msg": "Ce champ est requis.",

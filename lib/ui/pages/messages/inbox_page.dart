@@ -8,7 +8,7 @@ import 'package:ludo_mobile/ui/components/scaffold/admin_scaffold.dart';
 import 'package:ludo_mobile/ui/components/scaffold/home_scaffold.dart';
 import 'package:ludo_mobile/utils/menu_items.dart';
 
-import '../../../domain/use_cases/conversations/list_conversations_cubit.dart';
+import '../../../domain/use_cases/conversations/list_conversations/list_conversations_cubit.dart';
 import '../../router/routes.dart';
 import 'conversations_list.dart';
 
@@ -85,7 +85,7 @@ class _InboxPageState extends State<InboxPage> {
           }
           if (state is ListConversationsError) {
             return Center(
-              child: const Text("no-reservation-found").tr(),
+              child: const Text("no-messages-found").tr(),
             );
           }
           if (state is ListConversationsSuccess) {
