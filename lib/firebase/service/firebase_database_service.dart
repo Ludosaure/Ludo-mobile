@@ -6,7 +6,7 @@ class FirebaseDatabaseService {
   FirebaseDatabaseService({this.uid});
 
   final CollectionReference userCollection = FirebaseFirestore.instance.collection("users");
-  final CollectionReference conversationsCollection = FirebaseFirestore.instance.collection("conversations"); // TODO voir pour la modélisation dans Firebase plus tard
+  final CollectionReference conversationsCollection = FirebaseFirestore.instance.collection("conversations");
 
   Future saveUserData(String name, String firstname, String email, String profilePicture) async {
     final userDoc = userCollection.doc(uid);
@@ -18,6 +18,7 @@ class FirebaseDatabaseService {
         'name': name,
         'firstname': firstname,
         'profilePicture': profilePicture,
+        'conversations': [],
       }, SetOptions(merge: true));
     } else {
       return userDoc.set({
@@ -25,6 +26,7 @@ class FirebaseDatabaseService {
         'firstname': firstname,
         'email': email,
         'profilePicture': profilePicture,
+        'conversations': [],
         'uid': uid,
       });
     }
@@ -32,5 +34,9 @@ class FirebaseDatabaseService {
 
   Future getUserData(String email) async {
     return await userCollection.where('email', isEqualTo: email).get();
+  }
+
+  Future getUserConversations() async {
+    return userCollection.doc(uid).snapshots();
   }
 }

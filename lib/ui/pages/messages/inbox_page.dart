@@ -4,12 +4,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/domain/models/conversation.dart';
 import 'package:ludo_mobile/domain/models/user.dart';
+import 'package:ludo_mobile/domain/use_cases/conversations/list_conversations/list_conversations_cubit.dart';
 import 'package:ludo_mobile/ui/components/scaffold/admin_scaffold.dart';
 import 'package:ludo_mobile/ui/components/scaffold/home_scaffold.dart';
+import 'package:ludo_mobile/ui/router/routes.dart';
 import 'package:ludo_mobile/utils/menu_items.dart';
 
-import '../../../domain/use_cases/conversations/list_conversations/list_conversations_cubit.dart';
-import '../../router/routes.dart';
 import 'conversations_list.dart';
 
 class InboxPage extends StatefulWidget {
@@ -90,6 +90,7 @@ class _InboxPageState extends State<InboxPage> {
           }
           if (state is ListConversationsSuccess) {
             conversations = state.conversations;
+            // TODO si client, va direct sur la conv avec les admins
             return ConversationsList(conversations: conversations);
           }
           if (state is UserMustLogError) {

@@ -5,9 +5,11 @@ import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:ludo_mobile/domain/use_cases/cart/cart_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/conversations/get_conversation/get_conversation_cubit.dart';
+import 'package:ludo_mobile/domain/use_cases/conversations/list_conversations/list_conversations_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/favorite_games/favorite_games_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/get_game/get_game_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/get_games/get_games_cubit.dart';
+import 'package:ludo_mobile/domain/use_cases/get_reservation/get_reservation_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/list_all_reservations/list_all_reservations_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/list_reduction_plan/list_reduction_plan_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/login/login_bloc.dart';
@@ -22,6 +24,7 @@ import 'package:ludo_mobile/ui/pages/game/favorite/favorite_games_page.dart';
 import 'package:ludo_mobile/ui/pages/game/detail/game_details_page.dart';
 import 'package:ludo_mobile/ui/pages/home/admin_home_page.dart';
 import 'package:ludo_mobile/ui/pages/home/user_home_page.dart';
+import 'package:ludo_mobile/ui/pages/messages/conversation_page.dart';
 import 'package:ludo_mobile/ui/pages/messages/inbox_page.dart';
 import 'package:ludo_mobile/ui/pages/landing_page.dart';
 import 'package:ludo_mobile/ui/pages/login_page.dart';
@@ -33,9 +36,6 @@ import 'package:ludo_mobile/ui/pages/reservation/user_reservations_page.dart';
 import 'package:ludo_mobile/ui/pages/terms_and_conditions_page.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
 import 'package:ludo_mobile/utils/app_constants.dart';
-
-import '../../domain/use_cases/conversations/list_conversations/list_conversations_cubit.dart';
-import '../pages/messages/conversation_page.dart';
 
 @injectable
 class AppRouter {
@@ -226,7 +226,16 @@ class AppRouter {
       GoRoute(
         path: '${Routes.reservations.path}/:id',
         pageBuilder: (context, state) => CustomTransitionPage(
-          child: const ReservationDetailsPage(),
+          child: MultiBlocProvider(
+            providers: [
+              BlocProvider.value(
+                value: locator<GetReservationCubit>(),
+              ),
+            ],
+            child: ReservationDetailsPage(
+              reservationId: state.params['id']!,
+            ),
+          ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(
               opacity: animation,

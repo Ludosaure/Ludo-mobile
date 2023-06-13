@@ -1,17 +1,32 @@
+import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ludo_mobile/domain/models/conversation.dart';
 import 'package:ludo_mobile/domain/models/message.dart';
+import 'package:ludo_mobile/firebase/service/firebase_database_service.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
 
-import '../../../domain/models/conversation.dart';
-
-class ConversationsList extends StatelessWidget {
+class ConversationsList extends StatefulWidget {
   final List<Conversation> conversations;
 
   const ConversationsList({
     Key? key,
     required this.conversations,
   }) : super(key: key);
+
+  @override
+  State<ConversationsList> createState() => _ConversationsListState();
+}
+
+class _ConversationsListState extends State<ConversationsList> {
+  Stream? conversations;
+
+  @override
+  void initState() {
+    getUserConversations();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,9 +38,7 @@ class ConversationsList extends StatelessWidget {
       children: [
         Flexible(
           fit: FlexFit.loose,
-          child: _buildConversationsList(
-            conversations,
-          ),
+          child: _buildConversationList(),
         ),
       ],
     );
@@ -75,9 +88,62 @@ class ConversationsList extends StatelessWidget {
 
   TextStyle _getTextStyle(Message lastMessage) {
     return TextStyle(
-        fontWeight: lastMessage.isRead
-            ? FontWeight.normal
-            : FontWeight.bold,
+        fontWeight: lastMessage.isRead ? FontWeight.normal : FontWeight.bold,
         color: Colors.black);
+  }
+
+  getUserConversations() async {
+    await FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+        .getUserConversations()
+        .then((snapshot) {
+      setState(() {
+        conversations = snapshot;
+      });
+    });
+  }
+
+  _buildConversationList() {
+    return StreamBuilder(
+      stream: conversations,
+      builder: (context, AsyncSnapshot snapshot) {
+        if (snapshot.hasData) {
+          if (snapshot.data['conversations'] != null) {
+            if(snapshot.data['conversations'].length > 0) {
+              return Text("HELLOOOO");
+            } else {
+              return _buildNoConversations();
+            }
+          } else {
+            return _buildNoConversations();
+          }
+        } else {
+          return Center(
+            child: CircularProgressIndicator(
+              color: Theme.of(context).primaryColor,
+            ),
+          );
+        }
+      },
+    );
+  }
+
+  _buildNoConversations() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 25),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text("no-conversation".tr()),
+          const SizedBox(
+            height: 25,
+          ),
+          Text(
+            "how-contact-user".tr(),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
   }
 }

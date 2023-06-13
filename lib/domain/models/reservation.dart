@@ -11,12 +11,14 @@ class Reservation {
   double amount;
   DateTime startDate;
   DateTime endDate;
+  int nbWeeks;
   DateTime createdAt;
   bool returned;
   DateTime? returnedAt;
   bool paid;
   bool canceled;
   DateTime? canceledAt;
+  User? user;
 
   Reservation({
     required this.id,
@@ -26,12 +28,14 @@ class Reservation {
     required this.amount,
     required this.startDate,
     required this.endDate,
+    required this.nbWeeks,
     required this.createdAt,
     required this.returned,
     this.returnedAt,
     required this.paid,
     required this.canceled,
     this.canceledAt,
+    this.user,
   });
 
   factory Reservation.fromJson(Map<String, dynamic> json) {
@@ -48,12 +52,14 @@ class Reservation {
       amount: double.parse(json['totalAmount']),
       startDate: DateTime.parse(json['startDate']),
       endDate: DateTime.parse(json['endDate']),
+      nbWeeks: json['nbWeeks'],
       createdAt: DateTime.parse(json['createdAt']),
       returned: json['isReturned'],
       returnedAt: json['returnedDate'] != null ? DateTime.parse(json['returnedDate']) : null,
       paid: json['isPaid'],
       canceled: json['isCancelled'],
       canceledAt: json['cancelledDate'] != null ? DateTime.parse(json['cancelledDate']) : null,
+      user: json['user'] != null ? User.fromJson(json['user']) : null,
     );
   }
 

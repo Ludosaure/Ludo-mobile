@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/domain/models/reservation.dart';
 import 'package:ludo_mobile/domain/reservation_status.dart';
+import 'package:ludo_mobile/ui/components/list_header.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
 
 class ReservationList extends StatelessWidget {
@@ -21,9 +22,8 @@ class ReservationList extends StatelessWidget {
       verticalDirection: VerticalDirection.down,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        _buildListHeader(
-          context,
-          "all.fem".tr(),
+        ListHeader(
+          title: "all.fem".tr(),
         ),
         Flexible(
           fit: FlexFit.loose,
@@ -32,29 +32,6 @@ class ReservationList extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildListHeader(BuildContext context, String title) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      width: MediaQuery.of(context).size.width * 0.85,
-      decoration: const BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: Colors.grey,
-            width: 1.0,
-          ),
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.max,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        verticalDirection: VerticalDirection.down,
-        children: [
-          Text(title),
-        ],
-      ),
     );
   }
 
