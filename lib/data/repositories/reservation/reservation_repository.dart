@@ -15,6 +15,10 @@ class ReservationRepository {
     return await _reservationProvider.getReservations();
   }
 
+  Future<List<Reservation>> getMyReservations() async {
+    return await _reservationProvider.listUserReservations(null);
+  }
+
   Future<NewReservation> createReservation(DateTimeRange bookingPeriod, List<Game> games) async {
     NewReservation reservation = NewReservation(
       rentPeriod: bookingPeriod,
@@ -30,5 +34,9 @@ class ReservationRepository {
 
   Future<void> confirmReservationPayment(NewReservation reservation) async {
     await _reservationProvider.confirmReservationPayment(reservation);
+  }
+
+  Future<void> cancelReservation(String reservationId) async {
+    await _reservationProvider.cancelReservation(reservationId);
   }
 }

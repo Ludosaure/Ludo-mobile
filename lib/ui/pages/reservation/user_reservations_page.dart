@@ -3,45 +3,42 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/domain/models/reservation.dart';
-import 'package:ludo_mobile/domain/models/user.dart';
-import 'package:ludo_mobile/domain/use_cases/list_all_reservations/list_all_reservations_cubit.dart';
-import 'package:ludo_mobile/ui/components/scaffold/admin_scaffold.dart';
+import 'package:ludo_mobile/domain/use_cases/user_reservations/user_reservations_cubit.dart';
 import 'package:ludo_mobile/ui/pages/reservation/reservation_list.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
-import 'package:ludo_mobile/utils/menu_items.dart';
 
-class AdminHomePage extends StatefulWidget {
-  final User user;
-
-  const AdminHomePage({
-    Key? key,
-    required this.user,
-  }) : super(key: key);
+class UserReservationsPage extends StatefulWidget {
+  const UserReservationsPage({super.key});
 
   @override
-  State<AdminHomePage> createState() => _AdminHomePageState();
+  State<UserReservationsPage> createState() => _UserReservationsPageState();
 }
 
-class _AdminHomePageState extends State<AdminHomePage> {
+class _UserReservationsPageState extends State<UserReservationsPage> {
   late List<Reservation> reservations;
 
   @override
   Widget build(BuildContext context) {
-    return AdminScaffold(
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Mes Reservations'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            context.pop();
+          },
+        )
+      ),
       body: _buildReservationList(),
-      navBarIndex: AdminMenuItems.Home.index,
-      onSortPressed: null,
-      onSearch: onSearch,
-      user: widget.user,
     );
   }
 
   Widget _buildReservationList() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
-      child: BlocConsumer<ListAllReservationsCubit, ListAllReservationsState>(
+      child: BlocConsumer<UserReservationsCubit, UserReservationsState>(
         listener: (context, state) {
-          if (state is ListAllReservationsError) {
+          if (state is UserReservationsError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
@@ -59,21 +56,21 @@ class _AdminHomePageState extends State<AdminHomePage> {
           }
         },
         builder: (context, state) {
-          if (state is ListAllReservationsInitial) {
-            BlocProvider.of<ListAllReservationsCubit>(context)
-                .listReservations();
+          if (state is UserReservationsInitial) {
+            BlocProvider.of<UserReservationsCubit>(context)
+                .getMyReservations();
             return const Center(
               child: CircularProgressIndicator(),
             );
           }
 
-          if (state is ListAllReservationsError) {
+          if (state is UserReservationsError) {
             return Center(
               child: const Text("no-reservation-found").tr(),
             );
           }
 
-          if (state is ListReservationsSuccess) {
+          if (state is UserReservationsSuccess) {
             reservations = state.reservations;
 
             return ReservationList(reservations: reservations);
@@ -91,22 +88,4 @@ class _AdminHomePageState extends State<AdminHomePage> {
     );
   }
 
-  void onSortPressed(String something) {
-    //TODO faire un type abstrait pour les filtres
-    setState(() {
-      // reservations.sort((a, b) => a.date.compareTo(b.date));
-    });
-  }
-
-  //TODO probablement passer par un cubit de ses morts
-  void onSearch(String value) {
-    setState(() {
-      reservations = reservations
-          .where((element) =>
-              element.createdBy.firstname.contains(value) ||
-              element.createdBy.lastname.contains(value) ||
-              element.createdBy.email.contains(value))
-          .toList();
-    });
-  }
 }

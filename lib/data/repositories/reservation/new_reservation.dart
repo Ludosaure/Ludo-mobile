@@ -12,7 +12,6 @@ class NewReservation {
   });
 
   Map<String, dynamic> toJson() {
-    print("date to isostringmachinchosen: ${rentPeriod.start.toIso8601String()}");
     return {
       'startDate': rentPeriod.start.toIso8601String(),
       'endDate': rentPeriod.end.toIso8601String(),

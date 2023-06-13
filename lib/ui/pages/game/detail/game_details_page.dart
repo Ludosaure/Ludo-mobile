@@ -113,12 +113,11 @@ class GameDetailsPage extends StatelessWidget {
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: SizedBox(
-        height: MediaQuery.of(context).size.height -
-            MediaQuery.of(context).size.height * 0.06,
+        height: MediaQuery.of(context).size.height,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.max,
+          mainAxisSize: MainAxisSize.min,
           verticalDirection: VerticalDirection.down,
           children: [
             Padding(
@@ -126,7 +125,9 @@ class GameDetailsPage extends StatelessWidget {
                   const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
               child: _buildGame(context),
             ),
-            const Spacer(),
+            const SizedBox(
+              height: 10,
+            ),
             BlocProvider.value(
               value: context.read<CartCubit>(),
               child: GameDetailsBottomBar(
@@ -209,11 +210,14 @@ class GameDetailsPage extends StatelessWidget {
 
   Widget _buildGameImage(BuildContext context) {
     if (game.imageUrl != null) {
-      return Image(
-        image: NetworkImage(game.imageUrl!),
-        fit: BoxFit.cover,
-        height: MediaQuery.of(context).size.height * 0.4,
-        width: MediaQuery.of(context).size.width,
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Image(
+          image: NetworkImage(game.imageUrl!),
+          fit: BoxFit.contain,
+          height: MediaQuery.of(context).size.height * 0.25,
+          width: MediaQuery.of(context).size.width,
+        ),
       );
     }
     return const Padding(

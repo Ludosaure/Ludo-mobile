@@ -11,6 +11,7 @@ import 'package:ludo_mobile/domain/use_cases/list_all_reservations/list_all_rese
 import 'package:ludo_mobile/domain/use_cases/login/login_bloc.dart';
 import 'package:ludo_mobile/domain/use_cases/register/register_bloc.dart';
 import 'package:ludo_mobile/domain/use_cases/session/session_cubit.dart';
+import 'package:ludo_mobile/domain/use_cases/user_reservations/user_reservations_cubit.dart';
 import 'package:ludo_mobile/injection.dart';
 import 'package:ludo_mobile/ui/pages/cart/cart_page.dart';
 import 'package:ludo_mobile/ui/pages/game/add_game_page.dart';
@@ -26,6 +27,7 @@ import 'package:ludo_mobile/ui/pages/profile_page.dart';
 import 'package:ludo_mobile/ui/pages/register/register_page.dart';
 import 'package:ludo_mobile/ui/pages/register/register_success_page.dart';
 import 'package:ludo_mobile/ui/pages/reservation/reservation_detail_page.dart';
+import 'package:ludo_mobile/ui/pages/reservation/user_reservations_page.dart';
 import 'package:ludo_mobile/ui/pages/terms_and_conditions_page.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
 import 'package:ludo_mobile/utils/app_constants.dart';
@@ -42,6 +44,8 @@ class AppRouter {
       locator<ListAllReservationsCubit>();
   final FavoriteGamesCubit _getFavoriteGamesCubit =
       locator<FavoriteGamesCubit>();
+  final UserReservationsCubit _userReservationsCubit =
+      locator<UserReservationsCubit>();
 
   late User? connectedUser;
 
@@ -262,7 +266,31 @@ class AppRouter {
       GoRoute(
         path: Routes.profile.path,
         pageBuilder: (context, state) => CustomTransitionPage(
-          child: const ProfilePage(),
+          child: MultiBlocProvider(
+            providers: [
+              BlocProvider.value(
+                value: _sessionCubit,
+              ),
+            ],
+            child: ProfilePage(
+              connectedUser: connectedUser!,
+            ),
+          ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+        ),
+      ),
+      GoRoute(
+        path: Routes.userReservations.path,
+        pageBuilder: (context, state) => CustomTransitionPage(
+          child: BlocProvider.value(
+            value: _userReservationsCubit,
+            child: const UserReservationsPage(),
+          ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(
               opacity: animation,
@@ -317,8 +345,7 @@ class AppRouter {
 
       // guard admin ou auto-login client
       if (isAdminRoute && !connectedUser!.isAdmin() ||
-          state.location == Routes.landing.path &&
-              !connectedUser!.isAdmin()) {
+          state.location == Routes.landing.path && !connectedUser!.isAdmin()) {
         return Routes.home.path;
       }
 
@@ -353,5 +380,6 @@ class AppRouter {
     _getFavoriteGamesCubit.close();
     _getGameCubit.close();
     _cartBloc.close();
+    _userReservationsCubit.close();
   }
 }
