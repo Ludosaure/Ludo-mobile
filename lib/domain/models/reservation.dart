@@ -102,7 +102,7 @@ class Reservation {
 extension ReservationExtension on Reservation {
   ReservationStatus get status {
     if (canceled) {
-      return ReservationStatus.CANCELLED;
+      return ReservationStatus.CANCELED;
     } else if (returned) {
       return ReservationStatus.RETURNED;
     } else if (endDate.isBefore(DateTime.now()) && !returned) {

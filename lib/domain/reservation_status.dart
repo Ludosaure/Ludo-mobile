@@ -1,7 +1,7 @@
 enum ReservationStatus {
   RUNNING,
   LATE,
-  CANCELLED,
+  CANCELED,
   RETURNED,
   PAID,
   PENDING_PAIEMENT
@@ -14,7 +14,7 @@ extension ReservationStatusExtension on ReservationStatus {
         return 'En cours';
       case ReservationStatus.LATE:
         return 'En retard';
-      case ReservationStatus.CANCELLED:
+      case ReservationStatus.CANCELED:
         return 'Annulée';
       case ReservationStatus.RETURNED:
         return 'Rendue';

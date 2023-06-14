@@ -15,6 +15,7 @@ class HomeScaffold extends StatelessWidget {
   final int navBarIndex;
   final Widget? floatingActionButton;
 
+  // TODO recherche où ça ?
   const HomeScaffold({
     Key? key,
     required this.body,

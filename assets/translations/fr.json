@@ -70,6 +70,10 @@
     "fem": "Toutes",
     "masc": "Tous"
   },
+  "confirm": {
+    "yes": "Oui",
+    "no": "Non"
+  },
   "invoices": "Factures",
   "see-invoices": "Voir les factures",
   "download-invoice": "Télécharger la facture",
@@ -78,6 +82,8 @@
   "total-amount": "Montant total :",
   "reduction": "Réduction : ",
   "validate-game-returned": "Valider le retour des jeux",
+  "validate-game-returned-confirm": "Etes-vous sûr de vouloir valider le retour des jeux ?",
+  "irreversible-action": "Cette action est irréversible.",
   "contact-user": "Contacter l'utilisateur",
   "details": "Détails",
   "date-period": "Du {startDate} au {endDate}",
@@ -129,6 +135,6 @@
   "pick-booking-date-label": "Choisissez une date de réservation",
   "applied-reduction-label": "Réduction appliquée",
   "validate-label": "Valider",
-  "not-available-on-web-label": "Fonctionnalité non disponible sur le web"
+  "not-available-on-web-label": "Fonctionnalité non disponible sur le web",
   "email-copied": "L'email de l'utilisateur {email} a été copié dans le presse-papier."
 }
