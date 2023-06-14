@@ -57,10 +57,7 @@ class AdminBottomNavBar extends StatelessWidget {
         } else if (index == AdminMenuItems.Dashboard.index) {
           context.go(Routes.adminDashboard.path);
         } else if (index == AdminMenuItems.Profile.index) {
-          _sessionCubit.logout();
-          scheduleMicrotask(() {
-            context.go(Routes.landing.path);
-          });
+          context.go(Routes.profile.path);
         }
       },
     );
