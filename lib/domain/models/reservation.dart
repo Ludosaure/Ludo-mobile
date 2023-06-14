@@ -89,6 +89,7 @@ class Reservation {
       paid: json['isPaid'],
       canceled: json['isCancelled'],
       canceledAt: json['cancelledDate'] != null ? DateTime.parse(json['cancelledDate']) : null,
+      nbWeeks: json['nbWeeks'],
     );
   }
 }
