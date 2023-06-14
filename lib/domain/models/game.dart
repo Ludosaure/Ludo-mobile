@@ -15,7 +15,7 @@ class Game {
   final double weeklyAmount;
   final double rating;
   final bool isArchived;
-  final bool isAvailable;
+  final bool? isAvailable;
   final List<DateTime> unavailableDates;
 
   Game({
@@ -31,7 +31,7 @@ class Game {
     required this.weeklyAmount,
     required this.rating,
     required this.isArchived,
-    required this.isAvailable,
+    this.isAvailable,
     required this.unavailableDates,
   });
 
@@ -50,7 +50,7 @@ class Game {
       id: json['id'],
       name: json['name'].toString().titleCase(),
       description: json['description'],
-      imageUrl: json['imageUrl'],
+      imageUrl: json['picture'] != null ? json['picture']['url'] : null,
       averageDuration: json['averageDuration'],
       minAge: json['ageMin'],
       minPlayers: json['nbPlayersMin'],

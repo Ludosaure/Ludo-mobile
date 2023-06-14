@@ -5,6 +5,7 @@ import 'package:ludo_mobile/data/providers/authentication/login/login_request.da
 import 'package:ludo_mobile/data/repositories/authentication_repository.dart';
 import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:ludo_mobile/domain/use_cases/session/session_cubit.dart';
+import 'package:ludo_mobile/firebase/service/firebase_auth_service.dart';
 import 'package:ludo_mobile/utils/local_storage_helper.dart';
 import 'package:meta/meta.dart';
 
@@ -16,6 +17,7 @@ part 'login_state.dart';
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final AuthenticationRepository _authenticationRepository;
   final SessionCubit _sessionCubit;
+  final FirebaseAuthService _firebaseAuthService = FirebaseAuthService();
 
   LoginBloc(
     this._authenticationRepository,
@@ -42,6 +44,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
     try {
       user = await _authenticationRepository.login(req);
+      await _firebaseAuthService.login(state.email, state.password);
     } catch (exception) {
       emit(state.copyWith(
         status: FormSubmissionFailed(message: exception.toString()),

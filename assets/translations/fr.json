@@ -13,6 +13,7 @@
   "min-max-players-label": "{minPlayers} - {maxPlayers}",
   "nb-players-label": "@:min-max-players-label joueurs",
   "nb-players-label-long": "Nombre de joueurs",
+  "nb-weeks": "Nombre de semaines : {nbWeeks}",
   "weekly-amount-label": "Prix à la semaine",
   "amount": "{amount} €",
   "min-age-label": "Âge minimum",
@@ -27,6 +28,7 @@
   "try-again-label": "Réessayer",
   "no-favorites-found": "Aucun favoris trouvé.",
   "no-reservation-found": "Aucune réservation trouvées.",
+  "no-messages-found": "Aucuns messages trouvés.",
   "no-game-found": "Aucun jeu trouvé.",
   "form": {
     "field-required-msg": "Ce champ est requis.",
@@ -68,6 +70,16 @@
     "fem": "Toutes",
     "masc": "Tous"
   },
+  "invoices": "Factures",
+  "see-invoices": "Voir les factures",
+  "download-invoice": "Télécharger la facture",
+  "invoice-number": "Facture #{number}",
+  "invoice-amount": "Montant facturé :",
+  "total-amount": "Montant total :",
+  "reduction": "Réduction : ",
+  "validate-game-returned": "Valider le retour des jeux",
+  "contact-user": "Contacter l'utilisateur",
+  "details": "Détails",
   "date-period": "Du {startDate} au {endDate}",
   "send-label": "Envoyer",
   "edited-at-label": "Modifié le {date}",
@@ -80,6 +92,9 @@
   "reservation-title": "Réservations",
   "administration-title": "Administration",
   "cart-title": "Mon Panier",
+  "no-conversation": "Vous n'avez aucune conversation.",
+  "how-contact-user": "Pour contacter un utilisateur, veuillez passer par sa réservation",
+  "reservation-details-title": "Réservations #{number} - Par {firstname} {lastname}",
   "errors": {
     "unknown": "Erreur inconnue",
     "service-unavailable": "Service indisponible. Veuillez réessayer ultérieurement",
@@ -113,5 +128,6 @@
   "game-unavailable-label": "Indisponible",
   "pick-booking-date-label": "Choisissez une date de réservation",
   "applied-reduction-label": "Réduction appliquée",
-  "validate-label": "Valider"
+  "validate-label": "Valider",
+  "email-copied": "L'email de l'utilisateur {email} a été copié dans le presse-papier."
 }

@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/domain/models/reservation.dart';
 import 'package:ludo_mobile/domain/reservation_status.dart';
+import 'package:ludo_mobile/ui/components/list_header.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
+import 'package:ludo_mobile/utils/app_constants.dart';
 
 class ReservationList extends StatelessWidget {
   final List<Reservation> reservations;
@@ -21,9 +23,8 @@ class ReservationList extends StatelessWidget {
       verticalDirection: VerticalDirection.down,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        _buildListHeader(
-          context,
-          "all.fem".tr(),
+        ListHeader(
+          title: "all.fem".tr(),
         ),
         Flexible(
           fit: FlexFit.loose,
@@ -32,29 +33,6 @@ class ReservationList extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildListHeader(BuildContext context, String title) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      width: MediaQuery.of(context).size.width * 0.85,
-      decoration: const BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: Colors.grey,
-            width: 1.0,
-          ),
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.max,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        verticalDirection: VerticalDirection.down,
-        children: [
-          Text(title),
-        ],
-      ),
     );
   }
 
@@ -88,8 +66,8 @@ class ReservationList extends StatelessWidget {
   String _getPeriod(Reservation reservation) {
     String period = "";
     period = "date-period".tr(namedArgs: {
-      "startDate": DateFormat('d MMMM', 'FR').format(reservation.startDate),
-      "endDate": DateFormat('d MMMM yyyy', 'FR').format(reservation.endDate)
+      "startDate": DateFormat(AppConstants.DATE_TIME_FORMAT_DAY_MONTH, 'FR').format(reservation.startDate),
+      "endDate": DateFormat(AppConstants.DATE_TIME_FORMAT_LONG, 'FR').format(reservation.endDate)
     });
 
     return period;

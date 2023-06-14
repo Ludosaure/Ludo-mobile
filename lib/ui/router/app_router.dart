@@ -4,9 +4,12 @@ import 'package:go_router/go_router.dart';
 import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:ludo_mobile/domain/use_cases/cart/cart_cubit.dart';
+import 'package:ludo_mobile/domain/use_cases/conversations/get_conversation/get_conversation_cubit.dart';
+import 'package:ludo_mobile/domain/use_cases/conversations/list_conversations/list_conversations_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/favorite_games/favorite_games_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/get_game/get_game_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/get_games/get_games_cubit.dart';
+import 'package:ludo_mobile/domain/use_cases/get_reservation/get_reservation_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/list_all_reservations/list_all_reservations_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/list_reduction_plan/list_reduction_plan_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/login/login_bloc.dart';
@@ -21,7 +24,8 @@ import 'package:ludo_mobile/ui/pages/game/favorite/favorite_games_page.dart';
 import 'package:ludo_mobile/ui/pages/game/detail/game_details_page.dart';
 import 'package:ludo_mobile/ui/pages/home/admin_home_page.dart';
 import 'package:ludo_mobile/ui/pages/home/user_home_page.dart';
-import 'package:ludo_mobile/ui/pages/inbox_page.dart';
+import 'package:ludo_mobile/ui/pages/messages/conversation_page.dart';
+import 'package:ludo_mobile/ui/pages/messages/inbox_page.dart';
 import 'package:ludo_mobile/ui/pages/landing_page.dart';
 import 'package:ludo_mobile/ui/pages/login_page.dart';
 import 'package:ludo_mobile/ui/pages/profile_page.dart';
@@ -43,6 +47,8 @@ class AppRouter {
   final CartCubit _cartBloc = locator<CartCubit>();
   final ListAllReservationsCubit _listAllReservationsCubit =
       locator<ListAllReservationsCubit>();
+  final ListConversationsCubit _listConversationsCubit =
+      locator<ListConversationsCubit>();
   final FavoriteGamesCubit _getFavoriteGamesCubit =
       locator<FavoriteGamesCubit>();
   final UserReservationsCubit _userReservationsCubit =
@@ -220,7 +226,16 @@ class AppRouter {
       GoRoute(
         path: '${Routes.reservations.path}/:id',
         pageBuilder: (context, state) => CustomTransitionPage(
-          child: const ReservationDetailsPage(),
+          child: MultiBlocProvider(
+            providers: [
+              BlocProvider.value(
+                value: locator<GetReservationCubit>(),
+              ),
+            ],
+            child: ReservationDetailsPage(
+              reservationId: state.params['id']!,
+            ),
+          ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(
               opacity: animation,
@@ -249,8 +264,32 @@ class AppRouter {
       GoRoute(
         path: Routes.inbox.path,
         pageBuilder: (context, state) => CustomTransitionPage(
-          child: InboxPage(
-            user: connectedUser!,
+          child: BlocProvider.value(
+            value: _listConversationsCubit,
+            child: InboxPage(
+              user: connectedUser!,
+            ),
+          ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+        ),
+      ),
+      GoRoute(
+        path: "${Routes.inbox.path}/:userId",
+        pageBuilder: (context, state) => CustomTransitionPage(
+          child: MultiBlocProvider(
+            providers: [
+              BlocProvider.value(
+                value: locator<GetConversationCubit>(),
+              ),
+            ],
+            child: ConversationPage(
+              userId: state.params['userId']!,
+            ),
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(
@@ -386,6 +425,7 @@ class AppRouter {
     _registerBLoc.close();
     _getGamesCubit.close();
     _listAllReservationsCubit.close();
+    _listConversationsCubit.close();
     _getFavoriteGamesCubit.close();
     _getGameCubit.close();
     _cartBloc.close();

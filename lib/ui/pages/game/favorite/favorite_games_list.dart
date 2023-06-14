@@ -31,8 +31,8 @@ class FavoriteGamesList extends StatelessWidget {
                 ? Image(
                     image: NetworkImage(favorite.picture!),
                     fit: BoxFit.cover,
-                    height: MediaQuery.of(context).size.height * 0.4,
-                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height * 0.13,
+                    width: MediaQuery.of(context).size.width * 0.13,
                   )
                 : const Padding(
                     padding: EdgeInsets.all(8.0),

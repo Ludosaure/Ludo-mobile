@@ -12,6 +12,7 @@ class User {
   final bool hasVerifiedAccount;
   final bool isAccountClosed;
 
+
   User({
     required this.id,
     required this.email,
@@ -36,7 +37,7 @@ class User {
         lastname: json["lastname"],
         phone: json["phone"],
         pseudo: json["pseudo"] ?? "",
-        profilePicturePath: json["profilePicturePath"] ?? "",
+        profilePicturePath: json["profilePicture"] != null ? json["profilePicture"]["url"] : "",
         role: json["role"],
         hasVerifiedAccount: json["isAccountVerified"],
         isAccountClosed: json["isAccountClosed"],
