@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
@@ -237,7 +238,18 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
                 color: Theme.of(context).colorScheme.onPrimary,
               ),
               onPressed: () {
-                // TODO
+                Clipboard.setData(ClipboardData(text: reservation.user!.email))
+                    .then((value) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        "email-copied"
+                            .tr(namedArgs: {"email": reservation.user!.email}),
+                      ),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                });
               },
             ),
             IconButton(
