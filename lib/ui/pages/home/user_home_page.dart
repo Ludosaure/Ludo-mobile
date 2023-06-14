@@ -8,7 +8,6 @@ import 'package:ludo_mobile/ui/components/scaffold/home_scaffold.dart';
 import 'package:ludo_mobile/ui/pages/game/list/game_list.dart';
 import 'package:ludo_mobile/utils/menu_items.dart';
 
-//TODO récupérer les plans pour appliquer les réductions aux jeux lors de la fioutu réservation
 class UserHomePage extends StatefulWidget {
   final User? connectedUser;
 

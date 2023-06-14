@@ -118,6 +118,11 @@ class CartCubit extends Cubit<CartState> {
         );
       });
     }).catchError((error) {
+      if(error is UserNotLoggedInException) {
+        emit(UserNotLogged());
+        return;
+      }
+
       emit(
         LoadCartContentError(
           error: "errors.cart-loading".tr(),

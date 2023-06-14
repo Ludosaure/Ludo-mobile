@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:injectable/injectable.dart';
@@ -21,16 +22,22 @@ class PaymentProvider {
 
     final int amountInCents = (amount * 100).toInt();
 
-    //TODO gestion des erreurs
-    final response = await http.post(Uri.parse('$endpoint/charge'),
-        headers: {
-          'Authorization': 'Bearer $userToken',
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode({
-          'amount': amountInCents,
-          'paymentMethodId': AppConstants.STRIPE_PAYMENT_ID,
-        }));
+    final response = await http.post(
+      Uri.parse('$endpoint/charge'),
+      headers: {
+        'Authorization': 'Bearer $userToken',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'amount': amountInCents,
+        'paymentMethodId': AppConstants.STRIPE_PAYMENT_ID,
+      }),
+    ).catchError((error) {
+      if (error is SocketException) {
+        throw ServiceUnavailableException('errors.service-unavailable'.tr());
+      }
+      throw InternalServerException('errors.unknown'.tr());
+    });
 
     if (response.statusCode != HttpCode.CREATED) {
       throw Exception('Erreur lors de la création du paiement');
