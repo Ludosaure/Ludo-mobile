@@ -245,7 +245,7 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
               Padding(
                 padding:
                     const EdgeInsets.symmetric(vertical: 27.0, horizontal: 5.0),
-                child: _game.isAvailable
+                child: _game.isAvailable!
                     ? _buildAddToCartButton(context)
                     : const Text(
                         "game-unavailable-label",
