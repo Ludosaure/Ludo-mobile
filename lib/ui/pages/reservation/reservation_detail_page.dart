@@ -9,6 +9,7 @@ import 'package:ludo_mobile/domain/use_cases/get_reservation/get_reservation_cub
 import 'package:ludo_mobile/ui/components/custom_back_button.dart';
 import 'package:ludo_mobile/ui/components/list_header.dart';
 import 'package:ludo_mobile/ui/pages/game/list/game_tile.dart';
+import 'package:ludo_mobile/ui/pages/invoices/InvoicesList.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
@@ -69,6 +70,7 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
     final Size size = MediaQuery.of(context).size;
     return Stack(
       children: [
+        // TODO front web
         // Positioned(
         //   top: 0,
         //   left: 0,
@@ -142,7 +144,7 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
         Text(
           "date-period".tr(namedArgs: {
             "startDate":
-                DateFormat('d MMMM', 'FR').format(reservation.startDate),
+                DateFormat('d MMMM yyyy', 'FR').format(reservation.startDate),
             "endDate":
                 DateFormat('d MMMM yyyy', 'FR').format(reservation.endDate)
           }),
@@ -167,7 +169,30 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
         _buildGameDetails(context),
         const SizedBox(height: 20),
         _buildReservationSynthesis(context),
+        const SizedBox(height: 20),
+        InvoicesList(invoices: reservation.invoices!),
       ],
+    );
+  }
+
+  Widget _buildReturnedGamesButton(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () {
+        // TODO : enregistrer le retour des jeux
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+      ),
+      child: Text(
+        "validate-game-returned".tr(),
+        style: TextStyle(
+          fontSize: 16,
+          color: Theme.of(context).colorScheme.primary,
+        ),
+      ),
     );
   }
 
@@ -183,12 +208,9 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
           children: [
             _buildTotalAmount(context),
             const SizedBox(height: 10),
-            Align(
-              alignment: Alignment.centerRight,
-              child: _buildDownloadInvoiceButton(context),
-            ),
-            _buildReturnedGameButton(context),
             _buildContactUser(context),
+            const SizedBox(height: 20),
+            _buildReturnedGamesButton(context),
           ],
         ),
       ),
@@ -230,59 +252,6 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
           ],
         ),
       ],
-    );
-  }
-
-  Widget _buildReturnedGameButton(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          "returned-games".tr(),
-          style: TextStyle(
-            fontSize: 18,
-            color: Theme.of(context).colorScheme.onPrimary,
-          ),
-        ),
-        Checkbox(
-          checkColor: Theme.of(context).colorScheme.onPrimary,
-          fillColor: MaterialStateProperty.resolveWith<Color>(
-              (Set<MaterialState> states) {
-            if (states.contains(MaterialState.selected)) {
-              return Theme.of(context).colorScheme.secondary;
-            }
-            return Colors.white;
-          }),
-          value: reservation.returned,
-          onChanged: (bool? value) {
-            // TODO faire la modif en base
-            setState(() {
-              reservation.returned = value!;
-            });
-          },
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDownloadInvoiceButton(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () {
-        // TODO : download invoice
-      },
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Theme.of(context).colorScheme.secondary,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10.0),
-        ),
-      ),
-      child: Text(
-        "download-invoice".tr(),
-        style: TextStyle(
-          fontSize: 16,
-          color: Theme.of(context).colorScheme.onPrimary,
-        ),
-      ),
     );
   }
 

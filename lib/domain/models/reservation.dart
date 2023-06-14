@@ -1,4 +1,5 @@
 import 'package:ludo_mobile/domain/models/game.dart';
+import 'package:ludo_mobile/domain/models/invoice.dart';
 import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:ludo_mobile/domain/reservation_status.dart';
 
@@ -19,6 +20,7 @@ class Reservation {
   bool canceled;
   DateTime? canceledAt;
   User? user;
+  List<Invoice>? invoices;
 
   Reservation({
     required this.id,
@@ -36,6 +38,7 @@ class Reservation {
     required this.canceled,
     this.canceledAt,
     this.user,
+    this.invoices,
   });
 
   factory Reservation.fromJson(Map<String, dynamic> json) {
@@ -43,6 +46,13 @@ class Reservation {
     json["games"].forEach((game) {
       games.add(Game.fromJson(game));
     });
+
+    List<Invoice> invoices = [];
+    if(json["invoices"] != null) {
+      json["invoices"].forEach((invoice) {
+        invoices.add(Invoice.fromJson(invoice));
+      });
+    }
 
     return Reservation(
       id: json['id'],
@@ -60,6 +70,7 @@ class Reservation {
       canceled: json['isCancelled'],
       canceledAt: json['cancelledDate'] != null ? DateTime.parse(json['cancelledDate']) : null,
       user: json['user'] != null ? User.fromJson(json['user']) : null,
+      invoices: invoices,
     );
   }
 
