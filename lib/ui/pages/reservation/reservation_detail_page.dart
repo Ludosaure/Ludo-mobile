@@ -180,23 +180,30 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
   }
 
   Widget _buildReturnedGamesButton(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () {
-        // TODO : enregistrer le retour des jeux
-      },
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10.0),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        const SizedBox(height: 20),
+        ElevatedButton(
+          onPressed: () {
+            _showConfirmReturnedGamesDialog(context);
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+          ),
+          child: Text(
+            "validate-game-returned".tr(),
+            style: TextStyle(
+              fontSize: 16,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          ),
         ),
-      ),
-      child: Text(
-        "validate-game-returned".tr(),
-        style: TextStyle(
-          fontSize: 16,
-          color: Theme.of(context).colorScheme.primary,
-        ),
-      ),
+      ],
     );
   }
 
@@ -215,7 +222,8 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
             _buildTotalAmount(context),
             const SizedBox(height: 10),
             _buildContactUser(context),
-            const SizedBox(height: 20),
+            if(reservation.status != ReservationStatus.RETURNED &&
+              reservation.status != ReservationStatus.CANCELED)
             _buildReturnedGamesButton(context),
           ],
         ),
@@ -384,5 +392,52 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
       );
     }
     return null;
+  }
+
+  _showConfirmReturnedGamesDialog(BuildContext context) {
+    Widget cancelButton = ElevatedButton(
+      child: Text("confirm.no".tr()),
+      onPressed:  () {
+        Navigator.of(context).pop();
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.grey,
+      )
+    );
+    Widget continueButton = ElevatedButton(
+      child: Text("confirm.yes".tr()),
+      onPressed:  () {
+        // TODO valider le retour des jeux
+      },
+    );
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("validate-game-returned".tr()),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text("validate-game-returned-confirm".tr()),
+          const SizedBox(height: 10),
+          Text("irreversible-action".tr(),
+            style: const TextStyle(
+              fontSize: 14,
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 }
