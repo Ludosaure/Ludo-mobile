@@ -1,7 +1,5 @@
 import 'package:ludo_mobile/utils/extensions.dart';
 
-import 'game_category.dart';
-
 class Game {
   final String id;
   final String name;
@@ -36,11 +34,6 @@ class Game {
   });
 
   factory Game.fromJson(Map<String, dynamic> json) {
-    final List<String> categories = [];
-    json["category"] != null ? json["categories"].forEach((category) {
-      categories.add(GameCategory.fromJson(category).name);
-    }) : [];
-
     final List<DateTime> unavailableDates = [];
     json["unavailabilities"] != null ? json["unavailabilities"].forEach((unavailability) {
       unavailableDates.add(DateTime.parse(unavailability['date']).toLocal());
@@ -55,11 +48,11 @@ class Game {
       minAge: json['ageMin'],
       minPlayers: json['nbPlayersMin'],
       maxPlayers: json['nbPlayersMax'],
-      categories: categories,
+      categories: [json["category"]["name"].toString().titleCase()],
       weeklyAmount: json['weeklyAmount'].toDouble(),
       rating: json['averageRating'] != null ? json['averageRating'].toDouble() : 0.0,
       isArchived: json['isArchived'],
-      isAvailable: json['isAvailable'],
+      isAvailable: json['isAvailable'] ?? false,
       unavailableDates: unavailableDates,
     );
   }

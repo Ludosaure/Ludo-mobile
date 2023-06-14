@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_date_pickers/flutter_date_pickers.dart';
@@ -448,6 +449,28 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
   }
 
   Widget _button(BuildContext context, Function()? callback, String label) {
+    if(kIsWeb) {
+      return Tooltip(
+        message: "not-available-on-web-label".tr(),
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 1, vertical: 1),
+            visualDensity: VisualDensity.compact,
+            backgroundColor:
+            Theme.of(context).colorScheme.primary.withOpacity(0.88),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+          onPressed: null,
+          child: Text(
+            label,
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    }
+
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         padding: const EdgeInsets.symmetric(horizontal: 1, vertical: 1),
@@ -458,7 +481,7 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
           borderRadius: BorderRadius.circular(10),
         ),
       ),
-      onPressed: callback,
+      onPressed: !kIsWeb ? callback : null,
       child: Text(
         label,
         textAlign: TextAlign.center,

@@ -407,6 +407,7 @@ class AppRouter {
     gameDetailsRoute.hasMatch(state.location);
     final bool isUnauthenticatedRoute = state.location == Routes.login.path ||
         state.location == Routes.register.path ||
+        state.location == Routes.registerSuccess.path ||
         state.location == Routes.terms.path ||
         state.location == Routes.home.path ||
         state.location == Routes.landing.path ||
