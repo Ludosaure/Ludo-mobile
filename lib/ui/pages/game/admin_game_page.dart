@@ -1,49 +1,55 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
 import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:ludo_mobile/domain/use_cases/get_games/get_games_cubit.dart';
-import 'package:ludo_mobile/ui/components/scaffold/home_scaffold.dart';
-import 'package:ludo_mobile/ui/pages/game/list/game_grid_list.dart';
 import 'package:ludo_mobile/ui/pages/game/list/game_tile_list.dart';
-import 'package:ludo_mobile/utils/menu_items.dart';
+import 'package:ludo_mobile/ui/router/routes.dart';
 
-class UserHomePage extends StatefulWidget {
-  final User? connectedUser;
+class AdminGamesPage extends StatefulWidget {
+  final User user;
 
-  const UserHomePage({Key? key, required this.connectedUser}) : super(key: key);
+  const AdminGamesPage({
+    super.key,
+    required this.user,
+  });
 
   @override
-  State<UserHomePage> createState() => _UserHomePageState();
+  State<AdminGamesPage> createState() => _AdminGamesPageState();
 }
 
-class _UserHomePageState extends State<UserHomePage> {
+class _AdminGamesPageState extends State<AdminGamesPage> {
   late List<Game> games;
-  bool _gridView = true;
+
 
   @override
   Widget build(BuildContext context) {
-    return HomeScaffold(
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        leading: IconButton(
+          onPressed: () {
+            context.go(Routes.adminDashboard.path);
+          },
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.black,
+          ),
+        ),
+        title: const Text(
+          'game-administration-title',
+          style: TextStyle(color: Colors.black),
+        ).tr(),
+      ),
       body: _buildGameList(),
-      navBarIndex: MenuItems.Home.index,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          setState(() {
-            _gridView = !_gridView;
-          });
+          context.push(Routes.addGame.path);
         },
-        child: _gridView
-            ? const Icon(
-                Icons.list,
-                color: Colors.white,
-              )
-            : const Icon(
-                Icons.grid_view,
-                color: Colors.white,
-              ),
+        child: const Icon(Icons.add),
       ),
-      user: widget.connectedUser,
     );
   }
 
@@ -77,9 +83,10 @@ class _UserHomePageState extends State<UserHomePage> {
           if (state is GetGamesSuccess) {
             games = state.games;
             return RefreshIndicator(
-                child: _gridView
-                    ? GameGridList(games: state.games)
-                    : GameTileList(games: state.games),
+                child: GameTileList(
+                  adminView: true,
+                  games: state.games,
+                ),
                 onRefresh: () async {
                   BlocProvider.of<GetGamesCubit>(context).getGames();
                 });

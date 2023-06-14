@@ -27,4 +27,9 @@ class GameRepository {
     return gameJson.toGame();
   }
 
+  //TODO implémenter côté backend
+  Future<void> deleteGame(String gameId) async {
+    await _gameProvider.deleteGame(gameId);
+  }
+
 }

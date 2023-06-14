@@ -151,5 +151,25 @@
   "validate-label": "Valider",
   "cancel-label": "Annuler",
   "not-available-on-web-label": "Fonctionnalité non disponible sur le web",
-  "email-copied": "L'email de l'utilisateur {email} a été copié dans le presse-papier."
+  "email-copied": "L'email de l'utilisateur {email} a été copié dans le presse-papier.",
+  "game-administration-title": "Administration des jeux",
+  "delete-game-label": "Supprimer le jeu",
+  "delete-game-confirmation": "Êtes-vous sûr de vouloir supprimer ce jeu {game} ?",
+  "game-name-field": "Nom du jeu",
+  "game-name-placeholder": "Saisissez le nom du jeu",
+  "game-description-field": "Description du jeu",
+  "game-description-placeholder": "Saisissez la description du jeu",
+  "game-weekly-amount-field": "Prix à la semaine",
+  "game-weekly-amount-placeholder": "Saisissez le prix à la semaine",
+  "game-category-field": "Type de jeu",
+  "game-category-placeholder": "Sélectionnez le type de jeu",
+  "min-age-field": "Age minimum",
+  "min-age-placeholder": "Saisissez l'âge minimum",
+  "average-duration-field": "Durée moyenne d'une partie en min",
+  "average-duration-placeholder": "45",
+  "min-players-field": "Nombre de joueurs minimum",
+  "min-players-placeholder": "Saisissez le nombre de joueurs minimum",
+  "max-players-field": "Nombre de joueurs maximum",
+  "max-players-placeholder": "Saisissez le nombre de joueurs maximum"
+
 }

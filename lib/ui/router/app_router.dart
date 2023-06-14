@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:ludo_mobile/domain/use_cases/cart/cart_cubit.dart';
+import 'package:ludo_mobile/domain/use_cases/delete_game/delete_game_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/favorite_games/favorite_games_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/get_game/get_game_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/get_games/get_games_cubit.dart';
@@ -19,6 +20,7 @@ import 'package:ludo_mobile/injection.dart';
 import 'package:ludo_mobile/ui/pages/cart/cart_page.dart';
 import 'package:ludo_mobile/ui/pages/game/add_game_page.dart';
 import 'package:ludo_mobile/ui/pages/admin_dashboard_page.dart';
+import 'package:ludo_mobile/ui/pages/game/admin_game_page.dart';
 import 'package:ludo_mobile/ui/pages/game/favorite/favorite_games_page.dart';
 import 'package:ludo_mobile/ui/pages/game/detail/game_details_page.dart';
 import 'package:ludo_mobile/ui/pages/home/admin_home_page.dart';
@@ -51,6 +53,7 @@ class AppRouter {
       locator<UserReservationsCubit>();
   final ListReductionPlanCubit _listReductionPlanCubit =
       locator<ListReductionPlanCubit>();
+  final DeleteGameCubit _deleteGameCubit = locator<DeleteGameCubit>();
   final DownloadInvoiceCubit _downloadInvoiceCubit =
       locator<DownloadInvoiceCubit>();
 
@@ -370,6 +373,30 @@ class AppRouter {
           },
         ),
       ),
+      GoRoute(
+        path: Routes.adminGames.path,
+        pageBuilder: (context, state) => CustomTransitionPage(
+          child: MultiBlocProvider(
+            providers: [
+              BlocProvider.value(
+                value: _getGamesCubit,
+              ),
+              BlocProvider.value(
+                value: _deleteGameCubit,
+              ),
+            ],
+            child: AdminGamesPage(
+              user: connectedUser!,
+            ),
+          ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+        ),
+      ),
     ],
     redirect: _redirect,
     refreshListenable: GoRouterRefreshStream(_sessionCubit.stream),
@@ -380,10 +407,7 @@ class AppRouter {
     if (_sessionCubit.state is UserLoggedIn) {
       connectedUser = (_sessionCubit.state as UserLoggedIn).user;
 
-      final bool isAdminRoute = state.location == Routes.homeAdmin.path ||
-          state.location == Routes.addGame.path ||
-          state.location == Routes.reservations.path ||
-          state.location == Routes.adminDashboard.path;
+      final bool isAdminRoute = _isAdminRoute(state.location);
 
       // guard admin ou auto-login client
       if (isAdminRoute && !connectedUser!.isAdmin() ||
@@ -397,21 +421,33 @@ class AppRouter {
       }
     }
 
-    RegExp gameDetailsRoute = AppConstants.UUID_V4;
-    gameDetailsRoute.hasMatch(state.location);
-    final bool isUnauthenticatedRoute = state.location == Routes.login.path ||
-        state.location == Routes.register.path ||
-        state.location == Routes.registerSuccess.path ||
-        state.location == Routes.terms.path ||
-        state.location == Routes.home.path ||
-        state.location == Routes.landing.path ||
-        gameDetailsRoute.hasMatch(state.location);
+    final bool isUnauthenticatedRoute = _isUnauthenticatedRoute(state.location);
 
     if (connectedUser == null && !isUnauthenticatedRoute) {
       return Routes.login.path;
     }
 
     return null;
+  }
+
+  bool _isAdminRoute(String route) {
+    return route == Routes.homeAdmin.path ||
+        route == Routes.addGame.path ||
+        route == Routes.reservations.path ||
+        route == Routes.adminDashboard.path ||
+        route == Routes.adminGames.path;
+  }
+
+  bool _isUnauthenticatedRoute(String route) {
+    RegExp gameDetailsRoute = AppConstants.UUID_V4;
+
+    return route == Routes.login.path ||
+        route == Routes.register.path ||
+        route == Routes.registerSuccess.path ||
+        route == Routes.terms.path ||
+        route == Routes.home.path ||
+        route == Routes.landing.path ||
+        gameDetailsRoute.hasMatch(route);
   }
 
   void dispose() {
@@ -425,5 +461,6 @@ class AppRouter {
     _userReservationsCubit.close();
     _listReductionPlanCubit.close();
     _downloadInvoiceCubit.close();
+    _deleteGameCubit.close();
   }
 }

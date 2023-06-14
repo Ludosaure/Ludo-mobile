@@ -76,4 +76,38 @@ class GameProvider {
 
     return GameJson.fromJson(decodedResponse["game"]);
   }
+
+  Future<void> deleteGame(String gameId) async {
+    final http.Response response = await http
+        .delete(
+      Uri.parse("$baseUrl/id/$gameId"),
+    )
+        .catchError((error) {
+      if (error is SocketException) {
+        throw ServiceUnavailableException(
+          'errors.service-unavailable'.tr(),
+        );
+      }
+
+      throw InternalServerException('errors.unknown'.tr());
+    });
+
+    if (response.statusCode == HttpCode.NOT_FOUND) {
+      throw NotFoundException(
+        "errors.game-not-found".tr(),
+      );
+    }
+
+    if(response.statusCode == HttpCode.FORBIDDEN) {
+      throw ForbiddenException(
+        "errors.forbidden".tr(),
+      );
+    }
+
+    if (response.statusCode != HttpCode.OK) {
+      throw InternalServerException(
+        "errors.unknown".tr(),
+      );
+    }
+  }
 }

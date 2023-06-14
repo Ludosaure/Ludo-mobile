@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:ludo_mobile/ui/components/scaffold/admin_scaffold.dart';
+import 'package:ludo_mobile/ui/router/routes.dart';
 import 'package:ludo_mobile/utils/menu_items.dart';
 
 class AdminDashboardPage extends StatelessWidget {
@@ -14,11 +17,115 @@ class AdminDashboardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AdminScaffold(
-      body: const Center(child: Text('Admin Dashboard Page')),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
+        child: _buildBody(context),
+      ),
       navBarIndex: AdminMenuItems.Dashboard.index,
       onSortPressed: null,
       onSearch: null,
       user: user,
+    );
+  }
+
+  Widget _buildBody(BuildContext context) {
+    return GridView.count(
+      padding: const EdgeInsets.all(5),
+      mainAxisSpacing: 10,
+      crossAxisSpacing: 10,
+      scrollDirection: Axis.vertical,
+      shrinkWrap: true,
+      crossAxisCount: 2,
+      children: [
+        _buildCard(
+          title: 'Bibliothèque de jeux',
+          icon: FontAwesomeIcons.gamepad,
+          onTap: () {
+            context.push(Routes.adminGames.path);
+          },
+        ),
+        _buildCard(
+          title: 'Suivi des réservervations',
+          icon: Icons.calendar_month_outlined,
+          onTap: () {},
+        ),
+        _buildCard(
+          title: 'Gestion des réductions',
+          icon: Icons.money_off_csred_sharp,
+          onTap: () {},
+        ),
+        _buildCard(
+          title: 'Gestion des catégories',
+          icon: Icons.list_alt,
+          onTap: () {},
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCard({
+    required String title,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return SizedBox(
+      height: 100,
+      width: 100,
+      child: Card(
+        elevation: 5,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        surfaceTintColor: Colors.blue,
+        child: Container(
+          decoration: _buildCardDecoration(),
+          child: InkWell(
+            onTap: onTap,
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  verticalDirection: VerticalDirection.down,
+                  children: [
+                    FaIcon(
+                      icon,
+                      color: Colors.white,
+                      size: 40,
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  BoxDecoration _buildCardDecoration() {
+    return BoxDecoration(
+      borderRadius: BorderRadius.circular(10),
+      gradient: const RadialGradient(
+        center: Alignment.bottomLeft,
+        focalRadius: 0.9,
+        focal: Alignment.topRight,
+        colors: [
+          Color(0xffEA6EFB),
+          Color(0xff8A4094),
+        ],
+      ),
     );
   }
 }
