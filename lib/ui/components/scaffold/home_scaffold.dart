@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:ludo_mobile/ui/components/menu/client_side_menu.dart';
@@ -38,6 +39,7 @@ class HomeScaffold extends StatelessWidget {
     if (ResponsiveWrapper.of(context).isSmallerThan(TABLET)) {
       return body;
     }
+
     return ResponsiveRowColumn(
       layout: ResponsiveRowColumnType.ROW,
       children: [

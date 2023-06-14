@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -11,6 +12,8 @@ import 'package:ludo_mobile/domain/use_cases/list_reduction_plan/list_reduction_
 import 'package:ludo_mobile/ui/components/expandable_text_widget.dart';
 import 'package:ludo_mobile/ui/components/favorite_button.dart';
 import 'package:ludo_mobile/ui/pages/game/detail/game_details_bottom_bar.dart';
+import 'package:ludo_mobile/ui/router/routes.dart';
+import 'package:ludo_mobile/utils/app_constants.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
 class GameDetailsPage extends StatelessWidget {
@@ -154,15 +157,20 @@ class GameDetailsPage extends StatelessWidget {
 
   PreferredSizeWidget? _buildAppBar(BuildContext context) {
     return AppBar(
-      backgroundColor: ResponsiveWrapper.of(context).isSmallerThan(DESKTOP)
+      backgroundColor: ResponsiveWrapper.of(context).isSmallerThan(DESKTOP) && !kIsWeb
           ? Colors.transparent
           : Theme.of(context).colorScheme.secondary,
       elevation: 0,
+      title: kIsWeb ? const Text(AppConstants.APP_NAME) : null,
       leading: ResponsiveWrapper.of(context).isSmallerThan(DESKTOP)
           ? BackButton(
-              color: Colors.black,
+              color: kIsWeb ? Colors.white : Colors.black,
               onPressed: () {
-                context.pop();
+                if(Navigator.of(context).canPop()) {
+                  context.pop();
+                } else {
+                  context.go(Routes.home.path);
+                }
               },
             )
           : null,
