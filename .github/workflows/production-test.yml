@@ -12,6 +12,7 @@ jobs:
     steps:
       - name: Create .env file
         run: |
+          mkdir -p assets
           echo "API_KEY=${{ secrets.API_KEY }}" >> assets/.env
           echo "API_ID=${{ secrets.API_ID }}" >> assets/.env
           echo "MESSAGING_SENDER_ID=${{ secrets.MESSAGING_SENDER_ID }}" >> assets/.env
