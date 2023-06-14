@@ -1,20 +1,15 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/domain/models/user.dart';
-import 'package:ludo_mobile/domain/use_cases/session/session_cubit.dart';
-import 'package:ludo_mobile/injection.dart';
 import 'package:ludo_mobile/ui/components/search_bar.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
 import 'package:ludo_mobile/utils/menu_items.dart';
 
 class CustomBottomNavigationBar extends StatelessWidget {
-  late final SessionCubit _sessionCubit = locator<SessionCubit>();
   final User user;
   final int index;
 
-  CustomBottomNavigationBar({
+  const CustomBottomNavigationBar({
     Key? key,
     required this.index,
     required this.user,
@@ -64,10 +59,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
         } else if (index == MenuItems.Home.index) {
           context.go(Routes.home.path);
         } else if (index == MenuItems.Profile.index) {
-          _sessionCubit.logout();
-          scheduleMicrotask(() {
-            context.go(Routes.landing.path);
-          });
+          context.go(Routes.profile.path);
         } else if (index == MenuItems.Favorites.index) {
           context.go(Routes.favorites.path);
         }

@@ -1,15 +1,14 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:ludo_mobile/domain/models/reservation.dart';
 import 'package:ludo_mobile/domain/reservation_status.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
 
-class AdminReservationList extends StatelessWidget {
+class ReservationList extends StatelessWidget {
   final List<Reservation> reservations;
 
-  const AdminReservationList({
+  const ReservationList({
     Key? key,
     required this.reservations,
   }) : super(key: key);

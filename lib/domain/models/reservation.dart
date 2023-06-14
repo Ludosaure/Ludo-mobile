@@ -56,6 +56,24 @@ class Reservation {
       canceledAt: json['cancelledDate'] != null ? DateTime.parse(json['cancelledDate']) : null,
     );
   }
+
+  factory Reservation.fromJsonAndUser(Map<String, dynamic> json, User user) {
+    return Reservation(
+      id: json['id'],
+      reservationNumber: json['reservationNumber'],
+      createdBy: user,
+      games: [],
+      amount: double.parse(json['totalAmount']),
+      startDate: DateTime.parse(json['startDate']),
+      endDate: DateTime.parse(json['endDate']),
+      createdAt: DateTime.parse(json['createdAt']),
+      returned: json['isReturned'],
+      returnedAt: json['returnedDate'] != null ? DateTime.parse(json['returnedDate']) : null,
+      paid: json['isPaid'],
+      canceled: json['isCancelled'],
+      canceledAt: json['cancelledDate'] != null ? DateTime.parse(json['cancelledDate']) : null,
+    );
+  }
 }
 
 extension ReservationExtension on Reservation {

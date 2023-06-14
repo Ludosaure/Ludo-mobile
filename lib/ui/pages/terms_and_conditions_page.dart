@@ -4,9 +4,9 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:ludo_mobile/data/repositories/administration/terms_and_conditions_repository.dart';
 import 'package:ludo_mobile/domain/models/terms_and_conditions.dart';
 import 'package:ludo_mobile/ui/components/sized_box_20.dart';
+import 'package:ludo_mobile/utils/app_constants.dart';
 
 import '../components/custom_back_button.dart';
-import 'package:intl/intl.dart';
 
 //TODO
 class TermsAndConditionsPage extends StatelessWidget {
@@ -163,7 +163,7 @@ class TermsAndConditionsPage extends StatelessWidget {
     initializeDateFormatting();
     return "edited-at-label".tr(
       namedArgs: {
-        "date": DateFormat('dd MMMM yyyy', 'FR').format(_termsAndConditions.lastUpdatedAt),
+        "date": DateFormat(AppConstants.DATE_TIME_FORMAT_LONG, 'FR').format(_termsAndConditions.lastUpdatedAt),
       },
     );
   }

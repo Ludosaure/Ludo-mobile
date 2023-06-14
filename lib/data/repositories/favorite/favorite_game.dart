@@ -13,7 +13,7 @@ class FavoriteGame {
 
   factory FavoriteGame.fromFavoriteJson(FavoriteJson json) => FavoriteGame(
     gameId: json.gameId,
-    name: "name",
+    name: json.game.name,
     picture: null,
   );
 }

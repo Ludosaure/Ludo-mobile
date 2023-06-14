@@ -15,6 +15,8 @@ enum Routes {
   adminDashboard,
   reservations,
   success,
+  cart,
+  userReservations,
 }
 
 extension RoutesExtension on Routes {
@@ -52,6 +54,10 @@ extension RoutesExtension on Routes {
         return '/admin/reservations';
       case Routes.success:
         return 'success';
+      case Routes.cart:
+        return '/cart';
+      case Routes.userReservations:
+        return '/reservations';
     }
   }
 }

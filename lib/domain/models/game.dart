@@ -14,6 +14,9 @@ class Game {
   final List<String> categories;
   final double weeklyAmount;
   final double rating;
+  final bool isArchived;
+  final bool isAvailable;
+  final List<DateTime> unavailableDates;
 
   Game({
     required this.id,
@@ -27,12 +30,20 @@ class Game {
     required this.categories,
     required this.weeklyAmount,
     required this.rating,
+    required this.isArchived,
+    required this.isAvailable,
+    required this.unavailableDates,
   });
 
   factory Game.fromJson(Map<String, dynamic> json) {
     final List<String> categories = [];
     json["category"] != null ? json["categories"].forEach((category) {
       categories.add(GameCategory.fromJson(category).name);
+    }) : [];
+
+    final List<DateTime> unavailableDates = [];
+    json["unavailabilities"] != null ? json["unavailabilities"].forEach((unavailability) {
+      unavailableDates.add(DateTime.parse(unavailability['date']).toLocal());
     }) : [];
 
     return Game(
@@ -47,6 +58,9 @@ class Game {
       categories: categories,
       weeklyAmount: json['weeklyAmount'].toDouble(),
       rating: json['averageRating'] != null ? json['averageRating'].toDouble() : 0.0,
+      isArchived: json['isArchived'],
+      isAvailable: json['isAvailable'],
+      unavailableDates: unavailableDates,
     );
   }
 }
