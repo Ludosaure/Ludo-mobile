@@ -7,6 +7,7 @@ import 'package:ludo_mobile/domain/use_cases/cart/cart_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/favorite_games/favorite_games_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/get_game/get_game_cubit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:ludo_mobile/domain/use_cases/list_reduction_plan/list_reduction_plan_cubit.dart';
 import 'package:ludo_mobile/ui/components/expandable_text_widget.dart';
 import 'package:ludo_mobile/ui/components/favorite_button.dart';
 import 'package:ludo_mobile/ui/pages/game/detail/game_details_bottom_bar.dart';
@@ -98,8 +99,15 @@ class GameDetailsPage extends StatelessWidget {
         Positioned(
           top: size.height * 0.50,
           left: size.width * 0.30,
-          child: BlocProvider.value(
-            value: context.read<CartCubit>(),
+          child: MultiBlocProvider(
+            providers: [
+              BlocProvider.value(
+                value: context.read<CartCubit>(),
+              ),
+              BlocProvider.value(
+                value: context.read<ListReductionPlanCubit>(),
+              ),
+            ],
             child: GameDetailsBottomBar(
               game: game,
             ),
@@ -128,8 +136,15 @@ class GameDetailsPage extends StatelessWidget {
             const SizedBox(
               height: 10,
             ),
-            BlocProvider.value(
-              value: context.read<CartCubit>(),
+            MultiBlocProvider(
+              providers: [
+                BlocProvider.value(
+                  value: context.read<CartCubit>(),
+                ),
+                BlocProvider.value(
+                  value: context.read<ListReductionPlanCubit>(),
+                ),
+              ],
               child: GameDetailsBottomBar(
                 game: game,
               ),

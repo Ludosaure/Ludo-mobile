@@ -33,12 +33,12 @@ class PaymentProvider {
         }));
 
     if (response.statusCode != HttpCode.CREATED) {
-      throw Exception('Error while creating payment intent');
+      throw Exception('Erreur lors de la création du paiement');
     }
 
-    final truc = jsonDecode(response.body);
+    final paymentIntent = jsonDecode(response.body);
 
-    return CreatePaymentIntentResponse.fromJson(truc);
+    return CreatePaymentIntentResponse.fromJson(paymentIntent);
   }
 }
 

@@ -31,11 +31,12 @@ class CartCubit extends Cubit<CartState> {
     return state.bookingPeriod;
   }
 
-  void addToCart(Game game, DateTimeRange selectedPeriod) async {
+  void addToCart(Game game, DateTimeRange selectedPeriod, int reduction) async {
     emit(
       BookingOperationLoading(
         content: state.cartContent,
         bookingPeriod: selectedPeriod,
+        reduction: reduction,
       ),
     );
     await Future.delayed(const Duration(seconds: 2), () {
@@ -43,6 +44,7 @@ class CartCubit extends Cubit<CartState> {
         BookingOperationSuccess(
           content: state.cartContent + [game],
           bookingPeriod: selectedPeriod,
+          reduction: reduction,
         ),
       );
     });
@@ -53,6 +55,7 @@ class CartCubit extends Cubit<CartState> {
       BookingOperationLoading(
         content: state.cartContent,
         bookingPeriod: state.bookingPeriod,
+        reduction: state.reduction,
       ),
     );
     await Future.delayed(const Duration(seconds: 2), () {
@@ -64,6 +67,7 @@ class CartCubit extends Cubit<CartState> {
         BookingOperationSuccess(
           content: content,
           bookingPeriod: state.bookingPeriod,
+          reduction: state.reduction,
         ),
       );
     });
@@ -74,6 +78,7 @@ class CartCubit extends Cubit<CartState> {
       BookingOperationLoading(
         content: state.cartContent,
         bookingPeriod: bookingPeriod,
+        reduction: state.reduction,
       ),
     );
     await Future.delayed(const Duration(seconds: 0), () {
@@ -81,6 +86,7 @@ class CartCubit extends Cubit<CartState> {
         BookingDateUpdated(
           content: state.cartContent,
           bookingPeriod: bookingPeriod,
+          reduction: state.reduction,
         ),
       );
     });
@@ -93,6 +99,7 @@ class CartCubit extends Cubit<CartState> {
           CartContentLoaded(
             content: state.cartContent,
             bookingPeriod: state.bookingPeriod,
+            reduction: state.reduction,
           ),
         );
       });
@@ -106,6 +113,7 @@ class CartCubit extends Cubit<CartState> {
           CartContentLoaded(
             content: state.cartContent,
             bookingPeriod: state.bookingPeriod,
+            reduction: state.reduction,
           ),
         );
       });
@@ -115,6 +123,7 @@ class CartCubit extends Cubit<CartState> {
           error: "errors.cart-loading".tr(),
           content: state.cartContent,
           bookingPeriod: state.bookingPeriod,
+          reduction: state.reduction,
         ),
       );
     });
@@ -124,10 +133,11 @@ class CartCubit extends Cubit<CartState> {
     double amount = 0;
     state.cartContent.forEach((element) => amount += element.weeklyAmount);
 
+    int reduction = state.reduction;
     int nbWeek = (state.bookingPeriod.duration.inDays / 7).ceil();
     nbWeek == 0 ? nbWeek = 1 : nbWeek = nbWeek;
 
-    return amount * nbWeek;
+    return amount * nbWeek * (1 - reduction / 100);
   }
 
   Future<void> displayPaymentSheet() async {
@@ -148,6 +158,7 @@ class CartCubit extends Cubit<CartState> {
           PaymentSheetDisplayed(
             content: state.cartContent,
             bookingPeriod: state.bookingPeriod,
+            reduction: state.reduction,
           ),
         );
         await _confirmPayment(reservation);
@@ -157,6 +168,7 @@ class CartCubit extends Cubit<CartState> {
             PaymentCanceled(
               content: state.cartContent,
               bookingPeriod: state.bookingPeriod,
+              reduction: state.reduction,
             ),
           );
           return;
@@ -166,6 +178,7 @@ class CartCubit extends Cubit<CartState> {
             error: "errors.payment-sheet-display".tr(),
             content: state.cartContent,
             bookingPeriod: state.bookingPeriod,
+            reduction: state.reduction,
           ),
         );
       }).whenComplete(
@@ -184,6 +197,7 @@ class CartCubit extends Cubit<CartState> {
           error: error.toString(),
           content: state.cartContent,
           bookingPeriod: state.bookingPeriod,
+          reduction: state.reduction,
         ),
       );
     }
@@ -227,6 +241,7 @@ class CartCubit extends Cubit<CartState> {
             error: "errors.payment-sheet-submit".tr(),
             content: state.cartContent,
             bookingPeriod: state.bookingPeriod,
+            reduction: state.reduction,
           ),
         );
       }
@@ -238,6 +253,7 @@ class CartCubit extends Cubit<CartState> {
             start: DateTime.now(),
             end: DateTime.now().add(const Duration(days: 7)),
           ),
+          reduction: 0,
         ),
       );
     }).catchError((error) {
@@ -246,6 +262,7 @@ class CartCubit extends Cubit<CartState> {
           error: "errors.payment-sheet-submit".tr(),
           content: state.cartContent,
           bookingPeriod: state.bookingPeriod,
+          reduction: state.reduction,
         ),
       );
     });

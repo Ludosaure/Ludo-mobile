@@ -8,6 +8,7 @@ import 'package:ludo_mobile/domain/use_cases/favorite_games/favorite_games_cubit
 import 'package:ludo_mobile/domain/use_cases/get_game/get_game_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/get_games/get_games_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/list_all_reservations/list_all_reservations_cubit.dart';
+import 'package:ludo_mobile/domain/use_cases/list_reduction_plan/list_reduction_plan_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/login/login_bloc.dart';
 import 'package:ludo_mobile/domain/use_cases/register/register_bloc.dart';
 import 'package:ludo_mobile/domain/use_cases/session/session_cubit.dart';
@@ -46,6 +47,8 @@ class AppRouter {
       locator<FavoriteGamesCubit>();
   final UserReservationsCubit _userReservationsCubit =
       locator<UserReservationsCubit>();
+  final ListReductionPlanCubit _listReductionPlanCubit =
+      locator<ListReductionPlanCubit>();
 
   late User? connectedUser;
 
@@ -78,6 +81,9 @@ class AppRouter {
               ),
               BlocProvider.value(
                 value: _getGamesCubit,
+              ),
+              BlocProvider.value(
+                value: _listReductionPlanCubit,
               ),
             ],
             child: UserHomePage(
@@ -172,14 +178,17 @@ class AppRouter {
           child: MultiBlocProvider(
             providers: [
               BlocProvider.value(
-                value: locator<
-                    GetGameCubit>(), //TODO vérifier les fuites mémoire -> close
+                //TODO vérifier les fuites mémoire -> close
+                value: locator<GetGameCubit>(),
               ),
               BlocProvider.value(
                 value: _cartBloc,
               ),
               BlocProvider.value(
                 value: _getFavoriteGamesCubit,
+              ),
+              BlocProvider.value(
+                value: _listReductionPlanCubit,
               ),
             ],
             child: GameDetailsPage(
@@ -381,5 +390,6 @@ class AppRouter {
     _getGameCubit.close();
     _cartBloc.close();
     _userReservationsCubit.close();
+    _listReductionPlanCubit.close();
   }
 }

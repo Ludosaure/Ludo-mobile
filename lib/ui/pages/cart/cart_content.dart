@@ -10,12 +10,14 @@ class CartContent extends StatelessWidget {
   final List<Game> cartContent;
   final double totalAmount;
   final DateTimeRange bookingPeriod;
+  final int reduction;
 
   const CartContent({
     Key? key,
     required this.cartContent,
     required this.totalAmount,
     required this.bookingPeriod,
+    required this.reduction,
   }) : super(key: key);
 
   @override
@@ -60,7 +62,7 @@ class CartContent extends StatelessWidget {
           ),
           const Spacer(),
           Text(
-            '${game.weeklyAmount} €',
+            '${game.weeklyAmount * (1 - reduction / 100)} €',
             style: const TextStyle(
               fontWeight: FontWeight.bold,
             ),
@@ -71,10 +73,12 @@ class CartContent extends StatelessWidget {
   }
 
   Widget _buildSummary(BuildContext context) {
-    int nbWeeks = (bookingPeriod.duration.inDays ~/ 7).ceil();
+    int nbWeeks = (bookingPeriod.duration.inDays / 7).ceil();
+
     if(nbWeeks == 0) {
       nbWeeks = 1;
     }
+
     final String start = DateFormat(AppConstants.DATE_TIME_FORMAT_LONG, 'FR').format(bookingPeriod.start);
     final String end = DateFormat(AppConstants.DATE_TIME_FORMAT_LONG, 'FR').format(bookingPeriod.end);
     return Column(
@@ -128,6 +132,27 @@ class CartContent extends StatelessWidget {
             const Spacer(),
             Text(
               "booking-nb-weeks-label".plural(nbWeeks),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ).tr(namedArgs: {
+              'nbWeeks': nbWeeks.toString(),
+            }),
+          ],
+        ),
+        const SizedBox(height: 15),
+        Row(
+          children: [
+            const Text(
+              "applied-reduction-label",
+              style: TextStyle(
+                fontSize: 18,
+              ),
+            ).tr(),
+            const Spacer(),
+            Text(
+              "${reduction.toString()} %",
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,

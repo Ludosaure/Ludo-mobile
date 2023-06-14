@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_date_pickers/flutter_date_pickers.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
 import 'package:ludo_mobile/domain/use_cases/cart/cart_cubit.dart';
+import 'package:ludo_mobile/domain/use_cases/list_reduction_plan/list_reduction_plan_cubit.dart';
 import 'package:ludo_mobile/utils/app_constants.dart';
 import 'package:ludo_mobile/utils/app_dimensions.dart';
 import 'package:responsive_framework/responsive_value.dart';
@@ -26,8 +27,10 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
   late DateTimeRange _bookingPeriod;
   late bool _isInCart = false;
   late bool _showDatePicker = false;
+  int _reduction = 0;
 
   Game get _game => widget.game;
+  double get _price => _game.weeklyAmount - (_game.weeklyAmount * _reduction / 100);
 
   @override
   void initState() {
@@ -235,7 +238,7 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
                       fontWeight: FontWeight.bold,
                     ),
                   ).tr(namedArgs: {
-                    "amount": _game.weeklyAmount.toString(),
+                    "amount": _price.toString(),
                   }),
                 ],
               ),
@@ -309,11 +312,14 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
                 _bookingPeriod.start,
                 _bookingPeriod.end,
               ),
-              onChanged: (value) {
+              onChanged: (value) async {
                 setState(() {
                   _bookingPeriod =
                       DateTimeRange(start: value.start, end: value.end);
                 });
+                final int nbWeeks = (_bookingPeriod.duration.inDays / 7).ceil();
+                _reduction = await parentContext.read<ListReductionPlanCubit>().getReductionForNbWeeks(nbWeeks);
+
                 parentContext.read<CartCubit>().onChangeDate(_bookingPeriod);
               },
               onSelectionError: (UnselectablePeriodException error) {
@@ -386,7 +392,7 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
           return _button(
             context,
             () {
-              context.read<CartCubit>().addToCart(_game, _bookingPeriod);
+              context.read<CartCubit>().addToCart(_game, _bookingPeriod, _reduction);
               setState(() {
                 _isInCart = true;
               });
@@ -401,6 +407,7 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
             context.read<CartCubit>().addToCart(
                   _game,
                   _bookingPeriod,
+                  _reduction,
                 );
             setState(() {
               _isInCart = true;

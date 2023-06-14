@@ -60,10 +60,10 @@ class ReservationProvider {
     if (token == null) {
       throw UserNotLoggedInException("errors.user-must-log-for-access".tr());
     }
-    final String confirmEndpoint = "$endpoint/pay";
+
     http.Response response = await http
         .post(
-      Uri.parse(confirmEndpoint),
+      Uri.parse(endpoint),
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -94,8 +94,7 @@ class ReservationProvider {
       throw UserNotLoggedInException("errors.user-must-log-for-access".tr());
     }
 
-    late http.Response response;
-    response = await http
+    http.Response response = await http
         .put(
       Uri.parse("$endpoint/pay"),
       headers: {

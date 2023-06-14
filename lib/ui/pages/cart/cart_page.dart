@@ -120,7 +120,8 @@ class _CartPageState extends State<CartPage> {
                     child: CartContent(
                       cartContent: cartContent,
                       totalAmount: totalAmount,
-                      bookingPeriod: context.read<CartCubit>().getBookingPeriod(),
+                      bookingPeriod: state.bookingPeriod,
+                      reduction: state.reduction,
                     ),
                   ),
                   _buildBookingPeriodInformation(context),
