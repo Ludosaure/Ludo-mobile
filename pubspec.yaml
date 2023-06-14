@@ -6,7 +6,7 @@ description: La Ludosaure, application de location de jeux de société
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # version: 1.0.1 -> nom de la version : on s'en fiche
 # version: +2023060500 -> code de version : la date du jour
-version: 1.0.1+20230605
+version: 1.0.1+20230614
 
 environment:
   sdk: '>=2.18.5 <3.0.0'
