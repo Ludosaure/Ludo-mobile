@@ -141,8 +141,8 @@ class CartContent extends StatelessWidget {
             }),
           ],
         ),
-        const SizedBox(height: 15),
-        Row(
+        SizedBox(height: reduction > 0 ? 15 : 0),
+        reduction > 0 ? Row(
           children: [
             const Text(
               "applied-reduction-label",
@@ -159,7 +159,7 @@ class CartContent extends StatelessWidget {
               ),
             ),
           ],
-        ),
+        ) : const SizedBox(),
         const SizedBox(height: 15),
         Row(
           children: [

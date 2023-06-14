@@ -164,6 +164,7 @@ class CartCubit extends Cubit<CartState> {
         await _confirmPayment(reservation);
       }, onError: (e) {
         if (e is StripeException && e.error.code == FailureCode.Canceled) {
+          _removeUnpaidReservation(reservation.id);
           emit(
             PaymentCanceled(
               content: state.cartContent,
@@ -266,5 +267,24 @@ class CartCubit extends Cubit<CartState> {
         ),
       );
     });
+  }
+
+  Future<void> _removeUnpaidReservation(String reservationId) async {
+    try {
+      await _reservationRepository.removeUnpaidReservation(reservationId);
+      // Stripe
+      // curl -X POST https://api.stripe.com/v1/payment_intents/pi_1Gszg72eZvKYlo2CO4oPuG76/cancel \
+      // -d "cancellation_reason"="abandoned" \
+      //   -u sk_test_4eC39HqLyjWDarjtT1zdp7dc:
+    } catch (error) {
+      emit(
+        CancelReservationFailed(
+          error: "errors.cancel-reservation".tr(),
+          content: state.cartContent,
+          bookingPeriod: state.bookingPeriod,
+          reduction: state.reduction,
+        ),
+      );
+    }
   }
 }

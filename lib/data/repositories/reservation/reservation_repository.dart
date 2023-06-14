@@ -39,4 +39,8 @@ class ReservationRepository {
   Future<void> cancelReservation(String reservationId) async {
     await _reservationProvider.cancelReservation(reservationId);
   }
+
+  Future<void> removeUnpaidReservation(String reservationId) async {
+    await _reservationProvider.removeUnpaidReservation(reservationId);
+  }
 }

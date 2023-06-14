@@ -120,37 +120,34 @@ class GameDetailsPage extends StatelessWidget {
   Widget _buildMobileGameContent(BuildContext context) {
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
-      child: SizedBox(
-        height: MediaQuery.of(context).size.height,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          verticalDirection: VerticalDirection.down,
-          children: [
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
-              child: _buildGame(context),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            MultiBlocProvider(
-              providers: [
-                BlocProvider.value(
-                  value: context.read<CartCubit>(),
-                ),
-                BlocProvider.value(
-                  value: context.read<ListReductionPlanCubit>(),
-                ),
-              ],
-              child: GameDetailsBottomBar(
-                game: game,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        verticalDirection: VerticalDirection.down,
+        children: [
+          Padding(
+            padding:
+                const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
+            child: _buildGame(context),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          MultiBlocProvider(
+            providers: [
+              BlocProvider.value(
+                value: context.read<CartCubit>(),
               ),
+              BlocProvider.value(
+                value: context.read<ListReductionPlanCubit>(),
+              ),
+            ],
+            child: GameDetailsBottomBar(
+              game: game,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

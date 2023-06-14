@@ -169,6 +169,21 @@ class PaymentCanceled extends CartState {
         );
 }
 
+class CancelReservationFailed extends CartState {
+  final String error;
+
+  const CancelReservationFailed({
+    required List<Game> content,
+    required DateTimeRange bookingPeriod,
+    required int reduction,
+    required this.error,
+  }) : super(
+          cartContent: content,
+          bookingPeriod: bookingPeriod,
+          reduction: reduction,
+        );
+}
+
 class UserNotLogged extends CartState {
   UserNotLogged()
       : super(

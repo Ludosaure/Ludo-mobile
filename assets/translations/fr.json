@@ -93,7 +93,8 @@
     "favorite-already-exists": "Ce jeu est déjà dans vos favoris",
     "cart-loading": "Erreur lors du chargement du panier",
     "payment-sheet-display": "Erreur lors de l'affichage du formulaire de paiement",
-    "payment-sheet-submit": "Erreur lors de la confirmation du paiement"
+    "payment-sheet-submit": "Erreur lors de la confirmation du paiement",
+    "cancel-reservation": "Erreur lors de l'annulation de la réservation"
   },
   "select-date-range-label": "Durée de la réservation (une semaine minimum)",
   "booking-period-label-1": "Réservation du ",
