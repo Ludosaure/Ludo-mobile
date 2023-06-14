@@ -12,6 +12,7 @@ import 'package:ludo_mobile/ui/components/list_header.dart';
 import 'package:ludo_mobile/ui/pages/game/list/game_tile.dart';
 import 'package:ludo_mobile/ui/pages/invoices/InvoicesList.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
+import 'package:ludo_mobile/utils/app_constants.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
 class ReservationDetailsPage extends StatefulWidget {
@@ -144,17 +145,19 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
         const SizedBox(height: 10),
         Text(
           "date-period".tr(namedArgs: {
-            "startDate":
-                DateFormat('d MMMM yyyy', 'FR').format(reservation.startDate),
-            "endDate":
-                DateFormat('d MMMM yyyy', 'FR').format(reservation.endDate)
+            "startDate": DateFormat(AppConstants.DATE_TIME_FORMAT_LONG, 'FR')
+                .format(reservation.startDate),
+            "endDate": DateFormat(AppConstants.DATE_TIME_FORMAT_LONG, 'FR')
+                .format(reservation.endDate)
           }),
           style: const TextStyle(fontSize: 16),
         ),
         const SizedBox(height: 10),
-        Text("nb-weeks"
-            .tr(namedArgs: {"nbWeeks": reservation.nbWeeks.toString()})),
+        Text(
+          "nb-weeks".tr(namedArgs: {"nbWeeks": reservation.nbWeeks.toString()}),
+        ),
         Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             Text(
@@ -206,6 +209,8 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
       child: Padding(
         padding: const EdgeInsets.all(15.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             _buildTotalAmount(context),
             const SizedBox(height: 10),
@@ -220,6 +225,7 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
 
   Widget _buildContactUser(BuildContext context) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
@@ -230,6 +236,7 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
           ),
         ),
         Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             IconButton(
@@ -269,9 +276,11 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
 
   Widget _buildTotalAmount(BuildContext context) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Column(
+          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
@@ -294,19 +303,24 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
           ],
         ),
         Column(
+          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Text("${reservation.amount} €",
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Theme.of(context).colorScheme.onPrimary,
-                )),
+            Text(
+              "${reservation.amount} €",
+              style: TextStyle(
+                fontSize: 18,
+                color: Theme.of(context).colorScheme.onPrimary,
+              ),
+            ),
             const SizedBox(height: 10),
-            Text("2%", // TODO faire le pourcentage en dynamique
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Theme.of(context).colorScheme.onPrimary,
-                )),
+            Text(
+              "${reservation.appliedPlan.reduction}%",
+              style: TextStyle(
+                fontSize: 18,
+                color: Theme.of(context).colorScheme.onPrimary,
+              ),
+            ),
           ],
         ),
       ],
@@ -315,6 +329,7 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
 
   Widget _buildGameDetails(BuildContext context) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ListHeader(
@@ -334,12 +349,13 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
       itemBuilder: (context, index) {
         Game game = reservation.games[index];
         return GestureDetector(
-            onTap: () {
-              context.push(
-                '${Routes.game.path}/${game.id}',
-              );
-            },
-            child: GameTile(game: game));
+          onTap: () {
+            context.push(
+              '${Routes.game.path}/${game.id}',
+            );
+          },
+          child: GameTile(game: game),
+        );
       },
     );
   }
@@ -349,7 +365,7 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
       'reservation-details-title'.tr(namedArgs: {
         'number': reservation.reservationNumber.toString(),
         'firstname': reservation.user!.firstname,
-        'lastname': reservation.user!.lastname
+        'lastname': reservation.user!.lastname,
       }),
       style: Theme.of(context).textTheme.headline6,
     );

@@ -29,6 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Create .env file
+        # Voir si c'est possible de faire un job create_dotenv et dont chaque build (ios, apk, web) dépend
         run: |
           echo "API_KEY=${{ secrets.API_KEY }}" >> assets/.env
           echo "API_ID=${{ secrets.API_ID }}" >> assets/.env

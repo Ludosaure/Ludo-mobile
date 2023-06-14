@@ -5,6 +5,7 @@ import 'package:ludo_mobile/domain/models/reservation.dart';
 import 'package:ludo_mobile/domain/reservation_status.dart';
 import 'package:ludo_mobile/ui/components/list_header.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
+import 'package:ludo_mobile/utils/app_constants.dart';
 
 class ReservationList extends StatelessWidget {
   final List<Reservation> reservations;
@@ -65,8 +66,8 @@ class ReservationList extends StatelessWidget {
   String _getPeriod(Reservation reservation) {
     String period = "";
     period = "date-period".tr(namedArgs: {
-      "startDate": DateFormat('d MMMM', 'FR').format(reservation.startDate),
-      "endDate": DateFormat('d MMMM yyyy', 'FR').format(reservation.endDate)
+      "startDate": DateFormat(AppConstants.DATE_TIME_FORMAT_DAY_MONTH, 'FR').format(reservation.startDate),
+      "endDate": DateFormat(AppConstants.DATE_TIME_FORMAT_LONG, 'FR').format(reservation.endDate)
     });
 
     return period;

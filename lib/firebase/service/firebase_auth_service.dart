@@ -4,7 +4,7 @@ import 'package:ludo_mobile/firebase/service/firebase_database_service.dart';
 class FirebaseAuthService {
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 
-  Future registerUserWithEmailAndPassword(String name, String firstname, String email, String password) async {
+  Future register(String name, String firstname, String email, String password) async {
     try {
       List<String> signInMethods = await firebaseAuth.fetchSignInMethodsForEmail(email);
       bool userExists = signInMethods.isNotEmpty;
@@ -23,7 +23,7 @@ class FirebaseAuthService {
     }
   }
 
-  Future loginUserWithEmailAndPassword(String email, String password) async {
+  Future login(String email, String password) async {
     try {
       await firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
     } on FirebaseAuthException {

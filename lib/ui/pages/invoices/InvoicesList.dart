@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:ludo_mobile/domain/models/invoice.dart';
+import 'package:ludo_mobile/utils/app_constants.dart';
 
 class InvoicesList extends StatelessWidget {
   final List<Invoice> invoices;
@@ -17,6 +18,8 @@ class InvoicesList extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(15.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Text(
               "invoices".tr(),
@@ -92,6 +95,7 @@ class InvoicesList extends StatelessWidget {
 
   Widget _buildInvoiceDetails(BuildContext context, Invoice invoice) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
@@ -109,7 +113,7 @@ class InvoicesList extends StatelessWidget {
         _buildInvoicedAmount(context, invoice),
         const SizedBox(height: 10),
         Text(
-          "Créée le : ${DateFormat('d MMMM yyyy', 'FR').format(invoice.createdAt)}",
+          "Créée le : ${DateFormat(AppConstants.DATE_TIME_FORMAT_LONG).format(invoice.createdAt)}",
           style: const TextStyle(
             fontSize: 16,
           ),
@@ -120,6 +124,7 @@ class InvoicesList extends StatelessWidget {
 
   Widget _buildInvoicedAmount(BuildContext context, Invoice invoice) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(

@@ -24,8 +24,18 @@ class _ConversationsListState extends State<ConversationsList> {
 
   @override
   void initState() {
-    getUserConversations();
+    _getUserConversations();
     super.initState();
+  }
+
+  _getUserConversations() async {
+    await FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+        .getUserConversations()
+        .then((snapshot) {
+      setState(() {
+        conversations = snapshot;
+      });
+    });
   }
 
   @override
@@ -92,17 +102,7 @@ class _ConversationsListState extends State<ConversationsList> {
         color: Colors.black);
   }
 
-  getUserConversations() async {
-    await FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
-        .getUserConversations()
-        .then((snapshot) {
-      setState(() {
-        conversations = snapshot;
-      });
-    });
-  }
-
-  _buildConversationList() {
+  Widget _buildConversationList() {
     return StreamBuilder(
       stream: conversations,
       builder: (context, AsyncSnapshot snapshot) {

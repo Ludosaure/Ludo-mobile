@@ -44,7 +44,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
     try {
       user = await _authenticationRepository.login(req);
-      await _firebaseAuthService.loginUserWithEmailAndPassword(state.email, state.password);
+      await _firebaseAuthService.login(state.email, state.password);
     } catch (exception) {
       emit(state.copyWith(
         status: FormSubmissionFailed(message: exception.toString()),

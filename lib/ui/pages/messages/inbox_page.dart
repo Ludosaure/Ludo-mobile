@@ -12,20 +12,14 @@ import 'package:ludo_mobile/utils/menu_items.dart';
 
 import 'conversations_list.dart';
 
-class InboxPage extends StatefulWidget {
+class InboxPage extends StatelessWidget {
   final User user;
+  late List<Conversation> conversations;
 
-  const InboxPage({
+  InboxPage({
     Key? key,
     required this.user,
   }) : super(key: key);
-
-  @override
-  State<InboxPage> createState() => _InboxPageState();
-}
-
-class _InboxPageState extends State<InboxPage> {
-  late List<Conversation> conversations;
 
   @override
   Widget build(BuildContext context) {
@@ -33,12 +27,12 @@ class _InboxPageState extends State<InboxPage> {
   }
 
   Widget _getScaffold() {
-    if (widget.user.isAdmin()) {
+    if (user.isAdmin()) {
       return AdminScaffold(
         body: Center(
           child: _buildConversationsList(),
         ),
-        user: widget.user,
+        user: user,
         onSearch: null,
         onSortPressed: null,
         navBarIndex: MenuItems.Messages.index,
@@ -49,7 +43,7 @@ class _InboxPageState extends State<InboxPage> {
       body: Center(
         child: _buildConversationsList(),
       ),
-      user: widget.user,
+      user: user,
       navBarIndex: MenuItems.Messages.index,
     );
   }
