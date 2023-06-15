@@ -13,7 +13,9 @@ class CreateGameInitial extends CreateGameState {
   final int averageDuration;
   final int minPlayers;
   final int maxPlayers;
+  final File? image;
   final FormStatus status;
+
 
   CreateGameInitial({
     this.id,
@@ -25,6 +27,7 @@ class CreateGameInitial extends CreateGameState {
     this.averageDuration = 0,
     this.minPlayers = 0,
     this.maxPlayers = 0,
+    this.image,
     this.status = const FormNotSent(),
   });
 
@@ -38,6 +41,7 @@ class CreateGameInitial extends CreateGameState {
     int? averageDuration,
     int? minPlayers,
     int? maxPlayers,
+    File? image,
     FormStatus? status = const FormNotSent(),
   }) {
     return CreateGameInitial(
@@ -50,6 +54,7 @@ class CreateGameInitial extends CreateGameState {
       averageDuration: averageDuration ?? this.averageDuration,
       minPlayers: minPlayers ?? this.minPlayers,
       maxPlayers: maxPlayers ?? this.maxPlayers,
+      image: image ?? this.image,
       status: status ?? this.status,
     );
   }
@@ -66,6 +71,7 @@ class CreateGameInitial extends CreateGameState {
         'averageDuration: $averageDuration, '
         'minPlayers: $minPlayers, '
         'maxPlayers: $maxPlayers, '
+        'image: $image, '
         'status: $status)';
   }
 
@@ -83,6 +89,7 @@ class CreateGameInitial extends CreateGameState {
       other.averageDuration == averageDuration &&
       other.minPlayers == minPlayers &&
       other.maxPlayers == maxPlayers &&
+      other.image == image &&
       other.status == status;
   }
 
@@ -98,6 +105,9 @@ class CreateGameInitial extends CreateGameState {
       averageDuration.hashCode ^
       minPlayers.hashCode ^
       maxPlayers.hashCode ^
+      image.hashCode ^
       status.hashCode;
   }
 }
+
+class UserMustLog extends CreateGameInitial {}

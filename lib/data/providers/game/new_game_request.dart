@@ -7,6 +7,7 @@ class NewGameRequest {
   final int averageDuration;
   final int minPlayers;
   final int maxPlayers;
+  final String? image;
 
   NewGameRequest({
     required this.name,
@@ -17,6 +18,7 @@ class NewGameRequest {
     required this.averageDuration,
     required this.minPlayers,
     required this.maxPlayers,
+    this.image,
   });
 
   Map<String, dynamic> toJson() {
@@ -29,6 +31,7 @@ class NewGameRequest {
       'averageDuration': averageDuration,
       'nbPlayersMin': minPlayers,
       'nbPlayersMax': maxPlayers,
+      'pictureId': image,
     };
   }
 }

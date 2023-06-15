@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -95,7 +97,9 @@ class _AddGamePageState extends State<AddGamePage> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          const CustomFilePicker(),
+          CustomFilePicker(
+            onFileSelected: _onFileSelected
+          ),
           _buildForm(context),
           _buildSubmitButton(context),
         ],
@@ -287,6 +291,15 @@ class _AddGamePageState extends State<AddGamePage> {
               backgroundColor: Theme.of(context).errorColor,
             ),
           );
+        } else if (state is UserMustLog) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'user-must-log'.tr(),
+              ),
+              backgroundColor: Theme.of(context).errorColor,
+            ),
+          );
         }
       },
       builder: (context, state) {
@@ -294,6 +307,10 @@ class _AddGamePageState extends State<AddGamePage> {
           return const Center(
             child: CircularProgressIndicator(),
           );
+        }
+
+        if(state is UserMustLog){
+          context.go(Routes.login.path);
         }
 
         return Padding(
@@ -311,5 +328,9 @@ class _AddGamePageState extends State<AddGamePage> {
         );
       },
     );
+  }
+
+  void _onFileSelected(File? file) {
+    context.read<CreateGameBloc>().add(GamePictureChangedEvent(file));
   }
 }

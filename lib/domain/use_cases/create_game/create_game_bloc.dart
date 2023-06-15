@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:bloc/bloc.dart';
 import 'package:injectable/injectable.dart';
+import 'package:ludo_mobile/core/exception.dart';
 import 'package:ludo_mobile/core/form_status.dart';
 import 'package:ludo_mobile/data/providers/game/new_game_request.dart';
 import 'package:ludo_mobile/data/repositories/game_repository.dart';
+import 'package:ludo_mobile/data/repositories/media_repository.dart';
 import 'package:meta/meta.dart';
 
 part 'create_game_event.dart';
@@ -12,8 +16,12 @@ part 'create_game_state.dart';
 @injectable
 class CreateGameBloc extends Bloc<CreateGameEvent, CreateGameInitial> {
   final GameRepository _createGameRepository;
+  final MediaRepository _mediaRepository;
 
-  CreateGameBloc(this._createGameRepository) : super(CreateGameInitial()) {
+  CreateGameBloc(
+    this._createGameRepository,
+    this._mediaRepository,
+  ) : super(CreateGameInitial()) {
     on<CreateGameSubmitEvent>(onSubmitForm);
     on<GameNameChangedEvent>(onNameChanged);
     on<GameDescriptionChangedEvent>(onDescriptionChanged);
@@ -23,10 +31,36 @@ class CreateGameBloc extends Bloc<CreateGameEvent, CreateGameInitial> {
     on<GameAverageDurationChangedEvent>(onAverageDurationChanged);
     on<GameMinPlayersChangedEvent>(onMinPlayersChanged);
     on<GameMaxPlayersChangedEvent>(onMaxPlayersChanged);
+    on<GamePictureChangedEvent>(onPictureChanged);
   }
 
   void onSubmitForm(event, Emitter emit) async {
-    final newGameRequest = NewGameRequest(
+    String? imageUrl;
+    emit(
+      state.copyWith(
+        status: const FormSubmitting(),
+      ),
+    );
+    if (state.image != null) {
+      try {
+        imageUrl = await _uploadImage(state.image!);
+      } catch (error) {
+        if (error is UserNotLoggedInException) {
+          emit(UserMustLog);
+          return;
+        }
+
+        emit(
+          state.copyWith(
+            status: FormSubmissionFailed(message: error.toString()),
+          ),
+        );
+
+        return;
+      }
+    }
+
+    NewGameRequest newGameRequest = NewGameRequest(
       name: state.name,
       description: state.description,
       weeklyAmount: state.weeklyAmount,
@@ -35,14 +69,11 @@ class CreateGameBloc extends Bloc<CreateGameEvent, CreateGameInitial> {
       averageDuration: state.averageDuration,
       minPlayers: state.minPlayers,
       maxPlayers: state.maxPlayers,
+      image: imageUrl,
     );
+
     String gameId = '';
     try {
-      emit(
-        state.copyWith(
-          status: const FormSubmitting(),
-        ),
-      );
       gameId = await _createGameRepository.createGame(newGameRequest);
     } catch (error) {
       emit(
@@ -92,5 +123,13 @@ class CreateGameBloc extends Bloc<CreateGameEvent, CreateGameInitial> {
 
   void onMaxPlayersChanged(event, Emitter emit) async {
     emit(state.copyWith(maxPlayers: event.maxPlayers));
+  }
+
+  void onPictureChanged(event, Emitter emit) async {
+    emit(state.copyWith(image: event.image));
+  }
+
+  Future<String> _uploadImage(File image) async {
+    return await _mediaRepository.uploadPicture(image);
   }
 }

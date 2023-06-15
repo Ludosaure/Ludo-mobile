@@ -57,6 +57,12 @@ class GameMaxPlayersChangedEvent extends CreateGameEvent {
   const GameMaxPlayersChangedEvent(this.maxPlayers);
 }
 
+class GamePictureChangedEvent extends CreateGameEvent {
+  final File? image;
+
+  const GamePictureChangedEvent(this.image);
+}
+
 
 
 
