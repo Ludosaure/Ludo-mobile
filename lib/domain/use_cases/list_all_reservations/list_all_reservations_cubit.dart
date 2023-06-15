@@ -16,12 +16,10 @@ class ListAllReservationsCubit extends Cubit<ListAllReservationsState> {
 
   void listReservations() async {
     emit(const ListAllReservationsLoading());
-
+    List<Reservation> reservations;
     try {
-      final reservations = await _listReservationRepository.getReservations();
-      emit(ListReservationsSuccess(reservations: reservations));
+      reservations = await _listReservationRepository.getReservations();
     } catch (exception) {
-
       if (
         exception is UserNotLoggedInException ||
         exception is ForbiddenException
@@ -37,6 +35,9 @@ class ListAllReservationsCubit extends Cubit<ListAllReservationsState> {
       emit(
         ListAllReservationsError(message: exception.toString()),
       );
+      return;
     }
+
+    emit(ListReservationsSuccess(reservations: reservations));
   }
 }

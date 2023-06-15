@@ -7,6 +7,7 @@ import 'package:ludo_mobile/domain/use_cases/cart/cart_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/create_game/create_game_bloc.dart';
 import 'package:ludo_mobile/domain/use_cases/delete_game/delete_game_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/favorite_games/favorite_games_cubit.dart';
+import 'package:ludo_mobile/domain/use_cases/get_categories/get_categories_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/get_game/get_game_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/get_games/get_games_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/get_reservation/get_reservation_cubit.dart';
@@ -58,6 +59,7 @@ class AppRouter {
   final DownloadInvoiceCubit _downloadInvoiceCubit =
       locator<DownloadInvoiceCubit>();
   final CreateGameBloc _createGameBloc = locator<CreateGameBloc>();
+  final GetCategoriesCubit _getCategoriesCubit = locator<GetCategoriesCubit>();
 
   late User? connectedUser;
 
@@ -219,6 +221,9 @@ class AppRouter {
             providers: [
               BlocProvider.value(
                 value: _createGameBloc,
+              ),
+              BlocProvider.value(
+                value: _getCategoriesCubit,
               ),
             ],
             child: AddGamePage(
@@ -472,5 +477,6 @@ class AppRouter {
     _downloadInvoiceCubit.close();
     _deleteGameCubit.close();
     _createGameBloc.close();
+    _getCategoriesCubit.close();
   }
 }

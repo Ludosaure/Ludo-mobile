@@ -178,6 +178,7 @@ class _LoginPageState extends State<LoginPage> {
         if (state.status is FormSubmitting) {
           return const CircularProgressIndicator();
         }
+
         return ElevatedButton(
           onPressed: () {
             if (_formKey.currentState!.validate()) {

@@ -1,11 +1,15 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/core/form_status.dart';
+import 'package:ludo_mobile/domain/models/category.dart';
 import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:ludo_mobile/domain/use_cases/create_game/create_game_bloc.dart';
+import 'package:ludo_mobile/domain/use_cases/get_categories/get_categories_cubit.dart';
 import 'package:ludo_mobile/ui/components/custom_file_picker.dart';
 import 'package:ludo_mobile/ui/components/scaffold/admin_scaffold.dart';
+import 'package:ludo_mobile/ui/router/routes.dart';
 import 'package:ludo_mobile/utils/menu_items.dart';
 
 class AddGamePage extends StatefulWidget {
@@ -22,13 +26,63 @@ class AddGamePage extends StatefulWidget {
 
 class _AddGamePageState extends State<AddGamePage> {
   final _formKey = GlobalKey<FormState>();
+  late List<Category> _categories;
 
   @override
   Widget build(BuildContext context) {
     return AdminScaffold(
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
-        child: _buildBody(context),
+        child: BlocConsumer<GetCategoriesCubit, GetCategoriesState>(
+          listener: (context, state) {
+            if (state is GetCategoriesError) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: Theme.of(context).colorScheme.error,
+                ),
+              );
+            }
+
+            if (state is UserNotLogged) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: const Text(
+                    "errors.user-must-log-for-access",
+                  ).tr(),
+                  backgroundColor: Theme.of(context).colorScheme.error,
+                ),
+              );
+            }
+          },
+          builder: (context, state) {
+            if (state is GetCategoriesInitial) {
+              BlocProvider.of<GetCategoriesCubit>(context).getCategories();
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+
+            if (state is GetCategoriesLoading) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+
+            if (state is UserNotLogged) {
+              context.go(Routes.login.path);
+            }
+
+            if (state is GetCategoriesSuccess) {
+              _categories = state.categories;
+              return _buildBody(context);
+            }
+
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          },
+        ),
       ),
       navBarIndex: AdminMenuItems.AddGame.index,
       onSortPressed: null,
@@ -106,7 +160,6 @@ class _AddGamePageState extends State<AddGamePage> {
                   );
             },
           ),
-          //TODO récuperer les catégories de la BDD -> cubit
           DropdownButtonFormField(
             decoration: InputDecoration(
               labelText: 'game-category-field'.tr(),
@@ -118,24 +171,16 @@ class _AddGamePageState extends State<AddGamePage> {
               }
               return null;
             },
-            items: const [
-              DropdownMenuItem(
-                value: '5b2b9c6e-9d6a-464d-b7db-23e70de019c3',
-                child: Text('Plateau'),
-              ),
-              DropdownMenuItem(
-                value: 'identifiant ici 1',
-                child: Text('Dés'),
-              ),
-              DropdownMenuItem(
-                value: 'identifiant ici 2',
-                child: Text('Cartes'),
-              ),
-            ],
+            items: _categories.map((category) {
+              return DropdownMenuItem(
+                value: category.id,
+                child: Text(category.name),
+              );
+            }).toList(),
             onChanged: (value) {
-              context
-                  .read<CreateGameBloc>()
-                  .add(GameCategoryChangedEvent(value!));
+              context.read<CreateGameBloc>().add(
+                    GameCategoryChangedEvent(value!),
+                  );
             },
           ),
           TextFormField(
