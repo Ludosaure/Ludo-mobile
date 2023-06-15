@@ -3,24 +3,28 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-//WIP Ne pas faire le code review
-class CustomFilePicker extends StatelessWidget {
+class CustomFilePicker extends StatefulWidget {
+
+  const CustomFilePicker({Key? key}) : super(key: key);
+
+  @override
+  State<CustomFilePicker> createState() => _CustomFilePickerState();
+}
+
+class _CustomFilePickerState extends State<CustomFilePicker> {
   File? _selectedPicture;
-  CustomFilePicker({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: ThemeData.from(
-          colorScheme: const ColorScheme.light(),
-        ).cardColor,
         borderRadius: BorderRadius.circular(7),
       ),
-      child: Column(children: [
-        if (_selectedPicture != null)
-          Image.file(_selectedPicture!, height: 200, width: 200),
-        Row(
+      child: Column(
+        children: [
+          if (_selectedPicture != null)
+            Image.file(_selectedPicture!, height: 200, width: 200),
+          Row(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -28,9 +32,9 @@ class CustomFilePicker extends StatelessWidget {
               if (_selectedPicture != null)
                 IconButton(
                   onPressed: () {
-                    // setState(() {
+                    setState(() {
                       _selectedPicture = null;
-                    // });
+                    });
                   },
                   icon: const Icon(Icons.delete),
                 ),
@@ -40,8 +44,10 @@ class CustomFilePicker extends StatelessWidget {
                 },
                 icon: const Icon(Icons.camera_alt),
               ),
-            ])
-      ]),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -51,7 +57,9 @@ class CustomFilePicker extends StatelessWidget {
     );
 
     if (pickedFile != null) {
-      _selectedPicture = File(pickedFile.path);
+      setState(() {
+        _selectedPicture = File(pickedFile.path);
+      });
     }
   }
 }

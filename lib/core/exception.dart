@@ -51,3 +51,11 @@ class UserNotLoggedInException implements Exception {
   @override
   String toString() => message;
 }
+
+class NotAllowedException implements Exception {
+  final String message;
+  const NotAllowedException(this.message);
+
+  @override
+  String toString() => message;
+}

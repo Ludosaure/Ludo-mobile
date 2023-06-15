@@ -7,7 +7,6 @@ import 'package:ludo_mobile/domain/models/game.dart';
 import 'package:ludo_mobile/domain/use_cases/cart/cart_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/list_reduction_plan/list_reduction_plan_cubit.dart';
 import 'package:ludo_mobile/utils/app_constants.dart';
-import 'package:ludo_mobile/utils/app_dimensions.dart';
 import 'package:responsive_framework/responsive_value.dart';
 import 'package:responsive_framework/responsive_wrapper.dart';
 
@@ -31,7 +30,9 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
   int _reduction = 0;
 
   Game get _game => widget.game;
-  double get _price => _game.weeklyAmount - (_game.weeklyAmount * _reduction / 100);
+
+  double get _price =>
+      _game.weeklyAmount - (_game.weeklyAmount * _reduction / 100);
 
   @override
   void initState() {
@@ -51,66 +52,48 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
         padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: Container(
           padding: const EdgeInsets.only(
-              left: 8.0, right: 8.0, bottom: 8.0, top: 4.0),
+            left: 8.0,
+            right: 8.0,
+            bottom: 8.0,
+            top: 8.0,
+          ),
           height: ResponsiveValue(
             context,
-            defaultValue: 150.0,
+            defaultValue: 200.0,
             valueWhen: [
-              const Condition.smallerThan(name: TABLET, value: 175.0),
-              //mobile
-              const Condition.largerThan(name: MOBILE, value: 225.0),
-              //tablet
-              const Condition.largerThan(name: TABLET, value: 250.0),
-              //desktop
-              const Condition.largerThan(name: DESKTOP, value: 300.0),
-              //large desktop
-              Condition.largerThan(
-                  name: AppDimensions.LARGE_DESKTOP, value: 350.0),
-              //4k
+              const Condition.largerThan(
+                name: MOBILE,
+                value: 220.0,
+              ),
             ],
           ).value,
           width: ResponsiveValue(
             context,
             defaultValue: MediaQuery.of(context).size.width * 0.95,
             valueWhen: [
-              Condition.smallerThan(
-                name: DESKTOP,
-                value: MediaQuery.of(context).size.width * 0.95,
-              ),
-              Condition.largerThan(
-                name: TABLET,
-                value: MediaQuery.of(context).size.width * 0.60,
+              const Condition.largerThan(
+                name: MOBILE,
+                value: 450.0,
               ),
             ],
           ).value,
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.primary.withOpacity(0.88),
             borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(30), bottom: Radius.circular(30)),
+              top: Radius.circular(30),
+              bottom: Radius.circular(30),
+            ),
           ),
           child: GridView(
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              mainAxisSpacing: 8,
+              crossAxisSpacing: 8,
               crossAxisCount: 3,
-              childAspectRatio: ResponsiveValue(
-                context,
-                defaultValue: 1.5,
-                valueWhen: [
-                  const Condition.smallerThan(name: TABLET, value: 1.5),
-                  // mobile
-                  const Condition.largerThan(name: MOBILE, value: 2.5),
-                  // tablet
-                  const Condition.largerThan(name: TABLET, value: 2.0),
-                  // desktop
-                  const Condition.largerThan(name: DESKTOP, value: 2.7),
-                  // large desktop
-                  Condition.largerThan(
-                      name: AppDimensions.LARGE_DESKTOP, value: 3.0),
-                  // 4k
-                ],
-              ).value!,
+              childAspectRatio: 1.5,
             ),
             children: [
               Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 verticalDirection: VerticalDirection.down,
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -143,6 +126,7 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
                 verticalDirection: VerticalDirection.down,
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const Padding(
                     padding: EdgeInsets.all(2.0),
@@ -174,6 +158,7 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
                 verticalDirection: VerticalDirection.down,
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const Padding(
                     padding: EdgeInsets.all(2.0),
@@ -205,6 +190,7 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
                 verticalDirection: VerticalDirection.down,
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   _buildReservationIcon(context),
                   Text(
@@ -222,6 +208,7 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
                 verticalDirection: VerticalDirection.down,
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const Text(
                     "weekly-amount-label",
@@ -244,8 +231,10 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
                 ],
               ),
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 27.0, horizontal: 5.0),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 20.0,
+                  horizontal: 5.0,
+                ),
                 child: _game.isAvailable!
                     ? _buildAddToCartButton(context)
                     : const Text(
@@ -319,7 +308,9 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
                       DateTimeRange(start: value.start, end: value.end);
                 });
                 final int nbWeeks = (_bookingPeriod.duration.inDays / 7).ceil();
-                _reduction = await parentContext.read<ListReductionPlanCubit>().getReductionForNbWeeks(nbWeeks);
+                _reduction = await parentContext
+                    .read<ListReductionPlanCubit>()
+                    .getReductionForNbWeeks(nbWeeks);
 
                 parentContext.read<CartCubit>().onChangeDate(_bookingPeriod);
               },
@@ -393,7 +384,9 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
           return _button(
             context,
             () {
-              context.read<CartCubit>().addToCart(_game, _bookingPeriod, _reduction);
+              context
+                  .read<CartCubit>()
+                  .addToCart(_game, _bookingPeriod, _reduction);
               setState(() {
                 _isInCart = true;
               });
@@ -449,7 +442,7 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
   }
 
   Widget _button(BuildContext context, Function()? callback, String label) {
-    if(kIsWeb) {
+    if (kIsWeb) {
       return Tooltip(
         message: "not-available-on-web-label".tr(),
         child: ElevatedButton(
@@ -457,16 +450,18 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
             padding: const EdgeInsets.symmetric(horizontal: 1, vertical: 1),
             visualDensity: VisualDensity.compact,
             backgroundColor:
-            Theme.of(context).colorScheme.primary.withOpacity(0.88),
+                Theme.of(context).colorScheme.primary.withOpacity(0.88),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             ),
           ),
           onPressed: null,
-          child: Text(
-            label,
-            textAlign: TextAlign.center,
-          ),
+          child: Text(label,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Colors.grey,
+                fontSize: 16,
+              )),
         ),
       );
     }

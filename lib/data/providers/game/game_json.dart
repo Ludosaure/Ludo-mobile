@@ -39,6 +39,7 @@ class GameJson {
     json["unavailabilities"] != null ? json["unavailabilities"].forEach((unavailability) {
       unavailableDates.add(DateTime.parse(unavailability["date"]).toLocal());
     }) : [];
+
     return GameJson(
         id: json["id"],
         name: json["name"].toString().titleCase(),

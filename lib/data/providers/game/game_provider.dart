@@ -5,6 +5,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/core/exception.dart';
 import 'package:ludo_mobile/core/http_code.dart';
+import 'package:ludo_mobile/data/providers/game/new_game_request.dart';
 import 'package:ludo_mobile/utils/app_constants.dart';
 
 import 'package:http/http.dart' as http;
@@ -75,6 +76,46 @@ class GameProvider {
     final decodedResponse = jsonDecode(response.body);
 
     return GameJson.fromJson(decodedResponse["game"]);
+  }
+
+  Future<String> createGame(String token, NewGameRequest newGame) async {
+    final http.Response response = await http
+        .post(
+      Uri.parse(baseUrl),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(newGame),
+    )
+        .catchError((error) {
+      if (error is SocketException) {
+        throw ServiceUnavailableException(
+          'errors.service-unavailable'.tr(),
+        );
+      }
+
+      throw InternalServerException('errors.unknown'.tr());
+    });
+
+    if (response.statusCode == HttpCode.FORBIDDEN) {
+      throw NotAllowedException('errors.user-must-be-admin-for-action'.tr());
+    }
+
+    if(response.statusCode == HttpCode.BAD_REQUEST) {
+      throw BadRequestException(
+        "game-creation-failed".tr(),
+      );
+    }
+
+    if (response.statusCode != HttpCode.CREATED) {
+      throw InternalServerException(
+        "errors.unknown".tr(),
+      );
+    }
+
+    return response.body;
   }
 
   Future<void> deleteGame(String gameId) async {

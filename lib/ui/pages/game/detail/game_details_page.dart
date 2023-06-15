@@ -70,11 +70,11 @@ class GameDetailsPage extends StatelessWidget {
     return Stack(
       children: [
         Positioned(
-          top: 0,
+          top: size.height * 0.15,
           left: 0,
           child: SizedBox(
             width: size.width * 0.30,
-            height: size.height * 0.70,
+            height: size.height * 0.30,
             child: _buildGameImage(context),
           ),
         ),
@@ -157,23 +157,22 @@ class GameDetailsPage extends StatelessWidget {
 
   PreferredSizeWidget? _buildAppBar(BuildContext context) {
     return AppBar(
-      backgroundColor: ResponsiveWrapper.of(context).isSmallerThan(DESKTOP) && !kIsWeb
-          ? Colors.transparent
-          : Theme.of(context).colorScheme.secondary,
+      backgroundColor:
+          ResponsiveWrapper.of(context).isSmallerThan(DESKTOP) && !kIsWeb
+              ? Colors.transparent
+              : Theme.of(context).colorScheme.secondary,
       elevation: 0,
       title: kIsWeb ? const Text(AppConstants.APP_NAME) : null,
-      leading: ResponsiveWrapper.of(context).isSmallerThan(DESKTOP)
-          ? BackButton(
-              color: kIsWeb ? Colors.white : Colors.black,
-              onPressed: () {
-                if(Navigator.of(context).canPop()) {
-                  context.pop();
-                } else {
-                  context.go(Routes.home.path);
-                }
-              },
-            )
-          : null,
+      leading: BackButton(
+        color: kIsWeb ? Colors.white : Colors.black,
+        onPressed: () {
+          if (Navigator.of(context).canPop()) {
+            context.pop();
+          } else {
+            context.go(Routes.home.path);
+          }
+        },
+      ),
       leadingWidth: MediaQuery.of(context).size.width * 0.20,
     );
   }
