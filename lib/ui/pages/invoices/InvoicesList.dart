@@ -1,6 +1,9 @@
+import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ludo_mobile/domain/models/invoice.dart';
+import 'package:ludo_mobile/domain/use_cases/invoice/download_invoice_cubit.dart';
 import 'package:ludo_mobile/utils/app_constants.dart';
 
 class InvoicesList extends StatelessWidget {
@@ -45,11 +48,46 @@ class InvoicesList extends StatelessWidget {
   }
 
   Widget _buildDownloadButton(BuildContext context, Invoice invoice) {
+    return BlocConsumer<DownloadInvoiceCubit, DownloadInvoiceState>(
+      builder: (BuildContext context, DownloadInvoiceState state) {
+        if (state is DownloadInvoiceLoading) {
+          return const CircularProgressIndicator();
+        }
+        return _buildButton(context, invoice);
+      },
+      listener: (BuildContext context, DownloadInvoiceState state) async {
+        if (state is DownloadInvoiceSuccess) {
+          final filename = 'facture_${invoice.invoiceNumber}.pdf';
+          final base64Data = base64Encode(state.response.bodyBytes);
+          final dataUrl = 'data:application/pdf;base64,$base64Data';
+
+          print(base64Data);
+          print(dataUrl);
+          print(filename);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("download-invoice-success".tr()),
+              backgroundColor: Colors.green,
+            ),
+          );
+        } else if (state is DownloadInvoiceError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              duration: const Duration(seconds: 5),
+            ),
+          );
+        }
+      },
+    );
+  }
+
+  Widget _buildButton(BuildContext context, Invoice invoice) {
     return Align(
       alignment: Alignment.centerRight,
       child: ElevatedButton(
         onPressed: () {
-          // TODO télécharger la facture
+          context.read<DownloadInvoiceCubit>().downloadInvoice(invoice.id);
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: Theme.of(context).colorScheme.primary,

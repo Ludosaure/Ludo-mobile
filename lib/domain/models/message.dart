@@ -1,7 +1,3 @@
-import 'package:ludo_mobile/utils/extensions.dart';
-
-import 'game_category.dart';
-
 class Message {
   final String id;
   final String content;

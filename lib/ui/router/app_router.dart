@@ -10,6 +10,7 @@ import 'package:ludo_mobile/domain/use_cases/favorite_games/favorite_games_cubit
 import 'package:ludo_mobile/domain/use_cases/game/get_game_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/game/get_games_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/get_reservation/get_reservation_cubit.dart';
+import 'package:ludo_mobile/domain/use_cases/invoice/download_invoice_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/list_all_reservations/list_all_reservations_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/list_reduction_plan/list_reduction_plan_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/login/login_bloc.dart';
@@ -42,7 +43,6 @@ class AppRouter {
   final SessionCubit _sessionCubit;
   final LoginBloc _loginBloc = locator<LoginBloc>();
   final RegisterBloc _registerBLoc = locator<RegisterBloc>();
-  final GetGameCubit _getGameCubit = locator<GetGameCubit>();
   final GetGamesCubit _getGamesCubit = locator<GetGamesCubit>();
   final CartCubit _cartBloc = locator<CartCubit>();
   final ListAllReservationsCubit _listAllReservationsCubit =
@@ -55,6 +55,10 @@ class AppRouter {
       locator<UserReservationsCubit>();
   final ListReductionPlanCubit _listReductionPlanCubit =
       locator<ListReductionPlanCubit>();
+  final GetConversationCubit _getConversationCubit =
+      locator<GetConversationCubit>();
+  final DownloadInvoiceCubit _downloadInvoiceCubit =
+      locator<DownloadInvoiceCubit>();
 
   late User? connectedUser;
 
@@ -234,6 +238,9 @@ class AppRouter {
               BlocProvider.value(
                 value: _userReservationsCubit,
               ),
+              BlocProvider.value(
+                value: _downloadInvoiceCubit,
+              ),
             ],
             child: ReservationDetailsPage(
               reservationId: state.params['id']!,
@@ -287,7 +294,7 @@ class AppRouter {
           child: MultiBlocProvider(
             providers: [
               BlocProvider.value(
-                value: locator<GetConversationCubit>(),
+                value: _getConversationCubit,
               ),
             ],
             child: ConversationPage(
@@ -431,9 +438,10 @@ class AppRouter {
     _listAllReservationsCubit.close();
     _listConversationsCubit.close();
     _getFavoriteGamesCubit.close();
-    _getGameCubit.close();
     _cartBloc.close();
     _userReservationsCubit.close();
     _listReductionPlanCubit.close();
+    _getConversationCubit.close();
+    _downloadInvoiceCubit.close();
   }
 }

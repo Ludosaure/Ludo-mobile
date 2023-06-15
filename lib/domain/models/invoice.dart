@@ -1,8 +1,3 @@
-import 'package:ludo_mobile/domain/models/game.dart';
-import 'package:ludo_mobile/domain/models/user.dart';
-import 'package:ludo_mobile/domain/reservation_status.dart';
-
-
 class Invoice {
   String id;
   int invoiceNumber;

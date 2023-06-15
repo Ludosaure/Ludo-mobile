@@ -7,7 +7,6 @@ import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/core/exception.dart';
 import 'package:ludo_mobile/core/http_code.dart';
 import 'package:ludo_mobile/domain/models/conversation.dart';
-import 'package:ludo_mobile/domain/models/message.dart';
 import 'package:ludo_mobile/utils/app_constants.dart';
 import 'package:ludo_mobile/utils/local_storage_helper.dart';
 
