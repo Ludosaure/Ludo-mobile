@@ -282,6 +282,7 @@ class _AddGamePageState extends State<AddGamePage> {
               ).tr(),
             ),
           );
+          context.go(Routes.adminGames.path);
         } else if (state.status is FormSubmissionFailed) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
