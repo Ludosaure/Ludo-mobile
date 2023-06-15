@@ -7,6 +7,7 @@ import 'package:ludo_mobile/domain/models/game.dart';
 import 'package:ludo_mobile/domain/models/reservation.dart';
 import 'package:ludo_mobile/domain/reservation_status.dart';
 import 'package:ludo_mobile/domain/use_cases/get_reservation/get_reservation_cubit.dart';
+import 'package:ludo_mobile/domain/use_cases/user_reservations/user_reservations_cubit.dart';
 import 'package:ludo_mobile/ui/components/custom_back_button.dart';
 import 'package:ludo_mobile/ui/components/list_header.dart';
 import 'package:ludo_mobile/ui/components/nav_bar/app_bar/admin_app_bar.dart';
@@ -283,7 +284,8 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
                         "email-copied"
                             .tr(namedArgs: {"email": reservation.user!.email}),
                       ),
-                      backgroundColor: Colors.green,
+                      backgroundColor: Theme.of(context).colorScheme.secondary,
+                      duration: const Duration(seconds: 5),
                     ),
                   );
                 });
@@ -425,9 +427,9 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
     ).build(context);
   }
 
-  _showConfirmReturnedGamesDialog(BuildContext context) {
+  _showConfirmReturnedGamesDialog(BuildContext parentContext) {
     showDialog(
-      context: context,
+      context: parentContext,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text("validate-game-returned".tr()),
@@ -448,6 +450,25 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
           ),
           actions: [
             ElevatedButton(
+              child: Text("confirm.yes".tr()),
+              onPressed: () {
+                parentContext
+                    .read<UserReservationsCubit>()
+                    .returnReservation(reservation.id);
+                setState(() {
+                  reservation.returned = true;
+                });
+                Navigator.of(context).pop();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: const Text("games-returned-successfully").tr(),
+                    duration: const Duration(seconds: 4),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              },
+            ),
+            ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -455,12 +476,6 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
                 backgroundColor: Colors.grey,
               ),
               child: Text("confirm.no".tr()),
-            ),
-            ElevatedButton(
-              child: Text("confirm.yes".tr()),
-              onPressed: () {
-                // TODO valider le retour des jeux
-              },
             ),
           ],
         );

@@ -201,6 +201,40 @@ class ReservationProvider {
     }
   }
 
+  Future<void> returnReservation(String reservationId) async {
+    String? token = await LocalStorageHelper.getTokenFromLocalStorage();
+
+    if (token == null) {
+      throw UserNotLoggedInException("errors.user-must-log-for-access".tr());
+    }
+
+    late http.Response response;
+    response = await http
+        .put(
+      Uri.parse("$endpoint/return"),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        'id': reservationId,
+      }),
+    )
+        .catchError((error) {
+      if (error is SocketException) {
+        throw ServiceUnavailableException('errors.service-unavailable'.tr());
+      }
+      throw InternalServerException('errors.unknown'.tr());
+    });
+
+    if (response.statusCode == HttpCode.UNAUTHORIZED) {
+      throw ForbiddenException('errors.forbidden-access'.tr());
+    } else if (response.statusCode != HttpCode.OK) {
+      throw InternalServerException('errors.unknown'.tr());
+    }
+  }
+
   Future<void> removeUnpaidReservation(String reservationId) async {
     String? token = await LocalStorageHelper.getTokenFromLocalStorage();
 

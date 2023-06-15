@@ -440,7 +440,7 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.message),
-              duration: const Duration(seconds: 2),
+              duration: const Duration(seconds: 3),
             ),
           );
         }

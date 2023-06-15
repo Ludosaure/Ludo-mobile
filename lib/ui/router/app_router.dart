@@ -7,8 +7,8 @@ import 'package:ludo_mobile/domain/use_cases/cart/cart_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/conversations/get_conversation/get_conversation_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/conversations/list_conversations/list_conversations_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/favorite_games/favorite_games_cubit.dart';
-import 'package:ludo_mobile/domain/use_cases/get_game/get_game_cubit.dart';
-import 'package:ludo_mobile/domain/use_cases/get_games/get_games_cubit.dart';
+import 'package:ludo_mobile/domain/use_cases/game/get_game_cubit.dart';
+import 'package:ludo_mobile/domain/use_cases/game/get_games_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/get_reservation/get_reservation_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/list_all_reservations/list_all_reservations_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/list_reduction_plan/list_reduction_plan_cubit.dart';
@@ -230,6 +230,9 @@ class AppRouter {
             providers: [
               BlocProvider.value(
                 value: locator<GetReservationCubit>(),
+              ),
+              BlocProvider.value(
+                value: _userReservationsCubit,
               ),
             ],
             child: ReservationDetailsPage(

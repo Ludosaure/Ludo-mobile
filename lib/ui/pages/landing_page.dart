@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ludo_mobile/ui/components/sized_box_20.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
 import 'package:ludo_mobile/utils/app_constants.dart';
 import 'package:ludo_mobile/utils/app_dimensions.dart';
@@ -67,7 +68,7 @@ class LandingPage extends StatelessWidget {
           ).tr(),
           Flexible(
             child: SizedBox(
-              height: size.height * 0.03,
+              height: size.height * 0.02,
             ),
           ),
           ElevatedButton(
@@ -85,8 +86,8 @@ class LandingPage extends StatelessWidget {
               'login-label',
             ).tr(),
           ),
-          const SizedBox(
-            height: 5,
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.03,
           ),
           ElevatedButton(
             onPressed: () {
@@ -104,6 +105,9 @@ class LandingPage extends StatelessWidget {
               'create-account-label',
               style: TextStyle(color: Colors.black),
             ).tr(),
+          ),
+          const SizedBox(
+            height: 10,
           ),
           TextButton(
             onPressed: () {
