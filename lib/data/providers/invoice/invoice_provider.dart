@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
-import 'package:http/http.dart';
 import 'package:http/http.dart' as http;
 import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/core/exception.dart';
@@ -13,7 +12,7 @@ import 'package:ludo_mobile/utils/local_storage_helper.dart';
 class InvoiceProvider {
   final String baseUrl = '${AppConstants.API_URL}/invoice';
 
-  Future<Response> downloadInvoice(String invoiceId) async {
+  Future<String> downloadInvoice(String invoiceId) async {
     String? token = await LocalStorageHelper.getTokenFromLocalStorage();
 
     if (token == null) {
@@ -35,16 +34,19 @@ class InvoiceProvider {
       }
       throw InternalServerException('errors.unknown'.tr());
     });
+
     if (response.statusCode == HttpCode.NOT_FOUND) {
       throw NotFoundException(
         "errors.invoice-not-found".tr(),
       );
     }
+
     if (response.statusCode != HttpCode.CREATED) {
       throw InternalServerException(
         "errors.unknown".tr(),
       );
     }
-    return response;
+
+    return response.body;
   }
 }

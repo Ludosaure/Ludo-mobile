@@ -10,9 +10,9 @@ class DownloadInvoiceInitial extends DownloadInvoiceState {}
 class DownloadInvoiceLoading extends DownloadInvoiceState {}
 
 class DownloadInvoiceSuccess extends DownloadInvoiceState {
-  final Response response;
+  final String file;
 
-  const DownloadInvoiceSuccess({required this.response});
+  const DownloadInvoiceSuccess({required this.file});
 }
 
 class DownloadInvoiceError extends DownloadInvoiceState {

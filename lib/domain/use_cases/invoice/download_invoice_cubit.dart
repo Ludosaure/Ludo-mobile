@@ -1,5 +1,6 @@
+import 'package:universal_html/html.dart' as html;
 import 'package:bloc/bloc.dart';
-import 'package:http/http.dart';
+import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/data/repositories/invoice_repository.dart';
 import 'package:meta/meta.dart';
@@ -14,16 +15,31 @@ class DownloadInvoiceCubit extends Cubit<DownloadInvoiceState> {
     this._invoiceRepository,
   ) : super(DownloadInvoiceInitial());
 
-  void downloadInvoice(String invoiceId) async {
+  void downloadInvoice(String invoiceId, int invoiceNumber) async {
     emit(DownloadInvoiceLoading());
+    String? filePath;
+    final String filename = 'facture_$invoiceNumber.pdf';
     try {
-      final Response response = await _invoiceRepository.downloadInvoice(invoiceId);
-      emit(DownloadInvoiceSuccess(response : response));
+      filePath = await _invoiceRepository.downloadInvoice(invoiceId, filename);
     } catch (exception) {
       emit(
         DownloadInvoiceError(message: exception.toString()),
       );
+      return;
     }
+
+    if(kIsWeb){
+      html.AnchorElement downloadLink = html.AnchorElement()
+        ..href = filePath
+        ..download = filename;
+      html.document.body?.append(downloadLink);
+      downloadLink.click();
+      downloadLink.remove();
+    }
+
+    emit(
+      DownloadInvoiceSuccess(file: filePath),
+    );
   }
 
   dispose() {

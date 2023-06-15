@@ -1,5 +1,5 @@
-import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ludo_mobile/domain/models/invoice.dart';
@@ -57,19 +57,15 @@ class InvoicesList extends StatelessWidget {
       },
       listener: (BuildContext context, DownloadInvoiceState state) async {
         if (state is DownloadInvoiceSuccess) {
-          final filename = 'facture_${invoice.invoiceNumber}.pdf';
-          final base64Data = base64Encode(state.response.bodyBytes);
-          final dataUrl = 'data:application/pdf;base64,$base64Data';
+          if(!kIsWeb) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: const Text("download-invoice-success").tr(),
+                backgroundColor: Colors.green,
+              ),
+            );
+          }
 
-          print(base64Data);
-          print(dataUrl);
-          print(filename);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text("download-invoice-success".tr()),
-              backgroundColor: Colors.green,
-            ),
-          );
         } else if (state is DownloadInvoiceError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -87,7 +83,10 @@ class InvoicesList extends StatelessWidget {
       alignment: Alignment.centerRight,
       child: ElevatedButton(
         onPressed: () {
-          context.read<DownloadInvoiceCubit>().downloadInvoice(invoice.id);
+          context.read<DownloadInvoiceCubit>().downloadInvoice(
+                invoice.id,
+                invoice.invoiceNumber,
+              );
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: Theme.of(context).colorScheme.primary,
