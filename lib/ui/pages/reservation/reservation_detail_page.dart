@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:form_field_validator/form_field_validator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
 import 'package:ludo_mobile/domain/models/reservation.dart';
@@ -10,18 +11,20 @@ import 'package:ludo_mobile/domain/use_cases/get_reservation/get_reservation_cub
 import 'package:ludo_mobile/domain/use_cases/user_reservations/user_reservations_cubit.dart';
 import 'package:ludo_mobile/firebase/service/firebase_database_service.dart';
 import 'package:ludo_mobile/ui/components/custom_back_button.dart';
+import 'package:ludo_mobile/ui/components/form_field_decoration.dart';
 import 'package:ludo_mobile/ui/components/list_header.dart';
 import 'package:ludo_mobile/ui/components/nav_bar/app_bar/admin_app_bar.dart';
 import 'package:ludo_mobile/ui/pages/game/list/game_tile.dart';
 import 'package:ludo_mobile/ui/pages/invoices/InvoicesList.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
 import 'package:ludo_mobile/utils/app_constants.dart';
+import 'package:ludo_mobile/utils/local_storage_helper.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
 class ReservationDetailsPage extends StatefulWidget {
   final String reservationId;
 
-  const ReservationDetailsPage({Key? key, required this.reservationId})
+  ReservationDetailsPage({Key? key, required this.reservationId})
       : super(key: key);
 
   @override
@@ -30,6 +33,8 @@ class ReservationDetailsPage extends StatefulWidget {
 
 class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
   late Reservation reservation;
+  final _newMessageFormKey = GlobalKey<FormState>();
+  final _messageController = TextEditingController();
   FirebaseDatabaseService firebaseDatabaseService = FirebaseDatabaseService();
 
   @override
@@ -298,8 +303,8 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
                 Icons.message,
                 color: Theme.of(context).colorScheme.onPrimary,
               ),
-              onPressed: () {
-                _showNewMessageDialog(context);
+              onPressed: () async {
+                await _showNewMessageDialog(context);
               },
             ),
           ],
@@ -485,29 +490,61 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
     );
   }
 
-  _showNewMessageDialog(BuildContext parentContext) {
+  _showNewMessageDialog(BuildContext parentContext) async {
+    var connectedUserId =
+        (await LocalStorageHelper.getUserFromLocalStorage())!.id;
+    if (connectedUserId == reservation.user!.id) {
+      return ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text("cant-send-message-to-yourself").tr(),
+          duration: const Duration(seconds: 4),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
+    }
     showDialog(
       context: parentContext,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text("new-message".tr()),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // TODO FORM + CUBIT (BLOC ?)
-              Text("validate-game-returned-confirm".tr()),
-            ],
+          content: Form(
+            key: _newMessageFormKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                TextFormField(
+                  keyboardType: TextInputType.multiline,
+                  maxLines: null,
+                  controller: _messageController,
+                  validator: RequiredValidator(
+                      errorText: 'form.field-required-msg'.tr()),
+                  autocorrect: false,
+                  decoration: FormFieldDecoration.textField("message".tr()),
+                ),
+              ],
+            ),
           ),
           actions: [
             ElevatedButton(
               child: Text("send-label".tr()),
               onPressed: () {
-                firebaseDatabaseService.createConversationWithClient(
-                    reservation.user!.email, "coucou");
-                // TODO firebase
-                // attention si il y a déjà une discussion qui existe avec l'autre utilisateur
+                if (_newMessageFormKey.currentState!.validate()) {
+                  firebaseDatabaseService
+                      .createConversationWithClient(
+                          reservation.user!.email, _messageController.text)
+                      .then((value) {
+                    Navigator.of(context).pop();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: const Text("message-sent").tr(),
+                        duration: const Duration(seconds: 3),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                  });
+                }
               },
             ),
             ElevatedButton(
