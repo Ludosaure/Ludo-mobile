@@ -93,6 +93,7 @@
   "edited-at-label": "Modifié le {date}",
   "home-title": "Accueil",
   "messages-title": "Mes Messages",
+  "new-message": "Nouveau message",
   "search-title": "Rechercher",
   "account-title": "Mon Compte",
   "favorites-title": "Mes Favoris",
@@ -138,6 +139,7 @@
   "pick-booking-date-label": "Choisissez une date de réservation",
   "applied-reduction-label": "Réduction appliquée",
   "validate-label": "Valider",
+  "cancel-label": "Annuler",
   "not-available-on-web-label": "Fonctionnalité non disponible sur le web",
   "email-copied": "L'email de l'utilisateur {email} a été copié dans le presse-papier."
 }

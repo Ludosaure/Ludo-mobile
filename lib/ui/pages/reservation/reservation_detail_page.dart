@@ -8,6 +8,7 @@ import 'package:ludo_mobile/domain/models/reservation.dart';
 import 'package:ludo_mobile/domain/reservation_status.dart';
 import 'package:ludo_mobile/domain/use_cases/get_reservation/get_reservation_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/user_reservations/user_reservations_cubit.dart';
+import 'package:ludo_mobile/firebase/service/firebase_database_service.dart';
 import 'package:ludo_mobile/ui/components/custom_back_button.dart';
 import 'package:ludo_mobile/ui/components/list_header.dart';
 import 'package:ludo_mobile/ui/components/nav_bar/app_bar/admin_app_bar.dart';
@@ -29,6 +30,7 @@ class ReservationDetailsPage extends StatefulWidget {
 
 class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
   late Reservation reservation;
+  FirebaseDatabaseService firebaseDatabaseService = FirebaseDatabaseService();
 
   @override
   Widget build(BuildContext context) {
@@ -297,7 +299,7 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
                 color: Theme.of(context).colorScheme.onPrimary,
               ),
               onPressed: () {
-                // TODO Firebase
+                _showNewMessageDialog(context);
               },
             ),
           ],
@@ -476,6 +478,46 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
                 backgroundColor: Colors.grey,
               ),
               child: Text("confirm.no".tr()),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  _showNewMessageDialog(BuildContext parentContext) {
+    showDialog(
+      context: parentContext,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("new-message".tr()),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // TODO FORM + CUBIT (BLOC ?)
+              Text("validate-game-returned-confirm".tr()),
+            ],
+          ),
+          actions: [
+            ElevatedButton(
+              child: Text("send-label".tr()),
+              onPressed: () {
+                firebaseDatabaseService.createConversationWithClient(
+                    reservation.user!.email, "coucou");
+                // TODO firebase
+                // attention si il y a déjà une discussion qui existe avec l'autre utilisateur
+              },
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.grey,
+              ),
+              child: Text("cancel-label".tr()),
             ),
           ],
         );

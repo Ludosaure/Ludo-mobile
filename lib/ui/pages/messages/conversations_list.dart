@@ -107,12 +107,9 @@ class _ConversationsListState extends State<ConversationsList> {
       stream: conversations,
       builder: (context, AsyncSnapshot snapshot) {
         if (snapshot.hasData) {
-          if (snapshot.data['conversations'] != null) {
-            if(snapshot.data['conversations'].length > 0) {
-              return Text("HELLOOOO");
-            } else {
-              return _buildNoConversations();
-            }
+          if (snapshot.data['conversations'] != null &&
+              snapshot.data['conversations'].length > 0) {
+            return Text("HELLOOOO");
           } else {
             return _buildNoConversations();
           }

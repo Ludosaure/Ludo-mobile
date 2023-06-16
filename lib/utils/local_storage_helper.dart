@@ -33,6 +33,20 @@ class LocalStorageHelper {
     localStorage.setString('token', token);
   }
 
+  static Future<void> saveFirebaseUserIdToLocalStorage(String userId) async {
+    final SharedPreferences localStorage =
+        await SharedPreferences.getInstance();
+
+    localStorage.setString('firebaseUserId', userId);
+  }
+
+  static Future<String?> getFirebaseUserIdFromLocalStorage() async {
+    final SharedPreferences localStorage =
+    await SharedPreferences.getInstance();
+
+    return localStorage.getString('firebaseUserId');
+  }
+
   static Future<void> removeUserFromLocalStorage() async {
     final SharedPreferences localStorage =
         await SharedPreferences.getInstance();
