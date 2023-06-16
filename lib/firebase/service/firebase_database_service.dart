@@ -47,7 +47,6 @@ class FirebaseDatabaseService {
   }
 
   Future<Stream<DocumentSnapshot<Object?>>> getUserConversations() async {
-    print("getUserConversations: $uid");
     return userCollection.doc(uid).snapshots();
   }
 

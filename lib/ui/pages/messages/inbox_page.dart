@@ -1,7 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:ludo_mobile/domain/models/message.dart';
 import 'package:ludo_mobile/domain/models/user.dart' as dbUser;
 import 'package:ludo_mobile/firebase/service/firebase_database_service.dart';
 import 'package:ludo_mobile/ui/components/scaffold/admin_scaffold.dart';
@@ -102,7 +101,8 @@ class _InboxPageState extends State<InboxPage> {
         mainAxisSize: MainAxisSize.min,
         verticalDirection: VerticalDirection.down,
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: [],
+        children: [
+        ],
       ),
     );
   }
@@ -152,12 +152,6 @@ class _InboxPageState extends State<InboxPage> {
   //     ),
   //   );
   // }
-
-  TextStyle _getTextStyle(Message lastMessage) {
-    return TextStyle(
-        fontWeight: lastMessage.isRead ? FontWeight.normal : FontWeight.bold,
-        color: Colors.black);
-  }
 
   Widget _buildNoConversations() {
     return Container(

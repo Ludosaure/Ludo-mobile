@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:ludo_mobile/domain/models/conversation.dart';
 import 'package:ludo_mobile/ui/components/custom_back_button.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
 class ConversationPage extends StatelessWidget {
   final String userId;
-  late Conversation conversation;
 
   ConversationPage({Key? key, required this.userId}) : super(key: key);
 
