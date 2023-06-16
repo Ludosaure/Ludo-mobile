@@ -533,7 +533,8 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
                 if (_newMessageFormKey.currentState!.validate()) {
                   firebaseDatabaseService
                       .createConversationWithClient(
-                          reservation.user!.email, _messageController.text)
+                          reservation.user!.email,
+                          _messageController.text)
                       .then((value) {
                     Navigator.of(context).pop();
                     ScaffoldMessenger.of(context).showSnackBar(

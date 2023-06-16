@@ -4,8 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:ludo_mobile/domain/use_cases/cart/cart_cubit.dart';
-import 'package:ludo_mobile/domain/use_cases/conversations/get_conversation/get_conversation_cubit.dart';
-import 'package:ludo_mobile/domain/use_cases/conversations/list_conversations/list_conversations_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/favorite_games/favorite_games_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/game/get_game_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/game/get_games_cubit.dart';
@@ -47,16 +45,12 @@ class AppRouter {
   final CartCubit _cartBloc = locator<CartCubit>();
   final ListAllReservationsCubit _listAllReservationsCubit =
       locator<ListAllReservationsCubit>();
-  final ListConversationsCubit _listConversationsCubit =
-      locator<ListConversationsCubit>();
   final FavoriteGamesCubit _getFavoriteGamesCubit =
       locator<FavoriteGamesCubit>();
   final UserReservationsCubit _userReservationsCubit =
       locator<UserReservationsCubit>();
   final ListReductionPlanCubit _listReductionPlanCubit =
       locator<ListReductionPlanCubit>();
-  final GetConversationCubit _getConversationCubit =
-      locator<GetConversationCubit>();
   final DownloadInvoiceCubit _downloadInvoiceCubit =
       locator<DownloadInvoiceCubit>();
 
@@ -274,11 +268,8 @@ class AppRouter {
       GoRoute(
         path: Routes.inbox.path,
         pageBuilder: (context, state) => CustomTransitionPage(
-          child: BlocProvider.value(
-            value: _listConversationsCubit,
-            child: InboxPage(
-              user: connectedUser!,
-            ),
+          child: InboxPage(
+            user: connectedUser!,
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(
@@ -291,15 +282,8 @@ class AppRouter {
       GoRoute(
         path: "${Routes.inbox.path}/:userId",
         pageBuilder: (context, state) => CustomTransitionPage(
-          child: MultiBlocProvider(
-            providers: [
-              BlocProvider.value(
-                value: _getConversationCubit,
-              ),
-            ],
-            child: ConversationPage(
-              userId: state.params['userId']!,
-            ),
+          child: ConversationPage(
+            userId: state.params['userId']!,
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(
@@ -436,12 +420,10 @@ class AppRouter {
     _registerBLoc.close();
     _getGamesCubit.close();
     _listAllReservationsCubit.close();
-    _listConversationsCubit.close();
     _getFavoriteGamesCubit.close();
     _cartBloc.close();
     _userReservationsCubit.close();
     _listReductionPlanCubit.close();
-    _getConversationCubit.close();
     _downloadInvoiceCubit.close();
   }
 }

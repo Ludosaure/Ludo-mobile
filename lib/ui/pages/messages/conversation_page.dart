@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ludo_mobile/domain/models/conversation.dart';
-import 'package:ludo_mobile/domain/use_cases/conversations/get_conversation/get_conversation_cubit.dart';
 import 'package:ludo_mobile/ui/components/custom_back_button.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
@@ -15,43 +13,7 @@ class ConversationPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildAppBar(context),
-      body: BlocConsumer<GetConversationCubit, GetConversationState>(
-        builder: (context, state) {
-          if (state is GetConversationInitial) {
-            BlocProvider.of<GetConversationCubit>(context).getConversation(userId);
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-
-          if (state is GetConversationLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-
-          if (state is GetConversationSuccess) {
-            conversation = state.conversation;
-
-            return Container();
-            // return ResponsiveWrapper.of(context).isSmallerThan(DESKTOP)
-            //     ? _buildMobileConversationContent(context)
-            //     : _buildDesktopConversationContent(context);
-          }
-
-          return Container();
-        },
-        listener: (context, state) {
-          if (state is GetConversationError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: Theme.of(context).colorScheme.error,
-              ),
-            );
-          }
-        },
-      ),
+      body: Container(),
     );
   }
 

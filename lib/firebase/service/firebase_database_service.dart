@@ -47,7 +47,12 @@ class FirebaseDatabaseService {
   }
 
   Future<Stream<DocumentSnapshot<Object?>>> getUserConversations() async {
+    print("getUserConversations: $uid");
     return userCollection.doc(uid).snapshots();
+  }
+
+  Future getConversationById(String conversationId) async {
+    return conversationsCollection.doc(conversationId).get();
   }
 
   Future<List<Object?>> getAdmins() async {
@@ -58,19 +63,20 @@ class FirebaseDatabaseService {
         .toList();
   }
 
-  Future<List<Object?>> getConversationByTargetUserId(String targetUserId) async {
+  Future<List<Object?>> getConversationByMemberId(String memberId) async {
     QuerySnapshot<Object?> conversationSnapshot = await conversationsCollection
-        .where('members', arrayContains: targetUserId)
-        .limit(1)
+        .where('members', arrayContains: memberId)
         .get();
     return conversationSnapshot.docs
         .map((conversation) => conversation.data())
         .toList();
   }
 
-  Future<void> createConversationWithClient(String targetUserEmail, String message) async {
+  Future<void> createConversationWithClient(
+      String targetUserEmail, String message) async {
     List<Object?> admins = await getAdmins();
-    QuerySnapshot<Object?> targetUser = await getUserDataByEmail(targetUserEmail);
+    QuerySnapshot<Object?> targetUser =
+        await getUserDataByEmail(targetUserEmail);
     if (targetUser.docs.isEmpty) {
       throw Exception("Target user not found");
     }
@@ -79,16 +85,18 @@ class FirebaseDatabaseService {
     saveConversationData(targetUserId, admins, message);
   }
 
-  Future<void> saveConversationData(String targetUserId, List<Object?> admins, String message) async {
+  Future<void> saveConversationData(
+      String targetUserId, List<Object?> admins, String message) async {
     List<Object?> existingConversation =
-        await getConversationByTargetUserId(targetUserId);
+        await getConversationByMemberId(targetUserId);
 
     List<String> members = initGroupMembers(targetUserId, admins);
-    String? senderId = await LocalStorageHelper.getFirebaseUserIdFromLocalStorage();
-    if(senderId == null) {
+    String? senderId =
+        await LocalStorageHelper.getFirebaseUserIdFromLocalStorage();
+    if (senderId == null) {
       throw Exception("Sender id not found");
     }
-    if(senderId == targetUserId) {
+    if (senderId == targetUserId) {
       throw Exception("Sender id and target id are the same");
     }
 
@@ -97,6 +105,7 @@ class FirebaseDatabaseService {
       DocumentReference conversationDocumentReference =
           await conversationsCollection.add({
         'members': members,
+        'targetUserId': targetUserId,
         'messages': [],
       });
       // ajout de l'id de la conversation qui vient d'être créée
@@ -113,13 +122,13 @@ class FirebaseDatabaseService {
         });
       }
     } else {
-      print(existingConversation);
       var conversationMap = existingConversation[0] as Map<String, dynamic>;
       sendMessage(conversationMap["conversationId"], senderId, message);
     }
   }
 
-  Future<void> sendMessage(String conversationId, String senderId, String message) async {
+  Future<void> sendMessage(
+      String conversationId, String senderId, String message) async {
     conversationsCollection.doc(conversationId).update({
       'messages': FieldValue.arrayUnion([
         {
