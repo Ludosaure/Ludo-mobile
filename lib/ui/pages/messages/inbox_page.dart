@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -20,24 +21,6 @@ class InboxPage extends StatefulWidget {
 }
 
 class _InboxPageState extends State<InboxPage> {
-  Stream? conversations;
-
-  @override
-  void initState() {
-    _getUserConversations();
-    super.initState();
-  }
-
-  _getUserConversations() async {
-    await FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
-        .getUserConversations()
-        .then((snapshot) {
-      setState(() {
-        conversations = snapshot;
-      });
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return _getScaffold();
@@ -68,30 +51,127 @@ class _InboxPageState extends State<InboxPage> {
   }
 
   Widget _buildConversations() {
-    return StreamBuilder(
-      stream: conversations,
-      builder: (context, AsyncSnapshot snapshot) {
-        if (snapshot.hasData) {
-          if (snapshot.data['conversations'] != null &&
-              snapshot.data['conversations'].length > 0) {
-            return _buildConversationsList(snapshot.data['conversations']);
-          } else {
-            return _buildNoConversations();
-          }
-        } else {
-          return Center(
-            child: CircularProgressIndicator(
-              color: Theme.of(context).primaryColor,
-            ),
-          );
+    return StreamBuilder<List<Map<String, dynamic>>>(
+      stream:
+          FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+              .getUserConversations(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          // TODO trad
+          return Text('Erreur: ${snapshot.error}');
         }
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const CircularProgressIndicator();
+        }
+
+        final data = snapshot.data;
+        if (data == null || data.isEmpty) {
+          return const Text('Aucune conversation trouvée');
+        }
+
+        return ListView.builder(
+          itemCount: data.length,
+          itemBuilder: (context, index) {
+            final conversationData =
+                data[index]['conversation'] as Map<String, dynamic>;
+            final membersData =
+                data[index]['members'] as List<Map<String, dynamic>>;
+
+            // Extract relevant information from the conversationData and membersData
+            final lastMessage = conversationData['recentMessage'] as String;
+            final targetUserId = conversationData['targetUserId'] as String;
+            final profilePictures = membersData
+                .map((member) => member['profilePicture'] as String?)
+                .toList();
+            final names = membersData
+                .map((member) => '${member['firstname']} ${member['name']}')
+                .toList();
+
+            return StreamBuilder<DocumentSnapshot<Object?>>(
+              stream: FirebaseDatabaseService(uid: targetUserId)
+                  .getUserDataById(targetUserId)
+                  .asStream(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData && snapshot.data!.exists) {
+                  final userData =
+                      snapshot.data!.data()! as Map<String, dynamic>;
+                  final userFirstName = userData['firstname'] as String;
+                  final userLastName = userData['name'] as String;
+                  final userProfilePicture =
+                      userData['profilePicture'] as String?;
+
+                  return ListTile(
+                    leading: (userProfilePicture != null &&
+                            userProfilePicture != "")
+                        ? CircleAvatar(
+                            backgroundColor: Colors.grey[300],
+                            backgroundImage: NetworkImage(userProfilePicture!),
+                          )
+                        : const Icon(Icons.person),
+                    title: Text(
+                      '$userFirstName $userLastName',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Text(lastMessage),
+                    onTap: () {
+                      // Handle conversation item tap
+                    },
+                  );
+                } else if (snapshot.hasError) {
+                  return ListTile(
+                    title: Text('Error loading user data'),
+                  );
+                } else {
+                  return ListTile(
+                    title: Text('Loading user data...'),
+                  );
+                }
+              },
+            );
+          },
+        );
+        ListView.builder(
+          itemCount: data.length,
+          itemBuilder: (context, index) {
+            final conversationData =
+                data[index]['conversation'] as Map<String, dynamic>;
+            final membersData =
+                data[index]['members'] as List<Map<String, dynamic>>;
+
+            return ListTile(
+              title: Text(
+                  'Conversation ID: ${conversationData['conversationId']}'),
+              subtitle: Text('Nombre de membres: ${membersData.length}'),
+            );
+          },
+        );
       },
     );
+    // StreamBuilder(
+    //   stream: conversations,
+    //   builder: (context, AsyncSnapshot snapshot) {
+    //     if (snapshot.hasData) {
+    //       if (snapshot.data['conversations'] != null &&
+    //           snapshot.data['conversations'].length > 0) {
+    //         return _buildConversationsList(snapshot.data['conversations']);
+    //       } else {
+    //         return _buildNoConversations();
+    //       }
+    //     } else {
+    //       return Center(
+    //         child: CircularProgressIndicator(
+    //           color: Theme.of(context).primaryColor,
+    //         ),
+    //       );
+    //     }
+    //   },
+    // );
   }
 
   // TODO voir comment gérer le fait d'avoir vu les messages
   Widget _buildConversationsList(dynamic conversations) {
-    for(var conversation in conversations) {
+    for (var conversation in conversations) {
       // print(conversation);
     }
     return Padding(
@@ -101,8 +181,7 @@ class _InboxPageState extends State<InboxPage> {
         mainAxisSize: MainAxisSize.min,
         verticalDirection: VerticalDirection.down,
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-        ],
+        children: [],
       ),
     );
   }

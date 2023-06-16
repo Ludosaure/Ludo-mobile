@@ -38,6 +38,7 @@ dependencies:
   flutter_date_pickers: 0.4.1
   path_provider: ^2.0.15
   universal_html: ^2.2.2
+  rxdart: ^0.27.7
 
 dev_dependencies:
   flutter_test:

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ludo_mobile/utils/local_storage_helper.dart';
+import 'package:rxdart/rxdart.dart';
 
 class FirebaseDatabaseService {
   final String? uid;
@@ -46,8 +47,40 @@ class FirebaseDatabaseService {
     return await userCollection.doc(id).get();
   }
 
-  Future<Stream<DocumentSnapshot<Object?>>> getUserConversations() async {
+  Future<Stream<DocumentSnapshot<Object?>>> getUserConversationIds() async {
     return userCollection.doc(uid).snapshots();
+  }
+
+  Stream<List<Map<String, dynamic>>> getUserConversations() {
+    final userSnapshotStream = userCollection.doc(uid).snapshots();
+
+    return userSnapshotStream.asyncMap((userSnapshot) async {
+      final conversationIds = userSnapshot['conversations'] as List<dynamic>;
+
+      final conversationStreams = conversationIds.map((conversationId) {
+        final conversationStream = conversationsCollection.doc(conversationId).snapshots() as Stream<DocumentSnapshot<Map<String, dynamic>>>;
+        final membersStream = userCollection.where('conversations', arrayContains: conversationId).snapshots() as Stream<QuerySnapshot<Map<String, dynamic>>>;
+
+        // rx permet de combiner 2 streams
+        return Rx.combineLatest2<DocumentSnapshot<Map<String, dynamic>>, QuerySnapshot<Map<String, dynamic>>, Map<String, dynamic>>(
+          conversationStream,
+          membersStream,
+              (conversationSnapshot, membersSnapshot) {
+            final conversationData = conversationSnapshot.data()!;
+            final membersData = membersSnapshot.docs.map((doc) => doc.data()).toList();
+
+            return {
+              'conversation': conversationData,
+              'members': membersData,
+            };
+          },
+        );
+      });
+
+      final combinedStream = Rx.combineLatestList(conversationStreams);
+
+      return await combinedStream.first;
+    });
   }
 
   Future getConversationById(String conversationId) async {
