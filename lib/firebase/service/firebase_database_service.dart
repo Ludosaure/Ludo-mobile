@@ -55,19 +55,26 @@ class FirebaseDatabaseService {
     final userSnapshotStream = userCollection.doc(uid).snapshots();
 
     return userSnapshotStream.asyncMap((userSnapshot) async {
-      final conversationIds = userSnapshot['conversations'] as List<dynamic>;
+      final conversationIds = (userSnapshot['conversations'] as List<dynamic>)
+          .reversed; // reversed pour avoir les conversations les plus récentes en premier
 
       final conversationStreams = conversationIds.map((conversationId) {
-        final conversationStream = conversationsCollection.doc(conversationId).snapshots() as Stream<DocumentSnapshot<Map<String, dynamic>>>;
-        final membersStream = userCollection.where('conversations', arrayContains: conversationId).snapshots() as Stream<QuerySnapshot<Map<String, dynamic>>>;
+        final conversationStream = conversationsCollection
+            .doc(conversationId)
+            .snapshots() as Stream<DocumentSnapshot<Map<String, dynamic>>>;
+        final membersStream = userCollection
+            .where('conversations', arrayContains: conversationId)
+            .snapshots() as Stream<QuerySnapshot<Map<String, dynamic>>>;
 
         // rx permet de combiner 2 streams
-        return Rx.combineLatest2<DocumentSnapshot<Map<String, dynamic>>, QuerySnapshot<Map<String, dynamic>>, Map<String, dynamic>>(
+        return Rx.combineLatest2<DocumentSnapshot<Map<String, dynamic>>,
+            QuerySnapshot<Map<String, dynamic>>, Map<String, dynamic>>(
           conversationStream,
           membersStream,
-              (conversationSnapshot, membersSnapshot) {
+          (conversationSnapshot, membersSnapshot) {
             final conversationData = conversationSnapshot.data()!;
-            final membersData = membersSnapshot.docs.map((doc) => doc.data()).toList();
+            final membersData =
+                membersSnapshot.docs.map((doc) => doc.data()).toList();
             final recentMessage = conversationData['recentMessage'] as String;
 
             return {
@@ -81,12 +88,9 @@ class FirebaseDatabaseService {
 
       final combinedStream = Rx.combineLatestList(conversationStreams);
 
-      final data = await combinedStream.first;
-
-      return data;
+      return await combinedStream.first;
     });
   }
-
 
   Future getConversationById(String conversationId) async {
     return conversationsCollection.doc(conversationId).get();

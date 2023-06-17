@@ -108,6 +108,8 @@
   "how-contact-user": "Pour contacter un utilisateur, veuillez passer par sa réservation",
   "reservation-details-title": "Réservations #{number} - Par {firstname} {lastname}",
   "errors": {
+    "error-detail": "Erreur : {error}",
+    "error-loading-user-data": "Erreur lors du chargement des données de l'utilisateur",
     "unknown": "Erreur inconnue",
     "service-unavailable": "Service indisponible. Veuillez réessayer ultérieurement",
     "authentication-failed": "Erreur d'authentification, votre email ou votre mot de passe sont invalides",
