@@ -68,10 +68,12 @@ class FirebaseDatabaseService {
               (conversationSnapshot, membersSnapshot) {
             final conversationData = conversationSnapshot.data()!;
             final membersData = membersSnapshot.docs.map((doc) => doc.data()).toList();
+            final recentMessage = conversationData['recentMessage'] as String;
 
             return {
               'conversation': conversationData,
               'members': membersData,
+              'recentMessage': recentMessage,
             };
           },
         );
@@ -79,9 +81,12 @@ class FirebaseDatabaseService {
 
       final combinedStream = Rx.combineLatestList(conversationStreams);
 
-      return await combinedStream.first;
+      final data = await combinedStream.first;
+
+      return data;
     });
   }
+
 
   Future getConversationById(String conversationId) async {
     return conversationsCollection.doc(conversationId).get();

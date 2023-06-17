@@ -226,7 +226,7 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
             ),
           ),
           child: Text(
-            "validate-game-returned".tr(),
+            "validate-games-returned".tr(),
             style: TextStyle(
               fontSize: 16,
               color: Theme.of(context).colorScheme.primary,
@@ -439,13 +439,13 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
       context: parentContext,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("validate-game-returned".tr()),
+          title: Text("validate-games-returned".tr()),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("validate-game-returned-confirm".tr()),
+              Text("validate-games-returned-confirm".tr()),
               const SizedBox(height: 10),
               Text(
                 "irreversible-action".tr(),
@@ -502,6 +502,7 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
         ),
       );
     }
+    // TODO faire une taille fixe
     showDialog(
       context: parentContext,
       builder: (BuildContext context) {
@@ -536,6 +537,7 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
                           reservation.user!.email,
                           _messageController.text)
                       .then((value) {
+                    _messageController.text = "";
                     Navigator.of(context).pop();
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(

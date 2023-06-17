@@ -50,6 +50,7 @@ class _InboxPageState extends State<InboxPage> {
     );
   }
 
+  // TODO gestion des messages non lus
   Widget _buildConversations() {
     return StreamBuilder<List<Map<String, dynamic>>>(
       stream:
@@ -77,9 +78,9 @@ class _InboxPageState extends State<InboxPage> {
                 data[index]['conversation'] as Map<String, dynamic>;
             final membersData =
                 data[index]['members'] as List<Map<String, dynamic>>;
+            final recentMessage = data[index]['recentMessage'] as String;
 
             // Extract relevant information from the conversationData and membersData
-            final lastMessage = conversationData['recentMessage'] as String;
             final targetUserId = conversationData['targetUserId'] as String;
             final profilePictures = membersData
                 .map((member) => member['profilePicture'] as String?)
@@ -113,7 +114,8 @@ class _InboxPageState extends State<InboxPage> {
                       '$userFirstName $userLastName',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    subtitle: Text(lastMessage),
+                    // TODO last message ne se met pas à jour (voir dernier message de chatGPT)
+                    subtitle: Text(recentMessage),
                     onTap: () {
                       // Handle conversation item tap
                     },
