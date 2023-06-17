@@ -64,7 +64,7 @@ class _InboxPageState extends State<InboxPage> {
             return _buildNoConversations();
           }
           return CircularProgressIndicator(
-            color: Theme.of(context).primaryColor,
+            color: Theme.of(context).colorScheme.primary,
           );
         }
 
@@ -102,10 +102,9 @@ class _InboxPageState extends State<InboxPage> {
             title: Text('errors.error-loading-user-data'),
           );
         } else {
-          return Padding(
-            padding: const EdgeInsets.all(8.0),
+          return Center(
             child: CircularProgressIndicator(
-              color: Theme.of(context).primaryColor,
+              color: Theme.of(context).colorScheme.primary,
             ),
           );
         }
@@ -131,6 +130,7 @@ class _InboxPageState extends State<InboxPage> {
         strutStyle: const StrutStyle(fontSize: 12.0),
         text: TextSpan(
           text: recentMessage,
+          style: const TextStyle(color: Colors.black54),
         ),
       ),
       onTap: () {
