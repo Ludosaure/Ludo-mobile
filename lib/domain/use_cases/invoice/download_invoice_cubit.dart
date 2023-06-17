@@ -18,7 +18,7 @@ class DownloadInvoiceCubit extends Cubit<DownloadInvoiceState> {
   void downloadInvoice(String invoiceId, int invoiceNumber) async {
     emit(DownloadInvoiceLoading());
     String? filePath;
-    final String filename = 'facture_$invoiceNumber.pdf';
+    final String filename = 'ludosaure-facture_$invoiceNumber.pdf';
     try {
       filePath = await _invoiceRepository.downloadInvoice(invoiceId, filename);
     } catch (exception) {
