@@ -2,9 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:form_field_validator/form_field_validator.dart';
-import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/firebase/service/firebase_database_service.dart';
-import 'package:ludo_mobile/ui/router/routes.dart';
 
 import 'form_field_decoration.dart';
 
@@ -12,7 +10,7 @@ class NewConversationAlert extends StatelessWidget {
   final _newMessageFormKey = GlobalKey<FormState>();
   final _messageController = TextEditingController();
 
-  final userTargetMail;
+  final String userTargetMail;
 
   NewConversationAlert({Key? key, required this.userTargetMail}) : super(key: key);
 
