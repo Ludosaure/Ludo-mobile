@@ -98,8 +98,8 @@ class FirebaseDatabaseService {
     });
   }
 
-  Future<DocumentSnapshot<Object?>> getConversationById(String conversationId) async {
-    return conversationsCollection.doc(conversationId).get();
+  Future<Stream<DocumentSnapshot<Object?>>> getConversationById(String id) async {
+    return conversationsCollection.doc(id).snapshots();
   }
 
   Future<List<Object?>> getAdmins() async {

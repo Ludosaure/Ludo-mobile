@@ -6,11 +6,34 @@ import 'package:intl/intl.dart';
 import 'package:ludo_mobile/firebase/service/firebase_database_service.dart';
 import 'package:ludo_mobile/ui/components/custom_back_button.dart';
 
-class ConversationPage extends StatelessWidget {
+class ConversationPage extends StatefulWidget {
   final String conversationId;
 
   const ConversationPage({Key? key, required this.conversationId})
       : super(key: key);
+
+  @override
+  State<ConversationPage> createState() => _ConversationPageState();
+}
+
+class _ConversationPageState extends State<ConversationPage> {
+  Stream<DocumentSnapshot<Object?>>? _messages;
+
+  @override
+  void initState() {
+    super.initState();
+    _initMessages();
+  }
+
+  void _initMessages() async {
+    await FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+        .getConversationById(widget.conversationId)
+        .then((snapshot) {
+      setState(() {
+        _messages = snapshot;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,15 +83,15 @@ class ConversationPage extends StatelessWidget {
   Widget _buildMessageList() {
     return Flexible(
       child: StreamBuilder(
-        stream:
-            FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
-                .getConversationById(conversationId)
-                .asStream(),
+        stream: _messages,
         builder: (context, snapshot) {
           if (snapshot.hasData && snapshot.data!.exists) {
-            final userData = snapshot.data!.data()! as Map<String, dynamic>;
+            final conversationData =
+                snapshot.data!.data()! as Map<String, dynamic>;
             List<dynamic> messages =
-                (userData['messages'] as List<dynamic>).reversed.toList();
+                (conversationData['messages'] as List<dynamic>)
+                    .reversed
+                    .toList();
             return ListView.builder(
               itemCount: messages.length,
               reverse: true,
@@ -149,9 +172,10 @@ class ConversationPage extends StatelessWidget {
       ),
       leadingWidth: MediaQuery.of(context).size.width * 0.20,
       title: StreamBuilder<DocumentSnapshot<Object?>>(
-        stream: FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
-            .getTargetUserDataByConversationId(conversationId)
-            .asStream(),
+        stream:
+            FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+                .getTargetUserDataByConversationId(widget.conversationId)
+                .asStream(),
         builder: (context, snapshot) {
           if (snapshot.hasData && snapshot.data!.exists) {
             final userData = snapshot.data!.data()! as Map<String, dynamic>;
