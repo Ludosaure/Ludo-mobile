@@ -45,6 +45,7 @@
     "email-required-msg": "Veuillez saisir votre email.",
     "email-invalid-msg": "Veuillez saisir un email valide."
   },
+  "loading-label": "Chargement...",
   "name-label": "Nom",
   "firstname-label": "Prénom",
   "email-label": "Email",

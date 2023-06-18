@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:form_field_validator/form_field_validator.dart';
 import 'package:intl/intl.dart';
 import 'package:ludo_mobile/firebase/service/firebase_database_service.dart';
 import 'package:ludo_mobile/ui/components/custom_back_button.dart';
@@ -18,6 +19,8 @@ class ConversationPage extends StatefulWidget {
 
 class _ConversationPageState extends State<ConversationPage> {
   Stream<DocumentSnapshot<Object?>>? _messages;
+  final _newMessageFormKey = GlobalKey<FormState>();
+  final _messageController = TextEditingController();
 
   @override
   void initState() {
@@ -45,36 +48,6 @@ class _ConversationPageState extends State<ConversationPage> {
         children: [
           _buildMessageList(),
           _buildMessageInput(context),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildMessageInput(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'type-message'.tr(),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-              ),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              shape: const CircleBorder(),
-              padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.02),
-            ),
-            child: const Icon(Icons.send),
-          ),
         ],
       ),
     );
@@ -111,6 +84,57 @@ class _ConversationPageState extends State<ConversationPage> {
     );
   }
 
+  Widget _buildMessageInput(BuildContext context) {
+    return Form(
+      key: _newMessageFormKey,
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: TextFormField(
+                keyboardType: TextInputType.multiline,
+                maxLines: null,
+                controller: _messageController,
+                validator: RequiredValidator(
+                    errorText: 'form.field-required-msg'.tr()),
+                autocorrect: false,
+                decoration: InputDecoration(
+                  hintText: 'type-message'.tr(),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                String currentUserId = FirebaseAuth.instance.currentUser!.uid;
+                if (_newMessageFormKey.currentState!.validate()) {
+                  FirebaseDatabaseService(uid: currentUserId)
+                      .sendMessage(
+                    widget.conversationId,
+                      currentUserId,
+                      _messageController.text)
+                      .then((value) {
+                    _messageController.text = "";
+                  });
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                shape: const CircleBorder(),
+                padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.02),
+              ),
+              child: const Icon(Icons.send),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildMessage(BuildContext context, dynamic message) {
     var isCurrentUserMessage =
         message['sender'] == FirebaseAuth.instance.currentUser!.uid;
@@ -132,6 +156,8 @@ class _ConversationPageState extends State<ConversationPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
+              _buildSenderName(context, message['sender']),
+              const SizedBox(height: 5.0),
               Text(
                 message['message'],
                 style: const TextStyle(
@@ -158,6 +184,33 @@ class _ConversationPageState extends State<ConversationPage> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildSenderName(BuildContext context, String userId) {
+    return StreamBuilder(
+      stream:
+      FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+          .getUserDataById(userId)
+      .asStream(),
+      builder: (context, snapshot) {
+        final data = snapshot.data;
+        if (!snapshot.hasData ||
+            snapshot.connectionState == ConnectionState.waiting) {
+          if (data == null) {
+            return Text('errors.error-loading-user-data'.tr());
+          }
+          return Text('loading-label'.tr());
+        }
+
+        final userData = data!.data()! as Map<String, dynamic>;
+        return Text('${userData['firstname']} ${userData['name']}',
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 14.0,
+          ),
+        );
+      },
     );
   }
 

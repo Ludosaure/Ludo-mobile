@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,7 +25,7 @@ import 'package:responsive_framework/responsive_framework.dart';
 class ReservationDetailsPage extends StatefulWidget {
   final String reservationId;
 
-  ReservationDetailsPage({Key? key, required this.reservationId})
+  const ReservationDetailsPage({Key? key, required this.reservationId})
       : super(key: key);
 
   @override
@@ -35,7 +36,6 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
   late Reservation reservation;
   final _newMessageFormKey = GlobalKey<FormState>();
   final _messageController = TextEditingController();
-  FirebaseDatabaseService firebaseDatabaseService = FirebaseDatabaseService();
 
   @override
   Widget build(BuildContext context) {
@@ -532,7 +532,7 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
               child: Text("send-label".tr()),
               onPressed: () {
                 if (_newMessageFormKey.currentState!.validate()) {
-                  firebaseDatabaseService
+                  FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
                       .createConversationWithClient(
                           reservation.user!.email,
                           _messageController.text)
