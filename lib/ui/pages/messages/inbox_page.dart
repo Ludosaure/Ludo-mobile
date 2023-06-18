@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/domain/models/user.dart' as db_user;
 import 'package:ludo_mobile/firebase/service/firebase_database_service.dart';
 import 'package:ludo_mobile/ui/components/circle-avatar.dart';
+import 'package:ludo_mobile/ui/components/new_conversation_alert.dart';
 import 'package:ludo_mobile/ui/components/scaffold/admin_scaffold.dart';
 import 'package:ludo_mobile/ui/components/scaffold/home_scaffold.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
@@ -38,7 +39,7 @@ class _InboxPageState extends State<InboxPage> {
         .getConversationIds()
         .listen((snapshot) {
       conversationIds = snapshot;
-      if (conversationIds.isNotEmpty) {
+      if (conversationIds.isNotEmpty && !widget.user.isAdmin()) {
         context.go('${Routes.inbox.path}/${conversationIds.first}');
       }
     });
@@ -75,10 +76,7 @@ class _InboxPageState extends State<InboxPage> {
         ),
       ),
       onPressed: () async {
-        db_user.User currentUser =
-            (await LocalStorageHelper.getUserFromLocalStorage())!;
-        await FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
-            .createConversation(currentUser.email);
+        await _showNewMessageDialog(context);
       },
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -96,6 +94,16 @@ class _InboxPageState extends State<InboxPage> {
           ],
         ),
       ),
+    );
+  }
+
+  _showNewMessageDialog(BuildContext parentContext) async {
+    db_user.User currentUser = (await LocalStorageHelper.getUserFromLocalStorage())!;
+    showDialog(
+      context: parentContext,
+      builder: (BuildContext context) {
+        return NewConversationAlert(userTargetMail: currentUser.email);
+      },
     );
   }
 

@@ -15,6 +15,7 @@ import 'package:ludo_mobile/ui/components/custom_back_button.dart';
 import 'package:ludo_mobile/ui/components/form_field_decoration.dart';
 import 'package:ludo_mobile/ui/components/list_header.dart';
 import 'package:ludo_mobile/ui/components/nav_bar/app_bar/admin_app_bar.dart';
+import 'package:ludo_mobile/ui/components/new_conversation_alert.dart';
 import 'package:ludo_mobile/ui/pages/game/list/game_tile.dart';
 import 'package:ludo_mobile/ui/pages/invoices/InvoicesList.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
@@ -34,8 +35,6 @@ class ReservationDetailsPage extends StatefulWidget {
 
 class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
   late Reservation reservation;
-  final _newMessageFormKey = GlobalKey<FormState>();
-  final _messageController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -502,68 +501,10 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
         ),
       );
     }
-    // TODO faire une taille fixe
     showDialog(
       context: parentContext,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("new-message".tr()),
-          content: Form(
-            key: _newMessageFormKey,
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width * 0.5,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  TextFormField(
-                    keyboardType: TextInputType.multiline,
-                    maxLines: null,
-                    controller: _messageController,
-                    validator: RequiredValidator(
-                        errorText: 'form.field-required-msg'.tr()),
-                    autocorrect: false,
-                    decoration: FormFieldDecoration.textField("message".tr()),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          actions: [
-            ElevatedButton(
-              child: Text("send-label".tr()),
-              onPressed: () {
-                if (_newMessageFormKey.currentState!.validate()) {
-                  FirebaseDatabaseService(
-                          uid: FirebaseAuth.instance.currentUser!.uid)
-                      .createConversation(reservation.user!.email,
-                          message: _messageController.text)
-                      .then((value) {
-                    _messageController.text = "";
-                    Navigator.of(context).pop();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: const Text("message-sent").tr(),
-                        duration: const Duration(seconds: 3),
-                        backgroundColor: Colors.green,
-                      ),
-                    );
-                  });
-                }
-              },
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.grey,
-              ),
-              child: Text("cancel-label".tr()),
-            ),
-          ],
-        );
+        return NewConversationAlert(userTargetMail: reservation.user!.email);
       },
     );
   }
