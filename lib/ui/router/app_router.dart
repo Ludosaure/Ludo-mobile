@@ -280,10 +280,10 @@ class AppRouter {
         ),
       ),
       GoRoute(
-        path: "${Routes.inbox.path}/:userId",
+        path: "${Routes.inbox.path}/:conversationId",
         pageBuilder: (context, state) => CustomTransitionPage(
           child: ConversationPage(
-            userId: state.params['userId']!,
+            conversationId: state.params['conversationId']!,
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(

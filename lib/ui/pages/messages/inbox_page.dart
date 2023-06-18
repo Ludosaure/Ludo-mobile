@@ -2,10 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/domain/models/user.dart' as dbUser;
 import 'package:ludo_mobile/firebase/service/firebase_database_service.dart';
 import 'package:ludo_mobile/ui/components/scaffold/admin_scaffold.dart';
 import 'package:ludo_mobile/ui/components/scaffold/home_scaffold.dart';
+import 'package:ludo_mobile/ui/router/routes.dart';
 import 'package:ludo_mobile/utils/menu_items.dart';
 
 class InboxPage extends StatefulWidget {
@@ -76,16 +78,16 @@ class _InboxPageState extends State<InboxPage> {
             final recentMessage = data[index]['recentMessage'] as String;
 
             final targetUserId = conversationData['targetUserId'] as String;
-            return _buildConversation(targetUserId, recentMessage);
+            return _buildConversation(targetUserId, recentMessage, conversationData['conversationId']);
           },
         );
       },
     );
   }
 
-  Widget _buildConversation(String targetUserId, String recentMessage) {
+  Widget _buildConversation(String targetUserId, String recentMessage, String conversationId) {
     return StreamBuilder<DocumentSnapshot<Object?>>(
-      stream: FirebaseDatabaseService(uid: targetUserId)
+      stream: FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
           .getUserDataById(targetUserId)
           .asStream(),
       builder: (context, snapshot) {
@@ -96,7 +98,7 @@ class _InboxPageState extends State<InboxPage> {
           final userProfilePicture = userData['profilePicture'] as String?;
 
           return _buildConversationTile(
-              userProfilePicture, userFirstName, userLastName, recentMessage);
+              userProfilePicture, userFirstName, userLastName, recentMessage, conversationId);
         } else if (snapshot.hasError) {
           return const ListTile(
             title: Text('errors.error-loading-user-data'),
@@ -113,14 +115,13 @@ class _InboxPageState extends State<InboxPage> {
   }
 
   Widget _buildConversationTile(String? userProfilePicture, String firstname,
-      String lastname, String recentMessage) {
+      String lastname, String recentMessage, String conversationId) {
     return ListTile(
       leading: (userProfilePicture != null && userProfilePicture != "")
           ? CircleAvatar(
               backgroundColor: Colors.grey[300],
               backgroundImage: NetworkImage(userProfilePicture),
-            )
-          : const Icon(Icons.person),
+            ) : const Icon(Icons.person),
       title: Text(
         '$firstname $lastname',
         style: const TextStyle(fontWeight: FontWeight.bold),
@@ -134,10 +135,9 @@ class _InboxPageState extends State<InboxPage> {
         ),
       ),
       onTap: () {
-        // TODO
-        // context.push(
-        //   '${Routes.inbox.path}/${conversation.otherUser.id}',
-        // );
+        context.push(
+          '${Routes.inbox.path}/$conversationId',
+        );
       },
     );
   }

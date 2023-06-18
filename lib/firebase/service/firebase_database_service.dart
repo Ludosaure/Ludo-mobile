@@ -47,6 +47,12 @@ class FirebaseDatabaseService {
     return await userCollection.doc(id).get();
   }
 
+  Future<DocumentSnapshot<Object?>> getTargetUserDataByConversationId(String id) async {
+    final conversationDoc = await conversationsCollection.doc(id).get();
+    final targetUserId = conversationDoc['targetUserId'] as String;
+    return await userCollection.doc(targetUserId).get();
+  }
+
   Future<Stream<DocumentSnapshot<Object?>>> getUserConversationIds() async {
     return userCollection.doc(uid).snapshots();
   }
@@ -92,7 +98,7 @@ class FirebaseDatabaseService {
     });
   }
 
-  Future getConversationById(String conversationId) async {
+  Future<DocumentSnapshot<Object?>> getConversationById(String conversationId) async {
     return conversationsCollection.doc(conversationId).get();
   }
 
