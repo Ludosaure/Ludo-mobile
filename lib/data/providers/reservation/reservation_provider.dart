@@ -201,7 +201,7 @@ class ReservationProvider {
     }
   }
 
-  Future<void> returnReservation(String reservationId) async {
+  Future<void> returnReservationGames(String reservationId) async {
     String? token = await LocalStorageHelper.getTokenFromLocalStorage();
 
     if (token == null) {

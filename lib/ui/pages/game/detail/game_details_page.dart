@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
 import 'package:ludo_mobile/domain/use_cases/cart/cart_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/favorite_games/favorite_games_cubit.dart';
-import 'package:ludo_mobile/domain/use_cases/game/get_game_cubit.dart';
+import 'package:ludo_mobile/domain/use_cases/get_game/get_game_cubit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ludo_mobile/domain/use_cases/list_reduction_plan/list_reduction_plan_cubit.dart';
 import 'package:ludo_mobile/ui/components/expandable_text_widget.dart';

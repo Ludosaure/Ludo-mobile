@@ -136,7 +136,10 @@ class _ConversationPageState extends State<ConversationPage> {
     );
   }
 
-  Widget _buildMessage(BuildContext context, dynamic message) {
+  Widget _buildMessage(
+    BuildContext context,
+    dynamic message,
+  ) {
     var isCurrentUserMessage =
         message['sender'] == FirebaseAuth.instance.currentUser!.uid;
     return ListTile(
@@ -172,8 +175,9 @@ class _ConversationPageState extends State<ConversationPage> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    DateFormat('dd/MM/yyyy HH:mm')
-                        .format((message['time'] as Timestamp).toDate()),
+                    DateFormat('dd/MM/yyyy HH:mm').format(
+                      (message['time'] as Timestamp).toDate(),
+                    ),
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 12.0,
@@ -188,7 +192,10 @@ class _ConversationPageState extends State<ConversationPage> {
     );
   }
 
-  Widget _buildSenderName(BuildContext context, String userId) {
+  Widget _buildSenderName(
+    BuildContext context,
+    String userId,
+  ) {
     return StreamBuilder(
       stream:
           FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
@@ -295,6 +302,58 @@ class _ConversationPageState extends State<ConversationPage> {
     );
   }
 
+  _buildGroupInformationsAlert(
+    BuildContext context,
+    List<dynamic> members,
+  ) {
+    return AlertDialog(
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const Icon(Icons.info_outline, color: Colors.black, size: 30.0),
+          const SizedBox(width: 10.0),
+          Text("infos".tr()),
+        ],
+      ),
+      content: SizedBox(
+        width: MediaQuery.of(context).size.width * 0.5,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Icon(Icons.group, color: Colors.black, size: 20.0),
+                  const SizedBox(width: 10.0),
+                  Text("conversation-members".tr()),
+                ],
+              ),
+              const SizedBox(height: 10.0),
+              ListView.builder(
+                shrinkWrap: true,
+                itemCount: members.length,
+                itemBuilder: (context, index) {
+                  final member = members[index];
+                  return _buildConversationMember(
+                    member['profilePicture'],
+                    member['firstname'],
+                    member['name'],
+                    member['isAdmin'],
+                  );
+                },
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   _showGroupInfosDialog(BuildContext parentContext) async {
     await FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
         .getGroupMembers(widget.conversationId)
@@ -302,63 +361,22 @@ class _ConversationPageState extends State<ConversationPage> {
       showDialog(
         context: parentContext,
         builder: (BuildContext context) {
-          return AlertDialog(
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Icon(Icons.info_outline, color: Colors.black, size: 30.0),
-                const SizedBox(width: 10.0),
-                Text("infos".tr()),
-              ],
-            ),
-            content: SizedBox(
-              width: MediaQuery.of(context).size.width * 0.5,
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.group,
-                            color: Colors.black, size: 20.0),
-                        const SizedBox(width: 10.0),
-                        Text("conversation-members".tr()),
-                      ],
-                    ),
-                    const SizedBox(height: 10.0),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: members.length,
-                      itemBuilder: (context, index) {
-                        final member = members[index];
-                        return _buildConversationMember(
-                          member['profilePicture'],
-                          member['firstname'],
-                          member['name'],
-                          member['isAdmin'],
-                        );
-                      },
-                    )
-                  ],
-                ),
-              ),
-            ),
-          );
+          return _buildGroupInformationsAlert(context, members);
         },
       );
     });
   }
 
   _buildConversationMember(
-      String? userProfilePicture, String firstname, String lastname, bool isAdmin) {
+    String? userProfilePicture,
+    String firstname,
+    String lastname,
+    bool isAdmin,
+  ) {
     return ListTile(
       leading: CustomCircleAvatar(userProfilePicture: userProfilePicture),
-      title: Text('$firstname $lastname ${isAdmin ? ' (admin)' : ''}',
+      title: Text(
+        '$firstname $lastname ${isAdmin ? ' (admin)' : ''}',
         style: const TextStyle(fontWeight: FontWeight.bold),
       ),
     );

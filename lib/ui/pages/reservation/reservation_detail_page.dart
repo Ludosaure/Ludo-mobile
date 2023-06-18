@@ -456,7 +456,7 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
               onPressed: () {
                 parentContext
                     .read<UserReservationsCubit>()
-                    .returnReservation(reservation.id);
+                    .returnReservationGames(reservation.id);
                 setState(() {
                   reservation.returned = true;
                 });

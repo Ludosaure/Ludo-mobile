@@ -98,7 +98,8 @@ class _InboxPageState extends State<InboxPage> {
   }
 
   _showNewMessageDialog(BuildContext parentContext) async {
-    db_user.User currentUser = (await LocalStorageHelper.getUserFromLocalStorage())!;
+    db_user.User currentUser =
+        (await LocalStorageHelper.getUserFromLocalStorage())!;
     showDialog(
       context: parentContext,
       builder: (BuildContext context) {
@@ -133,8 +134,11 @@ class _InboxPageState extends State<InboxPage> {
             final recentMessage = data[index]['recentMessage'] as String;
 
             final targetUserId = conversationData['targetUserId'] as String;
-            return _buildConversation(targetUserId, recentMessage,
-                conversationData['conversationId']);
+            return _buildConversation(
+              targetUserId,
+              recentMessage,
+              conversationData['conversationId'],
+            );
           },
         );
       },
@@ -142,7 +146,10 @@ class _InboxPageState extends State<InboxPage> {
   }
 
   Widget _buildConversation(
-      String targetUserId, String recentMessage, String conversationId) {
+    String targetUserId,
+    String recentMessage,
+    String conversationId,
+  ) {
     return StreamBuilder<DocumentSnapshot<Object?>>(
       stream:
           FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
@@ -155,8 +162,13 @@ class _InboxPageState extends State<InboxPage> {
           final userLastName = userData['name'] as String;
           final userProfilePicture = userData['profilePicture'] as String?;
 
-          return _buildConversationTile(userProfilePicture, userFirstName,
-              userLastName, recentMessage, conversationId);
+          return _buildConversationTile(
+            userProfilePicture,
+            userFirstName,
+            userLastName,
+            recentMessage,
+            conversationId,
+          );
         } else if (snapshot.hasError) {
           return const ListTile(
             title: Text('errors.error-loading-user-data'),
@@ -172,8 +184,13 @@ class _InboxPageState extends State<InboxPage> {
     );
   }
 
-  Widget _buildConversationTile(String? userProfilePicture, String firstname,
-      String lastname, String recentMessage, String conversationId) {
+  Widget _buildConversationTile(
+    String? userProfilePicture,
+    String firstname,
+    String lastname,
+    String recentMessage,
+    String conversationId,
+  ) {
     return ListTile(
       leading: CustomCircleAvatar(userProfilePicture: userProfilePicture),
       title: Text(

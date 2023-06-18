@@ -61,11 +61,11 @@ class UserReservationsCubit extends Cubit<UserReservationsState> {
     }
   }
 
-  void returnReservation(String reservationId) {
+  void returnReservationGames(String reservationId) {
     emit(const UserReservationsLoading());
 
     try {
-      _userReservationRepository.returnReservation(reservationId);
+      _userReservationRepository.returnReservationGames(reservationId);
       emit(const UserReservationsInitial());
     } catch (exception) {
       if (exception is UserNotLoggedInException ||

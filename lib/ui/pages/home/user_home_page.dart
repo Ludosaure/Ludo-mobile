@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
 import 'package:ludo_mobile/domain/models/user.dart';
-import 'package:ludo_mobile/domain/use_cases/game/get_games_cubit.dart';
+import 'package:ludo_mobile/domain/use_cases/get_games/get_games_cubit.dart';
 import 'package:ludo_mobile/ui/components/scaffold/home_scaffold.dart';
 import 'package:ludo_mobile/ui/pages/game/list/game_list.dart';
 import 'package:ludo_mobile/utils/menu_items.dart';

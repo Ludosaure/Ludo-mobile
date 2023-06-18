@@ -9,6 +9,7 @@ import 'package:ludo_mobile/data/repositories/reservation/new_reservation.dart';
 import 'package:ludo_mobile/data/repositories/reservation/reservation_repository.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
 import 'package:ludo_mobile/utils/app_constants.dart';
+import 'package:meta/meta.dart';
 
 part 'cart_state.dart';
 
