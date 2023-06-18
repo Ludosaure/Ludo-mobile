@@ -537,8 +537,8 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
                 if (_newMessageFormKey.currentState!.validate()) {
                   FirebaseDatabaseService(
                           uid: FirebaseAuth.instance.currentUser!.uid)
-                      .createConversationWithClient(
-                          reservation.user!.email, _messageController.text)
+                      .createConversation(reservation.user!.email,
+                          message: _messageController.text)
                       .then((value) {
                     _messageController.text = "";
                     Navigator.of(context).pop();

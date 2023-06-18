@@ -20,22 +20,22 @@ class ConversationPage extends StatefulWidget {
 }
 
 class _ConversationPageState extends State<ConversationPage> {
-  Stream<DocumentSnapshot<Object?>>? _messages;
+  Stream<DocumentSnapshot<Object?>>? _conversation;
   final _newMessageFormKey = GlobalKey<FormState>();
   final _messageController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _initMessages();
+    _initConversation();
   }
 
-  void _initMessages() async {
+  void _initConversation() async {
     await FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
         .getConversationById(widget.conversationId)
         .then((snapshot) {
       setState(() {
-        _messages = snapshot;
+        _conversation = snapshot;
       });
     });
   }
@@ -58,7 +58,7 @@ class _ConversationPageState extends State<ConversationPage> {
   Widget _buildMessageList() {
     return Flexible(
       child: StreamBuilder(
-        stream: _messages,
+        stream: _conversation,
         builder: (context, snapshot) {
           if (snapshot.hasData && snapshot.data!.exists) {
             final conversationData =

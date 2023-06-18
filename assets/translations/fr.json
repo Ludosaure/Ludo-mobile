@@ -99,6 +99,7 @@
   "message-sent": "Message envoyé",
   "conversation-infos": "Informations de la conversation",
   "conversation-members": "Membres de la conversation",
+  "start-conv-with-admins": "Commencer une conversation avec les administrateurs",
   "type-message": "Tapez votre message ici...",
   "cant-send-message-to-yourself": "Vous ne pouvez pas envoyer de message à vous-même.",
   "search-title": "Rechercher",

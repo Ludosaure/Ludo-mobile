@@ -3,16 +3,17 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:ludo_mobile/domain/models/user.dart' as dbUser;
+import 'package:ludo_mobile/domain/models/user.dart' as db_user;
 import 'package:ludo_mobile/firebase/service/firebase_database_service.dart';
 import 'package:ludo_mobile/ui/components/circle-avatar.dart';
 import 'package:ludo_mobile/ui/components/scaffold/admin_scaffold.dart';
 import 'package:ludo_mobile/ui/components/scaffold/home_scaffold.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
+import 'package:ludo_mobile/utils/local_storage_helper.dart';
 import 'package:ludo_mobile/utils/menu_items.dart';
 
 class InboxPage extends StatefulWidget {
-  final dbUser.User user;
+  final db_user.User user;
 
   const InboxPage({
     Key? key,
@@ -24,13 +25,27 @@ class InboxPage extends StatefulWidget {
 }
 
 class _InboxPageState extends State<InboxPage> {
+  List<String> conversationIds = [];
+
   @override
-  Widget build(BuildContext context) {
-    return _getScaffold();
+  void initState() {
+    super.initState();
+    _initConversationIds();
   }
 
-  Widget _getScaffold() {
-    // TODO si admin liste des convs
+  void _initConversationIds() {
+    FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+        .getConversationIds()
+        .listen((snapshot) {
+      conversationIds = snapshot;
+      if (conversationIds.isNotEmpty) {
+        context.go('${Routes.inbox.path}/${conversationIds.first}');
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     if (widget.user.isAdmin()) {
       return AdminScaffold(
         body: Center(
@@ -43,13 +58,44 @@ class _InboxPageState extends State<InboxPage> {
       );
     }
 
-    // TODO si client proposer de créer une nouvelle conv avec les admins
     return HomeScaffold(
       body: Center(
-        child: _buildConversations(),
+        child: _buildClientNewConversationButton(),
       ),
       user: widget.user,
       navBarIndex: MenuItems.Messages.index,
+    );
+  }
+
+  Widget _buildClientNewConversationButton() {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+      onPressed: () async {
+        db_user.User currentUser =
+            (await LocalStorageHelper.getUserFromLocalStorage())!;
+        await FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+            .createConversation(currentUser.email);
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.add_circle,
+              color: Colors.white,
+            ),
+            const SizedBox(width: 10),
+            Text("start-conv-with-admins".tr()),
+          ],
+        ),
+      ),
     );
   }
 
@@ -79,18 +125,21 @@ class _InboxPageState extends State<InboxPage> {
             final recentMessage = data[index]['recentMessage'] as String;
 
             final targetUserId = conversationData['targetUserId'] as String;
-            return _buildConversation(targetUserId, recentMessage, conversationData['conversationId']);
+            return _buildConversation(targetUserId, recentMessage,
+                conversationData['conversationId']);
           },
         );
       },
     );
   }
 
-  Widget _buildConversation(String targetUserId, String recentMessage, String conversationId) {
+  Widget _buildConversation(
+      String targetUserId, String recentMessage, String conversationId) {
     return StreamBuilder<DocumentSnapshot<Object?>>(
-      stream: FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
-          .getUserDataById(targetUserId)
-          .asStream(),
+      stream:
+          FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+              .getUserDataById(targetUserId)
+              .asStream(),
       builder: (context, snapshot) {
         if (snapshot.hasData && snapshot.data!.exists) {
           final userData = snapshot.data!.data()! as Map<String, dynamic>;
@@ -98,8 +147,8 @@ class _InboxPageState extends State<InboxPage> {
           final userLastName = userData['name'] as String;
           final userProfilePicture = userData['profilePicture'] as String?;
 
-          return _buildConversationTile(
-              userProfilePicture, userFirstName, userLastName, recentMessage, conversationId);
+          return _buildConversationTile(userProfilePicture, userFirstName,
+              userLastName, recentMessage, conversationId);
         } else if (snapshot.hasError) {
           return const ListTile(
             title: Text('errors.error-loading-user-data'),
