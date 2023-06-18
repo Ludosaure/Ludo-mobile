@@ -510,21 +510,24 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
           title: Text("new-message".tr()),
           content: Form(
             key: _newMessageFormKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                TextFormField(
-                  keyboardType: TextInputType.multiline,
-                  maxLines: null,
-                  controller: _messageController,
-                  validator: RequiredValidator(
-                      errorText: 'form.field-required-msg'.tr()),
-                  autocorrect: false,
-                  decoration: FormFieldDecoration.textField("message".tr()),
-                ),
-              ],
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.5,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextFormField(
+                    keyboardType: TextInputType.multiline,
+                    maxLines: null,
+                    controller: _messageController,
+                    validator: RequiredValidator(
+                        errorText: 'form.field-required-msg'.tr()),
+                    autocorrect: false,
+                    decoration: FormFieldDecoration.textField("message".tr()),
+                  ),
+                ],
+              ),
             ),
           ),
           actions: [
@@ -532,10 +535,10 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
               child: Text("send-label".tr()),
               onPressed: () {
                 if (_newMessageFormKey.currentState!.validate()) {
-                  FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+                  FirebaseDatabaseService(
+                          uid: FirebaseAuth.instance.currentUser!.uid)
                       .createConversationWithClient(
-                          reservation.user!.email,
-                          _messageController.text)
+                          reservation.user!.email, _messageController.text)
                       .then((value) {
                     _messageController.text = "";
                     Navigator.of(context).pop();

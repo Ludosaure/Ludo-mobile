@@ -97,6 +97,8 @@
   "message": "Message",
   "new-message": "Nouveau message",
   "message-sent": "Message envoyé",
+  "conversation-infos": "Informations de la conversation",
+  "conversation-members": "Membres de la conversation",
   "type-message": "Tapez votre message ici...",
   "cant-send-message-to-yourself": "Vous ne pouvez pas envoyer de message à vous-même.",
   "search-title": "Rechercher",

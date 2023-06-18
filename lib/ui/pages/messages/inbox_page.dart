@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/domain/models/user.dart' as dbUser;
 import 'package:ludo_mobile/firebase/service/firebase_database_service.dart';
+import 'package:ludo_mobile/ui/components/circle-avatar.dart';
 import 'package:ludo_mobile/ui/components/scaffold/admin_scaffold.dart';
 import 'package:ludo_mobile/ui/components/scaffold/home_scaffold.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
@@ -117,11 +118,7 @@ class _InboxPageState extends State<InboxPage> {
   Widget _buildConversationTile(String? userProfilePicture, String firstname,
       String lastname, String recentMessage, String conversationId) {
     return ListTile(
-      leading: (userProfilePicture != null && userProfilePicture != "")
-          ? CircleAvatar(
-              backgroundColor: Colors.grey[300],
-              backgroundImage: NetworkImage(userProfilePicture),
-            ) : const Icon(Icons.person),
+      leading: CustomCircleAvatar(userProfilePicture: userProfilePicture),
       title: Text(
         '$firstname $lastname',
         style: const TextStyle(fontWeight: FontWeight.bold),

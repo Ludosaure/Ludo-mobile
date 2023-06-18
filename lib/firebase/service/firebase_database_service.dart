@@ -57,7 +57,7 @@ class FirebaseDatabaseService {
     return userCollection.doc(uid).snapshots();
   }
 
-  Future<List> sortConversationsByRecentMessage(List<dynamic> conversationsIdsNotSorted) async {
+  Future<List<dynamic>> sortConversationsByRecentMessage(List<dynamic> conversationsIdsNotSorted) async {
     final conversations = [];
     for (final conversationId in conversationsIdsNotSorted) {
       final conversationSnapshot = await conversationsCollection.doc(conversationId).get();
@@ -118,6 +118,20 @@ class FirebaseDatabaseService {
 
   Future<Stream<DocumentSnapshot<Object?>>> getConversationById(String id) async {
     return conversationsCollection.doc(id).snapshots();
+  }
+
+  Future<List<dynamic>> getGroupMembers(String conversationId) async {
+    DocumentSnapshot<Object?> conversationSnapshot =
+        await conversationsCollection.doc(conversationId).get();
+    final data = conversationSnapshot.data()! as Map<String, dynamic>;
+    final memberIds = data['members'] as List<dynamic>;
+    final memberList = [];
+    for(final member in memberIds) {
+      final memberSnapshot = await userCollection.doc(member).get();
+      final memberData = memberSnapshot.data()! as Map<String, dynamic>;
+      memberList.add(memberData);
+    }
+    return memberList;
   }
 
   Future<List<Object?>> getAdmins() async {

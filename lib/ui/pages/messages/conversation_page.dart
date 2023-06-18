@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:intl/intl.dart';
 import 'package:ludo_mobile/firebase/service/firebase_database_service.dart';
+import 'package:ludo_mobile/ui/components/circle-avatar.dart';
 import 'package:ludo_mobile/ui/components/custom_back_button.dart';
+import 'package:responsive_framework/responsive_wrapper.dart';
 
 class ConversationPage extends StatefulWidget {
   final String conversationId;
@@ -232,8 +234,7 @@ class _ConversationPageState extends State<ConversationPage> {
       elevation: 0,
       leading: const Padding(
         padding: EdgeInsets.all(8.0),
-        child:
-            CustomBackButton(), // TODO faire retourner sur la page des messages
+        child: CustomBackButton(),
       ),
       leadingWidth: MediaQuery.of(context).size.width * 0.20,
       title: StreamBuilder<DocumentSnapshot<Object?>>(
@@ -248,19 +249,23 @@ class _ConversationPageState extends State<ConversationPage> {
             final userLastName = userData['name'] as String;
             final userProfilePicture = userData['profilePicture'] as String?;
 
+            final fullName = '$userFirstName $userLastName';
+            var maxCharName = 45;
+            if (ResponsiveWrapper.of(context).isSmallerThan(DESKTOP)) {
+              maxCharName = 15;
+            }
             return Row(
               children: [
-                if (userProfilePicture != null && userProfilePicture != "")
-                  CircleAvatar(
-                    backgroundColor: Colors.grey[300],
-                    backgroundImage: NetworkImage(userProfilePicture),
-                  ),
+                CustomCircleAvatar(userProfilePicture: userProfilePicture),
                 const SizedBox(width: 10),
                 Text(
-                  '$userFirstName $userLastName',
+                  fullName.length > maxCharName
+                      ? "${fullName.substring(0, maxCharName)}..."
+                      : fullName,
                   style: const TextStyle(
                     color: Colors.black,
                     fontSize: 20,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
@@ -273,6 +278,88 @@ class _ConversationPageState extends State<ConversationPage> {
             );
           }
         },
+      ),
+      actions: [
+        Padding(
+          padding:
+              EdgeInsets.only(right: MediaQuery.of(context).size.width * 0.05),
+          child: IconButton(
+            onPressed: () async {
+              await _showGroupInfosDialog(context);
+            },
+            icon:
+                const Icon(Icons.info_outline, color: Colors.black, size: 30.0),
+          ),
+        ),
+      ],
+    );
+  }
+
+  _showGroupInfosDialog(BuildContext parentContext) async {
+    await FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+        .getGroupMembers(widget.conversationId)
+        .then((members) {
+      showDialog(
+        context: parentContext,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Icon(Icons.info_outline, color: Colors.black, size: 30.0),
+                const SizedBox(width: 10.0),
+                Text("conversation-infos".tr()),
+              ],
+            ),
+            content: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.5,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.group,
+                            color: Colors.black, size: 20.0),
+                        const SizedBox(width: 10.0),
+                        Text("conversation-members".tr()),
+                      ],
+                    ),
+                    const SizedBox(height: 10.0),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: members.length,
+                      itemBuilder: (context, index) {
+                        final member = members[index];
+                        return _buildConversationMember(
+                          member['profilePicture'],
+                          member['firstname'],
+                          member['name'],
+                          member['isAdmin'],
+                        );
+                      },
+                    )
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      );
+    });
+  }
+
+  _buildConversationMember(
+      String? userProfilePicture, String firstname, String lastname, bool isAdmin) {
+    return ListTile(
+      leading: CustomCircleAvatar(userProfilePicture: userProfilePicture),
+      title: Text('$firstname $lastname ${isAdmin ? ' (admin)' : ''}',
+        style: const TextStyle(fontWeight: FontWeight.bold),
       ),
     );
   }
