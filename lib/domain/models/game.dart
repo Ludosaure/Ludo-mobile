@@ -56,4 +56,24 @@ class Game {
       unavailableDates: unavailableDates,
     );
   }
+
+  // utilisé pour les favoris
+  factory Game.onlyWithId(String id) {
+    return Game(
+      id: id,
+      name: "",
+      description: "",
+      imageUrl: "",
+      averageDuration: 0,
+      minAge: 0,
+      minPlayers: 0,
+      maxPlayers: 0,
+      categories: [],
+      weeklyAmount: 0.0,
+      rating: 0.0,
+      isArchived: false,
+      isAvailable: false,
+      unavailableDates: [],
+    );
+  }
 }
