@@ -309,7 +309,7 @@ class _ConversationPageState extends State<ConversationPage> {
               children: [
                 const Icon(Icons.info_outline, color: Colors.black, size: 30.0),
                 const SizedBox(width: 10.0),
-                Text("conversation-infos".tr()),
+                Text("infos".tr()),
               ],
             ),
             content: SizedBox(

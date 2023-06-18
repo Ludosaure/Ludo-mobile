@@ -97,7 +97,7 @@
   "message": "Message",
   "new-message": "Nouveau message",
   "message-sent": "Message envoyé",
-  "conversation-infos": "Informations de la conversation",
+  "infos": "Informations",
   "conversation-members": "Membres de la conversation",
   "start-conv-with-admins": "Commencer une conversation avec les administrateurs",
   "type-message": "Tapez votre message ici...",
