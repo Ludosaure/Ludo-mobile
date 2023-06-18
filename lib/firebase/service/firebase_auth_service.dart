@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ludo_mobile/firebase/service/firebase_database_service.dart';
+import 'package:ludo_mobile/utils/local_storage_helper.dart';
 
 class FirebaseAuthService {
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
@@ -15,7 +16,7 @@ class FirebaseAuthService {
         credential = await firebaseAuth.createUserWithEmailAndPassword(email: email, password: password);
       }
       User user = credential.user!;
-      await FirebaseDatabaseService(uid: user.uid).saveUserData(name, firstname, email, "");
+      await FirebaseDatabaseService(uid: user.uid).saveUserData(name, firstname, email);
     } on FirebaseAuthException {
       rethrow;
     } catch (e) {
@@ -26,6 +27,7 @@ class FirebaseAuthService {
   Future login(String email, String password) async {
     try {
       await firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
+      LocalStorageHelper.saveFirebaseUserIdToLocalStorage(FirebaseAuth.instance.currentUser!.uid);
     } on FirebaseAuthException {
       rethrow;
     } catch (e) {

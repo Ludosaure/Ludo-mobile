@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:ludo_mobile/ui/components/menu/client_side_menu.dart';
@@ -7,7 +6,6 @@ import 'package:ludo_mobile/ui/components/nav_bar/app_bar/custom_app_bar.dart';
 import 'package:ludo_mobile/ui/components/nav_bar/bottom_nav_bar/bottom_nav_bar.dart';
 import 'package:ludo_mobile/ui/components/nav_bar/bottom_nav_bar/no_account_bottom_nav_bar.dart';
 import 'package:responsive_framework/responsive_framework.dart';
-import 'package:responsive_framework/responsive_wrapper.dart';
 
 class HomeScaffold extends StatelessWidget {
   final User? user;

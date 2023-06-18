@@ -12,11 +12,11 @@ class LandingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Size _size = MediaQuery.of(context).size;
+    final Size size = MediaQuery.of(context).size;
     return Scaffold(
       body: Center(
         child: Container(
-          child: _buildLandingPage(_size, context),
+          child: _buildLandingPage(size, context),
         ),
       ),
     );
@@ -67,7 +67,7 @@ class LandingPage extends StatelessWidget {
           ).tr(),
           Flexible(
             child: SizedBox(
-              height: size.height * 0.03,
+              height: size.height * 0.02,
             ),
           ),
           ElevatedButton(
@@ -85,8 +85,8 @@ class LandingPage extends StatelessWidget {
               'login-label',
             ).tr(),
           ),
-          const SizedBox(
-            height: 5,
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.03,
           ),
           ElevatedButton(
             onPressed: () {
@@ -104,6 +104,9 @@ class LandingPage extends StatelessWidget {
               'create-account-label',
               style: TextStyle(color: Colors.black),
             ).tr(),
+          ),
+          const SizedBox(
+            height: 10,
           ),
           TextButton(
             onPressed: () {

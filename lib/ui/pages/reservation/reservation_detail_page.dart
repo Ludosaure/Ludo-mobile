@@ -7,13 +7,16 @@ import 'package:ludo_mobile/domain/models/game.dart';
 import 'package:ludo_mobile/domain/models/reservation.dart';
 import 'package:ludo_mobile/domain/reservation_status.dart';
 import 'package:ludo_mobile/domain/use_cases/get_reservation/get_reservation_cubit.dart';
+import 'package:ludo_mobile/domain/use_cases/user_reservations/user_reservations_cubit.dart';
 import 'package:ludo_mobile/ui/components/custom_back_button.dart';
 import 'package:ludo_mobile/ui/components/list_header.dart';
 import 'package:ludo_mobile/ui/components/nav_bar/app_bar/admin_app_bar.dart';
+import 'package:ludo_mobile/ui/components/new_conversation_alert.dart';
 import 'package:ludo_mobile/ui/pages/game/list/game_tile.dart';
 import 'package:ludo_mobile/ui/pages/invoices/InvoicesList.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
 import 'package:ludo_mobile/utils/app_constants.dart';
+import 'package:ludo_mobile/utils/local_storage_helper.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
 class ReservationDetailsPage extends StatefulWidget {
@@ -218,7 +221,7 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
             ),
           ),
           child: Text(
-            "validate-game-returned".tr(),
+            "validate-games-returned".tr(),
             style: TextStyle(
               fontSize: 16,
               color: Theme.of(context).colorScheme.primary,
@@ -283,7 +286,8 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
                         "email-copied"
                             .tr(namedArgs: {"email": reservation.user!.email}),
                       ),
-                      backgroundColor: Colors.green,
+                      backgroundColor: Theme.of(context).colorScheme.secondary,
+                      duration: const Duration(seconds: 5),
                     ),
                   );
                 });
@@ -294,8 +298,8 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
                 Icons.message,
                 color: Theme.of(context).colorScheme.onPrimary,
               ),
-              onPressed: () {
-                // TODO Firebase
+              onPressed: () async {
+                await _showNewMessageDialog(context);
               },
             ),
           ],
@@ -425,18 +429,18 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
     ).build(context);
   }
 
-  _showConfirmReturnedGamesDialog(BuildContext context) {
+  _showConfirmReturnedGamesDialog(BuildContext parentContext) {
     showDialog(
-      context: context,
+      context: parentContext,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("validate-game-returned".tr()),
+          title: Text("validate-games-returned".tr()),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("validate-game-returned-confirm".tr()),
+              Text("validate-games-returned-confirm".tr()),
               const SizedBox(height: 10),
               Text(
                 "irreversible-action".tr(),
@@ -448,6 +452,25 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
           ),
           actions: [
             ElevatedButton(
+              child: Text("confirm.yes".tr()),
+              onPressed: () {
+                parentContext
+                    .read<UserReservationsCubit>()
+                    .returnReservationGames(reservation.id);
+                setState(() {
+                  reservation.returned = true;
+                });
+                Navigator.of(context).pop();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: const Text("games-returned-successfully").tr(),
+                    duration: const Duration(seconds: 4),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              },
+            ),
+            ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -456,14 +479,28 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
               ),
               child: Text("confirm.no".tr()),
             ),
-            ElevatedButton(
-              child: Text("confirm.yes".tr()),
-              onPressed: () {
-                // TODO valider le retour des jeux
-              },
-            ),
           ],
         );
+      },
+    );
+  }
+
+  _showNewMessageDialog(BuildContext parentContext) async {
+    var connectedUserId =
+        (await LocalStorageHelper.getUserFromLocalStorage())!.id;
+    if (connectedUserId == reservation.user!.id) {
+      return ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text("cant-send-message-to-yourself").tr(),
+          duration: const Duration(seconds: 4),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
+    }
+    showDialog(
+      context: parentContext,
+      builder: (BuildContext context) {
+        return NewConversationAlert(userTargetMail: reservation.user!.email);
       },
     );
   }

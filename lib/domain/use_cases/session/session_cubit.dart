@@ -3,7 +3,6 @@ import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:ludo_mobile/utils/local_storage_helper.dart';
 import 'package:flutter/material.dart';
-import 'package:meta/meta.dart';
 
 part 'session_state.dart';
 

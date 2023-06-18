@@ -60,4 +60,27 @@ class UserReservationsCubit extends Cubit<UserReservationsState> {
       );
     }
   }
+
+  void returnReservationGames(String reservationId) {
+    emit(const UserReservationsLoading());
+
+    try {
+      _userReservationRepository.returnReservationGames(reservationId);
+      emit(const UserReservationsInitial());
+    } catch (exception) {
+      if (exception is UserNotLoggedInException ||
+          exception is ForbiddenException) {
+        emit(
+          UserMustLogError(
+            message: exception.toString(),
+          ),
+        );
+        return;
+      }
+
+      emit(
+        UserReservationsError(message: exception.toString()),
+      );
+    }
+  }
 }
