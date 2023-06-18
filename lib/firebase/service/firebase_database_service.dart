@@ -57,12 +57,30 @@ class FirebaseDatabaseService {
     return userCollection.doc(uid).snapshots();
   }
 
+  Future<List> sortConversationsByRecentMessage(List<dynamic> conversationsIdsNotSorted) async {
+    final conversations = [];
+    for (final conversationId in conversationsIdsNotSorted) {
+      final conversationSnapshot = await conversationsCollection.doc(conversationId).get();
+      final conversationData = conversationSnapshot.data()! as Map<String, dynamic>;
+
+      conversations.add({
+        'conversationId': conversationData['conversationId'],
+        'time': conversationData['recentMessageTime'] as Timestamp,
+      });
+    }
+    conversations.sort((a, b) => b['time'].compareTo(a['time']));
+    final sortedConversations = [];
+    for (final conversation in conversations) {
+      sortedConversations.add(conversation['conversationId']);
+    }
+    return sortedConversations;
+  }
+
   Stream<List<Map<String, dynamic>>> getUserConversations() {
     final userSnapshotStream = userCollection.doc(uid).snapshots();
 
     return userSnapshotStream.asyncMap((userSnapshot) async {
-      final conversationIds = (userSnapshot['conversations'] as List<dynamic>)
-          .reversed; // reversed pour avoir les conversations les plus récentes en premier
+      final conversationIds = await sortConversationsByRecentMessage(userSnapshot['conversations'] as List<dynamic>);
 
       final conversationStreams = conversationIds.map((conversationId) {
         final conversationStream = conversationsCollection

@@ -114,10 +114,8 @@ class _ConversationPageState extends State<ConversationPage> {
                 String currentUserId = FirebaseAuth.instance.currentUser!.uid;
                 if (_newMessageFormKey.currentState!.validate()) {
                   FirebaseDatabaseService(uid: currentUserId)
-                      .sendMessage(
-                    widget.conversationId,
-                      currentUserId,
-                      _messageController.text)
+                      .sendMessage(widget.conversationId, currentUserId,
+                          _messageController.text)
                       .then((value) {
                     _messageController.text = "";
                   });
@@ -125,7 +123,8 @@ class _ConversationPageState extends State<ConversationPage> {
               },
               style: ElevatedButton.styleFrom(
                 shape: const CircleBorder(),
-                padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.02),
+                padding:
+                    EdgeInsets.all(MediaQuery.of(context).size.width * 0.02),
               ),
               child: const Icon(Icons.send),
             ),
@@ -190,21 +189,34 @@ class _ConversationPageState extends State<ConversationPage> {
   Widget _buildSenderName(BuildContext context, String userId) {
     return StreamBuilder(
       stream:
-      FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
-          .getUserDataById(userId)
-      .asStream(),
+          FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+              .getUserDataById(userId)
+              .asStream(),
       builder: (context, snapshot) {
         final data = snapshot.data;
         if (!snapshot.hasData ||
             snapshot.connectionState == ConnectionState.waiting) {
           if (data == null) {
-            return Text('errors.error-loading-user-data'.tr());
+            return Text(
+              'errors.error-loading-user-data'.tr(),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 14.0,
+              ),
+            );
           }
-          return Text('loading-label'.tr());
+          return Text(
+            'loading-label'.tr(),
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 14.0,
+            ),
+          );
         }
 
         final userData = data!.data()! as Map<String, dynamic>;
-        return Text('${userData['firstname']} ${userData['name']}',
+        return Text(
+          '${userData['firstname']} ${userData['name']}',
           style: const TextStyle(
             color: Colors.white,
             fontSize: 14.0,
