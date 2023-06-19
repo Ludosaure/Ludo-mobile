@@ -28,7 +28,7 @@ class ProfilePage extends StatelessWidget {
         user: connectedUser,
         onSearch: null,
         onSortPressed: null,
-        navBarIndex: MenuItems.Messages.index,
+        navBarIndex: MenuItems.Profile.index,
       );
     }
     return HomeScaffold(
