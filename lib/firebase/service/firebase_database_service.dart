@@ -279,6 +279,26 @@ class FirebaseDatabaseService {
     }
   }
 
+  Stream<bool> hasUnseenConversationsStream() {
+    final userSnapshotStream = userCollection.doc(uid).snapshots();
+
+    return userSnapshotStream.map((userSnapshot) {
+      final userMap = userSnapshot.data()! as Map<String, dynamic>;
+      final conversations = userMap['conversations'] as List<dynamic>;
+      bool hasUnreadConversations = false;
+
+      for (final conversation in conversations) {
+        final isSeen = conversation['isSeen'] as bool? ?? true;
+        if (!isSeen) {
+          hasUnreadConversations = true;
+          break;
+        }
+      }
+
+      return hasUnreadConversations;
+    });
+  }
+
   Future<bool> isConversationSeen(String conversationId) async {
     DocumentSnapshot userSnapshot = await userCollection.doc(uid).get();
     final conversationsMap = userSnapshot.data()! as Map<String, dynamic>;
