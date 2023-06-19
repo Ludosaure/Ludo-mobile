@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ludo_mobile/firebase/models/conversation_user.dart';
 import 'package:ludo_mobile/firebase/models/firebase_user.dart';
 import 'package:ludo_mobile/utils/local_storage_helper.dart';
 import 'package:rxdart/rxdart.dart';
@@ -19,7 +20,7 @@ class FirebaseDatabaseService {
       {String profilePicture = "", bool isAdmin = false}) async {
     final userDoc = userCollection.doc(uid);
 
-    final existingUserDocs = await getUserByEmail(email);
+    final existingUserDocs = await getUserDataByEmail(email);
 
     if (existingUserDocs.isNotEmpty) {
       final userData = FirebaseUser(
@@ -47,7 +48,7 @@ class FirebaseDatabaseService {
     }
   }
 
-  Future<List<FirebaseUser>> getUserByEmail(String email) async {
+  Future<List<FirebaseUser>> getUserDataByEmail(String email) async {
     final querySnapshot = await userCollection.where('email', isEqualTo: email).limit(1).get();
     final List<FirebaseUser> users = [];
 
@@ -58,22 +59,15 @@ class FirebaseDatabaseService {
     return users;
   }
 
-  Future<FirebaseUser?> getUserById(String id) async {
-    final docSnapshot = await userCollection.doc(id).get();
-
-    if (docSnapshot.exists) {
-      final userData = docSnapshot.data() as Map<String, dynamic>;
-      return FirebaseUser.fromMap(userData);
-    } else {
-      return null;
-    }
+  Future<DocumentSnapshot<Object?>> getUserDataById(String id) async {
+    return await userCollection.doc(id).get();
   }
 
-  Future<FirebaseUser?> getTargetUserByConversationId(String id) async {
+  Future<DocumentSnapshot<Object?>> getTargetUserDataByConversationId(
+      String id) async {
     final conversationDoc = await conversationsCollection.doc(id).get();
     final targetUserId = conversationDoc['targetUserId'] as String;
-
-    return getUserById(targetUserId);
+    return await userCollection.doc(targetUserId).get();
   }
 
   Stream<List<String>> getConversationIds() {
@@ -159,7 +153,7 @@ class FirebaseDatabaseService {
     });
   }
 
-  Future<Stream<DocumentSnapshot<Object?>>> getConversationStreamById(
+  Future<Stream<DocumentSnapshot<Object?>>> getConversationById(
       String id) async {
     return conversationsCollection.doc(id).snapshots();
   }
@@ -198,7 +192,7 @@ class FirebaseDatabaseService {
   Future<void> createConversation(String targetUserEmail,
       {String message = ""}) async {
     List<Object?> admins = await getAdmins();
-    List<FirebaseUser> targetUser = await getUserByEmail(targetUserEmail);
+    List<FirebaseUser> targetUser = await getUserDataByEmail(targetUserEmail);
     if (targetUser.isEmpty) {
       throw Exception("Target user not found");
     }

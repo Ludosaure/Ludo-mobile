@@ -30,16 +30,4 @@ class FirebaseConversation {
       'targetUserId': targetUserId,
     };
   }
-
-  factory FirebaseConversation.fromMap(Map<String, dynamic> map) {
-    return FirebaseConversation(
-      conversationId: map['conversationId'],
-      members: List<String>.from(map['members']),
-      messages: List<FirebaseMessage>.from(map['messages']?.map((x) => FirebaseMessage.fromMap(x))),
-      recentMessage: map['recentMessage'],
-      recentMessageSender: map['recentMessageSender'],
-      recentMessageTime: map['recentMessageTime'],
-      targetUserId: map['targetUserId'],
-    );
-  }
 }
