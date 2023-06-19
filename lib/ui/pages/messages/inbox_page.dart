@@ -109,8 +109,8 @@ class _InboxPageState extends State<InboxPage> {
   }
 
   Widget _buildConversations() {
-    return FutureBuilder<List<Map<String, dynamic>>>(
-      future: FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid).getUserConversations().first,
+    return StreamBuilder<List<Map<String, dynamic>>>(
+      stream: FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid).getUserConversations(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return CircularProgressIndicator(
