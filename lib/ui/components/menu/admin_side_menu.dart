@@ -1,15 +1,39 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ludo_mobile/firebase/service/firebase_database_service.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
 import 'package:ludo_mobile/utils/menu_items.dart';
 import 'package:responsive_framework/responsive_row_column.dart';
 import 'package:responsive_framework/responsive_value.dart';
 import 'package:responsive_framework/responsive_wrapper.dart';
 
-class AdminSideMenu extends StatelessWidget {
+class AdminSideMenu extends StatefulWidget {
   const AdminSideMenu({
     Key? key,
   }) : super(key: key);
+
+  @override
+  State<AdminSideMenu> createState() => _AdminSideMenuState();
+}
+
+class _AdminSideMenuState extends State<AdminSideMenu> {
+  bool _hasUnseenConversations = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initHasUnseenConversations();
+  }
+
+  _initHasUnseenConversations() {
+    final unreadConversationsStream =
+    FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+        .hasUnseenConversationsStream();
+    unreadConversationsStream.listen((hasUnreadConversations) {
+      setState(() => _hasUnseenConversations = hasUnreadConversations);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,10 +94,22 @@ class AdminSideMenu extends StatelessWidget {
     String route,
     IconData icon,
   ) {
-    bool isSelected = GoRouter.of(context).location == route;
+    Color selectedColor = (GoRouter.of(context).location == route)
+        ? Theme.of(context).colorScheme.secondary
+        : Colors.transparent;
+    Color color = (_hasUnseenConversations && label == MenuItems.Messages.label)
+        ? Theme.of(context).colorScheme.primary
+        : Colors.black;
+    Color backgroundColor =
+    (_hasUnseenConversations && label == MenuItems.Messages.label)
+        ? Theme.of(context).colorScheme.primary.withOpacity(0.2)
+        : selectedColor;
     return ResponsiveRowColumnItem(
       child: Container(
-        color: isSelected ? Colors.grey.shade200 : Colors.transparent,
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(7),
+        ),
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: ResponsiveRowColumn(
@@ -94,6 +130,7 @@ class AdminSideMenu extends StatelessWidget {
                       const Condition.largerThan(name: DESKTOP, value: 24.0),
                     ],
                   ).value,
+                  color: color,
                   icon,
                 ),
               ),
@@ -117,7 +154,7 @@ class AdminSideMenu extends StatelessWidget {
                         ],
                       ).value,
                       fontWeight: FontWeight.w400,
-                      color: Colors.black,
+                      color: color,
                     ),
                   ),
                 ),
