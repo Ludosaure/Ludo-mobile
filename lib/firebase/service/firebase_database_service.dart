@@ -66,7 +66,6 @@ class FirebaseDatabaseService {
     });
   }
 
-
   Future<List<dynamic>> sortConversationsByRecentMessage(
       List<dynamic> conversationsIdsNotSorted) async {
     final conversations = [];
@@ -109,10 +108,10 @@ class FirebaseDatabaseService {
             QuerySnapshot<Map<String, dynamic>>, Map<String, dynamic>>(
           conversationStream,
           membersStream,
-              (conversationSnapshot, membersSnapshot) {
+          (conversationSnapshot, membersSnapshot) {
             final conversationData = conversationSnapshot.data()!;
             final membersData =
-            membersSnapshot.docs.map((doc) => doc.data()).toList();
+                membersSnapshot.docs.map((doc) => doc.data()).toList();
             final recentMessage =
                 conversationData['recentMessage'] as String? ?? '';
 
@@ -136,7 +135,7 @@ class FirebaseDatabaseService {
     return conversationsCollection.doc(id).snapshots();
   }
 
-  Future<List<dynamic>> getGroupMembers(String conversationId) async {
+  Future<List<dynamic>> getConversationMembers(String conversationId) async {
     DocumentSnapshot<Object?> conversationSnapshot =
         await conversationsCollection.doc(conversationId).get();
     final data = conversationSnapshot.data()! as Map<String, dynamic>;
@@ -185,7 +184,7 @@ class FirebaseDatabaseService {
     List<Object?> existingConversation =
         await getConversationByMemberId(targetUserId);
 
-    List<String> members = initGroupMembers(targetUserId, admins);
+    List<String> members = initConversationMembers(targetUserId, admins);
     String? senderId =
         await LocalStorageHelper.getFirebaseUserIdFromLocalStorage();
     if (senderId == null) {
@@ -196,6 +195,7 @@ class FirebaseDatabaseService {
     if (existingConversation.isEmpty) {
       DocumentReference conversationDocumentReference =
           await conversationsCollection.add({
+        'isSeen': false,
         'members': members,
         'targetUserId': targetUserId,
         'messages': [],
@@ -221,6 +221,12 @@ class FirebaseDatabaseService {
     }
   }
 
+  void setConversationToSeen(String conversationId) async {
+    conversationsCollection.doc(conversationId).update({
+      'isSeen': true,
+    });
+  }
+
   Future<void> sendMessage(
       String conversationId, String senderId, String message) async {
     conversationsCollection.doc(conversationId).update({
@@ -237,7 +243,8 @@ class FirebaseDatabaseService {
     });
   }
 
-  List<String> initGroupMembers(String targetUserId, List<Object?> admins) {
+  List<String> initConversationMembers(
+      String targetUserId, List<Object?> admins) {
     List<String> members = [targetUserId];
     admins.forEach((admin) {
       var adminMap = admin as Map<String, dynamic>;

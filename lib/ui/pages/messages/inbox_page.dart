@@ -108,7 +108,6 @@ class _InboxPageState extends State<InboxPage> {
     );
   }
 
-  // TODO gestion des messages non lus
   Widget _buildConversations() {
     return StreamBuilder<List<Map<String, dynamic>>>(
       stream:
@@ -134,9 +133,11 @@ class _InboxPageState extends State<InboxPage> {
             final recentMessage = data[index]['recentMessage'] as String;
 
             final targetUserId = conversationData['targetUserId'] as String;
+            final isSeen = conversationData['isSeen'] as bool;
             return _buildConversation(
               targetUserId,
               recentMessage,
+              isSeen,
               conversationData['conversationId'],
             );
           },
@@ -148,6 +149,7 @@ class _InboxPageState extends State<InboxPage> {
   Widget _buildConversation(
     String targetUserId,
     String recentMessage,
+    bool isSeen,
     String conversationId,
   ) {
     return StreamBuilder<DocumentSnapshot<Object?>>(
@@ -166,6 +168,7 @@ class _InboxPageState extends State<InboxPage> {
             userProfilePicture,
             userFirstName,
             userLastName,
+            isSeen,
             recentMessage,
             conversationId,
           );
@@ -188,6 +191,7 @@ class _InboxPageState extends State<InboxPage> {
     String? userProfilePicture,
     String firstname,
     String lastname,
+    bool isSeen,
     String recentMessage,
     String conversationId,
   ) {
@@ -195,17 +199,23 @@ class _InboxPageState extends State<InboxPage> {
       leading: CustomCircleAvatar(userProfilePicture: userProfilePicture),
       title: Text(
         '$firstname $lastname',
-        style: const TextStyle(fontWeight: FontWeight.bold),
+        style:
+            TextStyle(fontWeight: isSeen ? FontWeight.normal : FontWeight.bold),
       ),
       subtitle: RichText(
         overflow: TextOverflow.ellipsis,
         strutStyle: const StrutStyle(fontSize: 12.0),
         text: TextSpan(
           text: recentMessage,
-          style: const TextStyle(color: Colors.black54),
+          style: TextStyle(
+            color: Colors.black54,
+            fontWeight: isSeen ? FontWeight.normal : FontWeight.bold,
+          ),
         ),
       ),
       onTap: () {
+        FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+            .setConversationToSeen(conversationId);
         context.push(
           '${Routes.inbox.path}/$conversationId',
         );

@@ -356,7 +356,7 @@ class _ConversationPageState extends State<ConversationPage> {
 
   _showGroupInfosDialog(BuildContext parentContext) async {
     await FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
-        .getGroupMembers(widget.conversationId)
+        .getConversationMembers(widget.conversationId)
         .then((members) {
       showDialog(
         context: parentContext,
