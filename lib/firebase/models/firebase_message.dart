@@ -17,4 +17,12 @@ class FirebaseMessage {
       'time': time,
     };
   }
+
+  factory FirebaseMessage.fromMap(Map<String, dynamic> map) {
+    return FirebaseMessage(
+      message: map['message'],
+      sender: map['sender'],
+      time: map['time'],
+    );
+  }
 }

@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:intl/intl.dart';
+import 'package:ludo_mobile/firebase/models/firebase_conversation.dart';
 import 'package:ludo_mobile/firebase/service/firebase_database_service.dart';
 import 'package:ludo_mobile/ui/components/circle-avatar.dart';
 import 'package:ludo_mobile/ui/components/custom_back_button.dart';
@@ -20,7 +21,7 @@ class ConversationPage extends StatefulWidget {
 }
 
 class _ConversationPageState extends State<ConversationPage> {
-  Stream<DocumentSnapshot<Object?>>? _conversation;
+  Stream<DocumentSnapshot>? _conversation;
   final _newMessageFormKey = GlobalKey<FormState>();
   final _messageController = TextEditingController();
 
@@ -34,7 +35,7 @@ class _ConversationPageState extends State<ConversationPage> {
     FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
         .setConversationToSeen(widget.conversationId);
     await FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
-        .getConversationById(widget.conversationId)
+        .getConversationStreamById(widget.conversationId)
         .then((snapshot) {
       setState(() {
         _conversation = snapshot;
@@ -201,11 +202,11 @@ class _ConversationPageState extends State<ConversationPage> {
     return StreamBuilder(
       stream:
           FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
-              .getUserDataById(userId)
+              .getUserById(userId)
               .asStream(),
       builder: (context, snapshot) {
         final data = snapshot.data;
-        if (!snapshot.hasData ||
+        if (!snapshot.hasData || snapshot.data == null ||
             snapshot.connectionState == ConnectionState.waiting) {
           if (data == null) {
             return Text(
@@ -225,9 +226,9 @@ class _ConversationPageState extends State<ConversationPage> {
           );
         }
 
-        final userData = data!.data()! as Map<String, dynamic>;
+        final userFirebase = data!;
         return Text(
-          '${userData['firstname']} ${userData['name']}',
+          '${userFirebase.firstname} ${userFirebase.name}',
           style: const TextStyle(
             color: Colors.white,
             fontSize: 14.0,
@@ -246,26 +247,23 @@ class _ConversationPageState extends State<ConversationPage> {
         child: CustomBackButton(),
       ),
       leadingWidth: MediaQuery.of(context).size.width * 0.20,
-      title: StreamBuilder<DocumentSnapshot<Object?>>(
+      title: StreamBuilder(
         stream:
             FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
-                .getTargetUserDataByConversationId(widget.conversationId)
+                .getTargetUserByConversationId(widget.conversationId)
                 .asStream(),
         builder: (context, snapshot) {
-          if (snapshot.hasData && snapshot.data!.exists) {
-            final userData = snapshot.data!.data()! as Map<String, dynamic>;
-            final userFirstName = userData['firstname'] as String;
-            final userLastName = userData['name'] as String;
-            final userProfilePicture = userData['profilePicture'] as String?;
+          if (snapshot.hasData && snapshot.data != null) {
+            final userFirebase = snapshot.data!;
 
-            final fullName = '$userFirstName $userLastName';
+            final fullName = '${userFirebase.firstname} ${userFirebase.name}';
             var maxCharName = 45;
             if (ResponsiveWrapper.of(context).isSmallerThan(DESKTOP)) {
               maxCharName = 15;
             }
             return Row(
               children: [
-                CustomCircleAvatar(userProfilePicture: userProfilePicture),
+                CustomCircleAvatar(userProfilePicture: userFirebase.profilePicture),
                 const SizedBox(width: 10),
                 Text(
                   fullName.length > maxCharName

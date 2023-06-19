@@ -157,22 +157,19 @@ class _InboxPageState extends State<InboxPage> {
     bool isSeen,
     String conversationId,
   ) {
-    return StreamBuilder<DocumentSnapshot<Object?>>(
+    return StreamBuilder(
       stream:
           FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
-              .getUserDataById(targetUserId)
+              .getUserById(targetUserId)
               .asStream(),
       builder: (context, snapshot) {
-        if (snapshot.hasData && snapshot.data!.exists) {
-          final userData = snapshot.data!.data()! as Map<String, dynamic>;
-          final userFirstName = userData['firstname'] as String;
-          final userLastName = userData['name'] as String;
-          final userProfilePicture = userData['profilePicture'] as String?;
+        if (snapshot.hasData && snapshot.data != null) {
+          final userFirebase = snapshot.data!;
 
           return _buildConversationTile(
-            userProfilePicture,
-            userFirstName,
-            userLastName,
+            userFirebase.profilePicture,
+            userFirebase.firstname,
+            userFirebase.name,
             isSeen,
             recentMessage,
             conversationId,
