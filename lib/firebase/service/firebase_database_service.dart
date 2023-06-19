@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ludo_mobile/firebase/models/conversation_user.dart';
+import 'package:ludo_mobile/firebase/models/firebase_user.dart';
 import 'package:ludo_mobile/utils/local_storage_helper.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -18,31 +20,43 @@ class FirebaseDatabaseService {
       {String profilePicture = "", bool isAdmin = false}) async {
     final userDoc = userCollection.doc(uid);
 
-    final existingUserDoc = await getUserDataByEmail(email);
+    final existingUserDocs = await getUserDataByEmail(email);
 
-    if (existingUserDoc.docs.isNotEmpty) {
-      return userDoc.set({
-        'name': name,
-        'firstname': firstname,
-        'profilePicture': profilePicture,
-        'conversations': [],
-        'isAdmin': isAdmin,
-      }, SetOptions(merge: true));
+    if (existingUserDocs.isNotEmpty) {
+      final userData = FirebaseUser(
+        name: name,
+        firstname: firstname,
+        email: email,
+        profilePicture: profilePicture,
+        conversations: [],
+        isAdmin: isAdmin,
+      ).toMap();
+
+      return userDoc.set(userData, SetOptions(merge: true));
     } else {
-      return userDoc.set({
-        'name': name,
-        'firstname': firstname,
-        'email': email,
-        'profilePicture': profilePicture,
-        'conversations': [],
-        'isAdmin': isAdmin,
-        'uid': uid,
-      });
+      final userData = FirebaseUser(
+        uid: uid,
+        name: name,
+        firstname: firstname,
+        email: email,
+        profilePicture: profilePicture,
+        conversations: [],
+        isAdmin: isAdmin,
+      ).toMap();
+
+      return userDoc.set(userData);
     }
   }
 
-  Future<QuerySnapshot<Object?>> getUserDataByEmail(String email) async {
-    return await userCollection.where('email', isEqualTo: email).limit(1).get();
+  Future<List<FirebaseUser>> getUserDataByEmail(String email) async {
+    final querySnapshot = await userCollection.where('email', isEqualTo: email).limit(1).get();
+    final List<FirebaseUser> users = [];
+
+    for (final docSnapshot in querySnapshot.docs) {
+      final userData = docSnapshot.data() as Map<String, dynamic>;
+      users.add(FirebaseUser.fromMap(userData));
+    }
+    return users;
   }
 
   Future<DocumentSnapshot<Object?>> getUserDataById(String id) async {
@@ -178,12 +192,11 @@ class FirebaseDatabaseService {
   Future<void> createConversation(String targetUserEmail,
       {String message = ""}) async {
     List<Object?> admins = await getAdmins();
-    QuerySnapshot<Object?> targetUser =
-        await getUserDataByEmail(targetUserEmail);
-    if (targetUser.docs.isEmpty) {
+    List<FirebaseUser> targetUser = await getUserDataByEmail(targetUserEmail);
+    if (targetUser.isEmpty) {
       throw Exception("Target user not found");
     }
-    var targetUserId = targetUser.docs[0]["uid"];
+    var targetUserId = targetUser[0].uid!;
 
     saveConversationData(targetUserId, admins, message: message);
   }
