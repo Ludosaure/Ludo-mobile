@@ -1,12 +1,15 @@
+import 'package:badges/badges.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:ludo_mobile/domain/models/user.dart';
+import 'package:ludo_mobile/domain/models/user.dart' as db_user;
+import 'package:ludo_mobile/firebase/service/firebase_database_service.dart';
 import 'package:ludo_mobile/ui/components/search_bar.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
 import 'package:ludo_mobile/utils/menu_items.dart';
 
-class CustomBottomNavigationBar extends StatelessWidget {
-  final User user;
+class CustomBottomNavigationBar extends StatefulWidget {
+  final db_user.User user;
   final int index;
 
   const CustomBottomNavigationBar({
@@ -16,14 +19,43 @@ class CustomBottomNavigationBar extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<CustomBottomNavigationBar> createState() => _CustomBottomNavigationBarState();
+}
+
+class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
+  bool _hasUnseenConversations = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initHasUnseenConversations();
+  }
+
+  _initHasUnseenConversations() {
+    final unreadConversationsStream =
+    FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+        .hasUnseenConversationsStream();
+    unreadConversationsStream.listen((hasUnreadConversations) {
+      setState(() => _hasUnseenConversations = hasUnreadConversations);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
-      currentIndex: index,
+      currentIndex: widget.index,
       unselectedItemColor: Colors.grey[800],
       selectedItemColor: Theme.of(context).colorScheme.primary,
       items: [
         BottomNavigationBarItem(
-          icon: Icon(MenuItems.Messages.icon),
+          icon: Badge(
+            badgeContent: const Text(
+              '',
+              style: TextStyle(color: Colors.white),
+            ),
+            showBadge: _hasUnseenConversations,
+            child: Icon(MenuItems.Messages.icon),
+          ),
           label: MenuItems.Messages.label,
         ),
         BottomNavigationBarItem(

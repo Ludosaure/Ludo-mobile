@@ -1,33 +1,62 @@
 import 'dart:async';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:ludo_mobile/domain/models/user.dart';
-import 'package:ludo_mobile/domain/use_cases/session/session_cubit.dart';
-import 'package:ludo_mobile/injection.dart';
+import 'package:ludo_mobile/domain/models/user.dart' as db_user;
+import 'package:ludo_mobile/firebase/service/firebase_database_service.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
 import 'package:ludo_mobile/utils/menu_items.dart';
+import 'package:badges/badges.dart';
 
-class AdminBottomNavBar extends StatelessWidget {
-  late final SessionCubit _sessionCubit = locator<SessionCubit>();
-  final User user;
+class AdminBottomNavBar extends StatefulWidget {
+  final db_user.User user;
   final int index;
 
-  AdminBottomNavBar({
+  const AdminBottomNavBar({
     Key? key,
     required this.index,
     required this.user,
   }) : super(key: key);
 
   @override
+  State<AdminBottomNavBar> createState() => _AdminBottomNavBarState();
+}
+
+class _AdminBottomNavBarState extends State<AdminBottomNavBar> {
+  bool _hasUnseenConversations = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initHasUnseenConversations();
+  }
+
+  _initHasUnseenConversations() {
+    final unreadConversationsStream =
+        FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+            .hasUnseenConversationsStream();
+    unreadConversationsStream.listen((hasUnreadConversations) {
+      setState(() => _hasUnseenConversations = hasUnreadConversations);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
-      currentIndex: index,
+      currentIndex: widget.index,
       unselectedItemColor: Colors.grey[800],
       selectedItemColor: Theme.of(context).colorScheme.primary,
       items: [
         BottomNavigationBarItem(
-          icon: Icon(AdminMenuItems.Messages.icon),
+          icon: Badge(
+            badgeContent: const Text(
+              '',
+              style: TextStyle(color: Colors.white),
+            ),
+            showBadge: _hasUnseenConversations,
+            child: Icon(AdminMenuItems.Messages.icon),
+          ),
           label: AdminMenuItems.Messages.label,
         ),
         BottomNavigationBarItem(

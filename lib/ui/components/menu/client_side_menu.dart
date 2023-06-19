@@ -1,3 +1,4 @@
+import 'package:badges/badges.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -88,20 +89,11 @@ class _ClientSideMenuState extends State<ClientSideMenu> {
     String route,
     IconData icon,
   ) {
-    Color selectedColor = (GoRouter.of(context).location == route)
-        ? Theme.of(context).colorScheme.secondary
-        : Colors.transparent;
-    Color color = (_hasUnseenConversations && label == MenuItems.Messages.label)
-        ? Theme.of(context).colorScheme.primary
-        : Colors.black;
-    Color backgroundColor =
-        (_hasUnseenConversations && label == MenuItems.Messages.label)
-            ? Theme.of(context).colorScheme.primary.withOpacity(0.2)
-            : selectedColor;
+    bool isSelected = GoRouter.of(context).location == route;
     return ResponsiveRowColumnItem(
       child: Container(
         decoration: BoxDecoration(
-          color: backgroundColor,
+          color: isSelected ? Colors.grey.shade200 : Colors.transparent,
           borderRadius: BorderRadius.circular(7),
         ),
         child: Padding(
@@ -114,18 +106,24 @@ class _ClientSideMenuState extends State<ClientSideMenu> {
             rowVerticalDirection: VerticalDirection.down,
             children: [
               ResponsiveRowColumnItem(
-                child: Icon(
-                  size: ResponsiveValue(
-                    context,
-                    defaultValue: 20.0,
-                    valueWhen: [
-                      const Condition.largerThan(name: MOBILE, value: 14.0),
-                      const Condition.largerThan(name: TABLET, value: 20.0),
-                      const Condition.largerThan(name: DESKTOP, value: 24.0),
-                    ],
-                  ).value,
-                  color: color,
-                  icon,
+                child: Badge(
+                  badgeContent: const Text(
+                    '',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  showBadge: (_hasUnseenConversations && label == MenuItems.Messages.label),
+                  child: Icon(
+                    size: ResponsiveValue(
+                      context,
+                      defaultValue: 20.0,
+                      valueWhen: [
+                        const Condition.largerThan(name: MOBILE, value: 14.0),
+                        const Condition.largerThan(name: TABLET, value: 20.0),
+                        const Condition.largerThan(name: DESKTOP, value: 24.0),
+                      ],
+                    ).value,
+                    icon,
+                  ),
                 ),
               ),
               ResponsiveRowColumnItem(
@@ -148,7 +146,7 @@ class _ClientSideMenuState extends State<ClientSideMenu> {
                         ],
                       ).value,
                       fontWeight: FontWeight.w400,
-                      color: color,
+                      color: Colors.black,
                     ),
                   ),
                 ),

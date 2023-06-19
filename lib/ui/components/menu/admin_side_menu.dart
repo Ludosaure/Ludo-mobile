@@ -1,3 +1,4 @@
+import 'package:badges/badges.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -28,8 +29,8 @@ class _AdminSideMenuState extends State<AdminSideMenu> {
 
   _initHasUnseenConversations() {
     final unreadConversationsStream =
-    FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
-        .hasUnseenConversationsStream();
+        FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+            .hasUnseenConversationsStream();
     unreadConversationsStream.listen((hasUnreadConversations) {
       setState(() => _hasUnseenConversations = hasUnreadConversations);
     });
@@ -94,20 +95,11 @@ class _AdminSideMenuState extends State<AdminSideMenu> {
     String route,
     IconData icon,
   ) {
-    Color selectedColor = (GoRouter.of(context).location == route)
-        ? Theme.of(context).colorScheme.secondary
-        : Colors.transparent;
-    Color color = (_hasUnseenConversations && label == MenuItems.Messages.label)
-        ? Theme.of(context).colorScheme.primary
-        : Colors.black;
-    Color backgroundColor =
-    (_hasUnseenConversations && label == MenuItems.Messages.label)
-        ? Theme.of(context).colorScheme.primary.withOpacity(0.2)
-        : selectedColor;
+    bool isSelected = GoRouter.of(context).location == route;
     return ResponsiveRowColumnItem(
       child: Container(
         decoration: BoxDecoration(
-          color: backgroundColor,
+          color: isSelected ? Colors.grey.shade200 : Colors.transparent,
           borderRadius: BorderRadius.circular(7),
         ),
         child: Padding(
@@ -120,18 +112,24 @@ class _AdminSideMenuState extends State<AdminSideMenu> {
             rowVerticalDirection: VerticalDirection.down,
             children: [
               ResponsiveRowColumnItem(
-                child: Icon(
-                  size: ResponsiveValue(
-                    context,
-                    defaultValue: 20.0,
-                    valueWhen: [
-                      const Condition.largerThan(name: MOBILE, value: 14.0),
-                      const Condition.largerThan(name: TABLET, value: 20.0),
-                      const Condition.largerThan(name: DESKTOP, value: 24.0),
-                    ],
-                  ).value,
-                  color: color,
-                  icon,
+                child: Badge(
+                  badgeContent: const Text(
+                    '',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  showBadge: (_hasUnseenConversations && label == AdminMenuItems.Messages.label),
+                  child: Icon(
+                    size: ResponsiveValue(
+                      context,
+                      defaultValue: 20.0,
+                      valueWhen: [
+                        const Condition.largerThan(name: MOBILE, value: 14.0),
+                        const Condition.largerThan(name: TABLET, value: 20.0),
+                        const Condition.largerThan(name: DESKTOP, value: 24.0),
+                      ],
+                    ).value,
+                    icon,
+                  ),
                 ),
               ),
               ResponsiveRowColumnItem(
@@ -154,7 +152,7 @@ class _AdminSideMenuState extends State<AdminSideMenu> {
                         ],
                       ).value,
                       fontWeight: FontWeight.w400,
-                      color: color,
+                      color: Colors.black,
                     ),
                   ),
                 ),
