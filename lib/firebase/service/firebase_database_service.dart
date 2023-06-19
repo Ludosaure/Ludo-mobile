@@ -61,9 +61,17 @@ class FirebaseDatabaseService {
 
     return userSnapshotStream.map((userSnapshot) {
       final userMap = userSnapshot.data()! as Map<String, dynamic>;
-      final conversationIds = userMap['conversations'].cast<String>();
-      return conversationIds;
+      final conversations = userMap['conversations'] as List<dynamic>;
+      return initConversationIdsList(conversations);
     });
+  }
+
+  List<String> initConversationIdsList(List<dynamic> conversations) {
+    final List<String> conversationIds = [];
+    for (final conversation in conversations) {
+      conversationIds.add(conversation['conversationId'] as String);
+    }
+    return conversationIds;
   }
 
   Future<List<dynamic>> sortConversationsByRecentMessage(
@@ -92,15 +100,16 @@ class FirebaseDatabaseService {
     final userSnapshotStream = userCollection.doc(uid).snapshots();
 
     return userSnapshotStream.asyncMap((userSnapshot) async {
+      final conversations = userSnapshot['conversations'] as List<dynamic>;
       final conversationIds = await sortConversationsByRecentMessage(
-          userSnapshot['conversations'] as List<dynamic>);
+          initConversationIdsList(conversations));
 
       final conversationStreams = conversationIds.map((conversationId) {
         final conversationStream = conversationsCollection
             .doc(conversationId)
             .snapshots() as Stream<DocumentSnapshot<Map<String, dynamic>>>;
         final membersStream = userCollection
-            .where('conversations', arrayContains: conversationId)
+            .where('conversations.conversationId', isEqualTo: conversationId)
             .snapshots() as Stream<QuerySnapshot<Map<String, dynamic>>>;
 
         // rx permet de combiner 2 streams
@@ -195,7 +204,6 @@ class FirebaseDatabaseService {
     if (existingConversation.isEmpty) {
       DocumentReference conversationDocumentReference =
           await conversationsCollection.add({
-        'isSeen': false,
         'members': members,
         'targetUserId': targetUserId,
         'messages': [],
@@ -211,8 +219,12 @@ class FirebaseDatabaseService {
       for (var memberId in members) {
         DocumentReference userDocumentReference = userCollection.doc(memberId);
         await userDocumentReference.update({
-          "conversations":
-              FieldValue.arrayUnion([conversationDocumentReference.id])
+          'conversations': FieldValue.arrayUnion([
+            {
+              'conversationId': conversationDocumentReference.id,
+              'isSeen': false
+            }
+          ])
         });
       }
     } else {
@@ -222,9 +234,63 @@ class FirebaseDatabaseService {
   }
 
   void setConversationToSeen(String conversationId) async {
-    conversationsCollection.doc(conversationId).update({
-      'isSeen': true,
+    DocumentReference userDocumentReference = userCollection.doc(uid);
+    DocumentSnapshot userSnapshot = await userDocumentReference.get();
+    final conversationsMap = userSnapshot.data()! as Map<String, dynamic>;
+    List<dynamic> conversations = conversationsMap['conversations'];
+
+    for (var conversation in conversations) {
+      if (conversation['conversationId'] == conversationId) {
+        conversation['isSeen'] = true;
+        break;
+      }
+    }
+
+    await userDocumentReference.update({
+      'conversations': conversations,
     });
+  }
+
+  void setConversationUnseenForOtherMembers(String conversationId, String senderId) async {
+    final conversationSnapshot = await conversationsCollection.doc(conversationId).get();
+
+    if (conversationSnapshot.exists) {
+      final conversationData = conversationSnapshot.data() as Map<String, dynamic>;
+      final members = conversationData['members'] as List<dynamic>;
+
+      final userSnapshots = await userCollection.where(FieldPath.documentId, whereIn: members).get();
+      for (final userSnapshot in userSnapshots.docs) {
+        final userSnapshotMap = userSnapshot.data()! as Map<String, dynamic>;
+        final conversations = userSnapshotMap['conversations'] as List<dynamic>;
+
+        if (userSnapshot.id != senderId) {
+          for (var conversation in conversations) {
+            if (conversation['conversationId'] == conversationId) {
+              conversation['isSeen'] = false;
+              break;
+            }
+          }
+
+          await userCollection.doc(userSnapshot.id).update({
+            'conversations': conversations,
+          });
+        }
+      }
+    }
+  }
+
+  Future<bool> isConversationSeen(String conversationId) async {
+    DocumentSnapshot userSnapshot = await userCollection.doc(uid).get();
+    final conversationsMap = userSnapshot.data()! as Map<String, dynamic>;
+    List<dynamic> conversations = conversationsMap['conversations'];
+
+    for (var conversation in conversations) {
+      if (conversation['conversationId'] == conversationId) {
+        return conversation['isSeen'] ?? false;
+      }
+    }
+
+    return false;
   }
 
   Future<void> sendMessage(
@@ -241,6 +307,7 @@ class FirebaseDatabaseService {
       'recentMessageSender': senderId,
       'recentMessageTime': DateTime.now(),
     });
+    setConversationUnseenForOtherMembers(conversationId, senderId);
   }
 
   List<String> initConversationMembers(

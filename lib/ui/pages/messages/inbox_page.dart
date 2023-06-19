@@ -109,42 +109,47 @@ class _InboxPageState extends State<InboxPage> {
   }
 
   Widget _buildConversations() {
-    return StreamBuilder<List<Map<String, dynamic>>>(
-      stream:
-          FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
-              .getUserConversations(),
+    return FutureBuilder<List<Map<String, dynamic>>>(
+      future: FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid).getUserConversations().first,
       builder: (context, snapshot) {
-        final data = snapshot.data;
-        if (!snapshot.hasData ||
-            snapshot.connectionState == ConnectionState.waiting) {
-          if (data == null || data.isEmpty) {
-            return _buildNoConversations();
-          }
+        if (snapshot.connectionState == ConnectionState.waiting) {
           return CircularProgressIndicator(
             color: Theme.of(context).colorScheme.primary,
           );
         }
 
+        final data = snapshot.data;
+        if (!snapshot.hasData || data == null || data.isEmpty) {
+          return _buildNoConversations();
+        }
+
         return ListView.builder(
-          itemCount: data!.length,
+          itemCount: data.length,
           itemBuilder: (context, index) {
-            final conversationData =
-                data[index]['conversation'] as Map<String, dynamic>;
+            final conversationData = data[index]['conversation'] as Map<String, dynamic>;
             final recentMessage = data[index]['recentMessage'] as String;
 
             final targetUserId = conversationData['targetUserId'] as String;
-            final isSeen = conversationData['isSeen'] as bool;
-            return _buildConversation(
-              targetUserId,
-              recentMessage,
-              isSeen,
-              conversationData['conversationId'],
+            final conversationId = conversationData['conversationId'] as String;
+
+            return FutureBuilder<bool>(
+              future: FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid).isConversationSeen(conversationId),
+              builder: (context, snapshot) {
+                final isSeen = snapshot.data ?? false;
+                return _buildConversation(
+                  targetUserId,
+                  recentMessage,
+                  isSeen,
+                  conversationId,
+                );
+              },
             );
           },
         );
       },
     );
   }
+
 
   Widget _buildConversation(
     String targetUserId,
@@ -214,8 +219,6 @@ class _InboxPageState extends State<InboxPage> {
         ),
       ),
       onTap: () {
-        FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
-            .setConversationToSeen(conversationId);
         context.push(
           '${Routes.inbox.path}/$conversationId',
         );
