@@ -108,36 +108,41 @@ class _InboxPageState extends State<InboxPage> {
     );
   }
 
-  // TODO gestion des messages non lus
   Widget _buildConversations() {
     return StreamBuilder<List<Map<String, dynamic>>>(
-      stream:
-          FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
-              .getUserConversations(),
+      stream: FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid).getUserConversations(),
       builder: (context, snapshot) {
-        final data = snapshot.data;
-        if (!snapshot.hasData ||
-            snapshot.connectionState == ConnectionState.waiting) {
-          if (data == null || data.isEmpty) {
-            return _buildNoConversations();
-          }
+        if (snapshot.connectionState == ConnectionState.waiting) {
           return CircularProgressIndicator(
             color: Theme.of(context).colorScheme.primary,
           );
         }
 
+        final data = snapshot.data;
+        if (!snapshot.hasData || data == null || data.isEmpty) {
+          return _buildNoConversations();
+        }
+
         return ListView.builder(
-          itemCount: data!.length,
+          itemCount: data.length,
           itemBuilder: (context, index) {
-            final conversationData =
-                data[index]['conversation'] as Map<String, dynamic>;
+            final conversationData = data[index]['conversation'] as Map<String, dynamic>;
             final recentMessage = data[index]['recentMessage'] as String;
 
             final targetUserId = conversationData['targetUserId'] as String;
-            return _buildConversation(
-              targetUserId,
-              recentMessage,
-              conversationData['conversationId'],
+            final conversationId = conversationData['conversationId'] as String;
+
+            return FutureBuilder<bool>(
+              future: FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid).isConversationSeen(conversationId),
+              builder: (context, snapshot) {
+                final isSeen = snapshot.data ?? false;
+                return _buildConversation(
+                  targetUserId,
+                  recentMessage,
+                  isSeen,
+                  conversationId,
+                );
+              },
             );
           },
         );
@@ -145,9 +150,11 @@ class _InboxPageState extends State<InboxPage> {
     );
   }
 
+
   Widget _buildConversation(
     String targetUserId,
     String recentMessage,
+    bool isSeen,
     String conversationId,
   ) {
     return StreamBuilder<DocumentSnapshot<Object?>>(
@@ -166,6 +173,7 @@ class _InboxPageState extends State<InboxPage> {
             userProfilePicture,
             userFirstName,
             userLastName,
+            isSeen,
             recentMessage,
             conversationId,
           );
@@ -188,6 +196,7 @@ class _InboxPageState extends State<InboxPage> {
     String? userProfilePicture,
     String firstname,
     String lastname,
+    bool isSeen,
     String recentMessage,
     String conversationId,
   ) {
@@ -195,14 +204,18 @@ class _InboxPageState extends State<InboxPage> {
       leading: CustomCircleAvatar(userProfilePicture: userProfilePicture),
       title: Text(
         '$firstname $lastname',
-        style: const TextStyle(fontWeight: FontWeight.bold),
+        style:
+            TextStyle(fontWeight: isSeen ? FontWeight.normal : FontWeight.bold),
       ),
       subtitle: RichText(
         overflow: TextOverflow.ellipsis,
         strutStyle: const StrutStyle(fontSize: 12.0),
         text: TextSpan(
           text: recentMessage,
-          style: const TextStyle(color: Colors.black54),
+          style: TextStyle(
+            color: Colors.black54,
+            fontWeight: isSeen ? FontWeight.normal : FontWeight.bold,
+          ),
         ),
       ),
       onTap: () {

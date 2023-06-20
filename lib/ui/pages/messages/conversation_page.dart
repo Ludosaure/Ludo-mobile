@@ -31,6 +31,8 @@ class _ConversationPageState extends State<ConversationPage> {
   }
 
   void _initConversation() async {
+    FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+        .setConversationToSeen(widget.conversationId);
     await FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
         .getConversationById(widget.conversationId)
         .then((snapshot) {
@@ -356,7 +358,7 @@ class _ConversationPageState extends State<ConversationPage> {
 
   _showGroupInfosDialog(BuildContext parentContext) async {
     await FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
-        .getGroupMembers(widget.conversationId)
+        .getConversationMembers(widget.conversationId)
         .then((members) {
       showDialog(
         context: parentContext,
