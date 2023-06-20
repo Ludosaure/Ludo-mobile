@@ -19,7 +19,7 @@ class CustomCircleAvatar extends StatelessWidget {
     return CircleAvatar(
       backgroundColor: Colors.grey[300],
       backgroundImage: NetworkImage(userProfilePicture!),
-      radius: height != null ? height! / 2 : null,
+      radius: height != null ? height! : null,
     );
   }
 }

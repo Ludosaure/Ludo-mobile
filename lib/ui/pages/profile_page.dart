@@ -51,6 +51,7 @@ class ProfilePage extends StatelessWidget {
         mainAxisSize: MainAxisSize.max,
         children: [
           _buildUserInfosHeader(context),
+          const SizedBox(height: 20),
           _buildUserInfosBody(context),
           const SizedBox(height: 20),
           ElevatedButton(
@@ -65,32 +66,66 @@ class ProfilePage extends StatelessWidget {
   }
 
   Widget _buildUserInfosHeader(BuildContext context) {
+    final logoutButtonSeparated =
+        ResponsiveWrapper.of(context).isSmallerThan(MOBILE);
     final fullName = '${connectedUser.firstname} ${connectedUser.lastname}';
     var maxCharName = 45;
     if (ResponsiveWrapper.of(context).isSmallerThan(DESKTOP)) {
-      maxCharName = 15;
+      maxCharName = 20;
     }
     final size = MediaQuery.of(context).size;
+    var avatarHeight = size.height * 0.1;
+    if (ResponsiveWrapper.of(context).isSmallerThan(MOBILE)) {
+      avatarHeight = size.height * 0.05;
+    } else if (ResponsiveWrapper.of(context).isSmallerThan(DESKTOP)) {
+      avatarHeight = size.height * 0.07;
+    }
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: logoutButtonSeparated
+              ? CrossAxisAlignment.end
+              : CrossAxisAlignment.center,
+          children: [
+            CustomCircleAvatar(
+              userProfilePicture: connectedUser.profilePicturePath,
+              height: avatarHeight,
+            ),
+            SizedBox(width: size.width * 0.02),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  fullName.length > maxCharName
+                      ? "${fullName.substring(0, maxCharName)}..."
+                      : fullName,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize:
+                        ResponsiveWrapper.of(context).isSmallerThan(DESKTOP)
+                            ? 18
+                            : 26,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                if (logoutButtonSeparated) _buildLogoutButton(context),
+              ],
+            ),
+            SizedBox(width: size.width * 0.01),
+            if (!logoutButtonSeparated) _buildLogoutButton(context),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLogoutButton(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        CustomCircleAvatar(
-          userProfilePicture: connectedUser.profilePicturePath,
-          height: ResponsiveWrapper.of(context).isSmallerThan(DESKTOP) ? size.height * 0.15 : size.height * 0.2,
-        ),
-        SizedBox(width: size.width * 0.02),
-        Text(
-          fullName.length > maxCharName
-              ? "${fullName.substring(0, maxCharName)}..."
-              : fullName,
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: ResponsiveWrapper.of(context).isSmallerThan(DESKTOP) ? 18 : 26,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-        SizedBox(width: size.width * 0.01),
         IconButton(
           onPressed: () {
             // TODO modifier le profil
