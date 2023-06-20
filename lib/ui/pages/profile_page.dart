@@ -41,12 +41,6 @@ class ProfilePage extends StatelessWidget {
   }
 
   Widget _buildPage(BuildContext context) {
-    final fullName = '${connectedUser.firstname} ${connectedUser.lastname}';
-    var maxCharName = 45;
-    if (ResponsiveWrapper.of(context).isSmallerThan(DESKTOP)) {
-      maxCharName = 15;
-    }
-    print(connectedUser.profilePicturePath);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
       child: Column(
@@ -55,24 +49,8 @@ class ProfilePage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.max,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CustomCircleAvatar(userProfilePicture: connectedUser.profilePicturePath),
-              const SizedBox(width: 10),
-              Text(
-                fullName.length > maxCharName
-                    ? "${fullName.substring(0, maxCharName)}..."
-                    : fullName,
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 20,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
+          _buildUserInfosHeader(context),
+          _buildUserInfosBody(context),
           ElevatedButton(
             onPressed: () {
               _logout(context);
@@ -87,6 +65,103 @@ class ProfilePage extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildUserInfosHeader(BuildContext context) {
+    final fullName = '${connectedUser.firstname} ${connectedUser.lastname}';
+    var maxCharName = 45;
+    if (ResponsiveWrapper.of(context).isSmallerThan(DESKTOP)) {
+      maxCharName = 15;
+    }
+    final size = MediaQuery.of(context).size;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        CustomCircleAvatar(
+          userProfilePicture: connectedUser.profilePicturePath,
+          height: size.height * 0.2,
+        ),
+        SizedBox(width: size.width * 0.02),
+        Text(
+          fullName.length > maxCharName
+              ? "${fullName.substring(0, maxCharName)}..."
+              : fullName,
+          style: const TextStyle(
+            color: Colors.black,
+            fontSize: 26,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        SizedBox(width: size.width * 0.01),
+        IconButton(
+          onPressed: () {
+            // TODO modifier le profil
+          },
+          icon: const Icon(Icons.edit),
+        )
+      ],
+    );
+  }
+
+  Widget _buildUserInfosBody(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(height: size.height * 0.01),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const Icon(Icons.email),
+            SizedBox(width: size.width * 0.01),
+            Text(
+              connectedUser.email,
+              style: const TextStyle(
+                color: Colors.black,
+                fontSize: 18,
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: size.height * 0.01),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const Icon(Icons.phone),
+            SizedBox(width: size.width * 0.01),
+            Text(
+              connectedUser.phone,
+              style: const TextStyle(
+                color: Colors.black,
+                fontSize: 18,
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: size.height * 0.01),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const Icon(Icons.account_box),
+            SizedBox(width: size.width * 0.01),
+            Text(
+              (connectedUser.pseudo != null && connectedUser.pseudo != "")
+                  ? connectedUser.pseudo!
+                  : 'Pseudo à renseigner',
+              style: const TextStyle(
+                color: Colors.black,
+                fontSize: 18,
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
