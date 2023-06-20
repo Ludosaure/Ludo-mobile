@@ -20,3 +20,5 @@ class GetReservationError extends GetReservationState {
 
   const GetReservationError({required this.message});
 }
+
+class UserNotLoggedIn extends GetReservationState {}

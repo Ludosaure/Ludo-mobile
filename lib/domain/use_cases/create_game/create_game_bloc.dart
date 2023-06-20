@@ -141,7 +141,8 @@ class CreateGameBloc extends Bloc<CreateGameEvent, CreateGameInitial> {
     return await _mediaRepository.uploadPicture(image);
   }
 
-  void dispose() {
+  @override
+  Future<void> close() async {
     _sessionCubit.close();
     super.close();
   }

@@ -166,11 +166,11 @@ class UpdateGameBloc extends Bloc<UpdateGameEvent, UpdateGameInitial> {
     emit(state.copyWith(id: event.id));
   }
 
-
-  void dispose() {
+  @override
+  Future<void> close() {
     _sessionCubit.close();
     _getGameCubit.close();
     _getGamesCubit.close();
-    super.close();
+    return super.close();
   }
 }

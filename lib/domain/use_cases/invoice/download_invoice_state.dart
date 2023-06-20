@@ -20,3 +20,5 @@ class DownloadInvoiceError extends DownloadInvoiceState {
 
   const DownloadInvoiceError({required this.message});
 }
+
+class UserMustLog extends DownloadInvoiceState {}
