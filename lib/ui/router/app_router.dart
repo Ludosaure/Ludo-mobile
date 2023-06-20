@@ -54,8 +54,6 @@ class AppRouter {
       locator<ListAllReservationsCubit>();
   final FavoriteGamesCubit _getFavoriteGamesCubit =
       locator<FavoriteGamesCubit>();
-  final UserReservationsCubit _userReservationsCubit =
-      locator<UserReservationsCubit>();
   final ListReductionPlanCubit _listReductionPlanCubit =
       locator<ListReductionPlanCubit>();
   final DeleteGameCubit _deleteGameCubit = locator<DeleteGameCubit>();
@@ -275,7 +273,7 @@ class AppRouter {
                 value: locator<GetReservationCubit>(),
               ),
               BlocProvider.value(
-                value: _userReservationsCubit,
+                value: locator<UserReservationsCubit>(),
               ),
               BlocProvider.value(
                 value: _downloadInvoiceCubit,
@@ -500,7 +498,6 @@ class AppRouter {
     _listAllReservationsCubit.close();
     _getFavoriteGamesCubit.close();
     _cartBloc.close();
-    _userReservationsCubit.close();
     _listReductionPlanCubit.close();
     _downloadInvoiceCubit.close();
     _deleteGameCubit.close();
