@@ -375,7 +375,7 @@ class AppRouter {
         path: Routes.userReservations.path,
         pageBuilder: (context, state) => CustomTransitionPage(
           child: BlocProvider.value(
-            value: _userReservationsCubit,
+            value: locator<UserReservationsCubit>(),
             child: const UserReservationsPage(),
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {

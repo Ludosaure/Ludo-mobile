@@ -246,7 +246,18 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
           children: [
             _buildTotalAmount(context),
             const SizedBox(height: 10),
-            _buildContactUser(context),
+            FutureBuilder<Widget>(
+              future: _buildContactUser(context),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const CircularProgressIndicator();
+                } else if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                } else {
+                  return snapshot.data!;
+                }
+              },
+            ),
             if (reservation.status != ReservationStatus.RETURNED &&
                 reservation.status != ReservationStatus.CANCELED)
               _buildReturnedGamesButton(context),
@@ -256,7 +267,12 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
     );
   }
 
-  Widget _buildContactUser(BuildContext context) {
+  Future<Widget> _buildContactUser(BuildContext context) async {
+    var connectedUserId =
+        (await LocalStorageHelper.getUserFromLocalStorage())!.id;
+    if (reservation.user!.id == connectedUserId) {
+      return Container();
+    }
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
