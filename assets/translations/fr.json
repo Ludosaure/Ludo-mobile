@@ -28,7 +28,7 @@
   "try-again-label": "Réessayer",
   "no-favorites-found": "Aucun favoris trouvé.",
   "no-reservation-found": "Aucune réservation trouvées.",
-  "no-messages-found": "Aucuns messages trouvés.",
+  "no-messages-found": "Aucun messages trouvés.",
   "no-game-found": "Aucun jeu trouvé.",
   "form": {
     "field-required-msg": "Ce champ est requis.",
@@ -106,6 +106,7 @@
   "account-title": "Mon Compte",
   "favorites-title": "Mes Favoris",
   "add-game-title": "Ajouter un jeu",
+  "add-game-btn": "Créer",
   "update-game-title": "Editer {name}",
   "update-game-btn": "Editer",
   "reservation-title": "Réservations",
@@ -162,20 +163,13 @@
   "delete-game-label": "Supprimer le jeu",
   "delete-game-confirmation": "Êtes-vous sûr de vouloir supprimer ce jeu {game} ?",
   "game-name-field": "Nom du jeu *",
-  "game-name-placeholder": "Saisissez le nom du jeu",
   "game-description-field": "Description du jeu",
-  "game-description-placeholder": "Saisissez la description du jeu",
   "weekly-amount-field": "Prix à la semaine *",
-  "weekly-amount-placeholder": "Saisissez le prix à la semaine",
   "game-category-field": "Type de jeu ",
-  "game-category-placeholder": "Sélectionnez le type de jeu ",
   "min-age-field": "Age minimum *",
-  "min-age-placeholder": "Saisissez l'âge minimum",
   "average-duration-field": "Durée moyenne d'une partie en min *",
-  "average-duration-placeholder": "45",
   "min-players-field": "Nombre de joueurs minimum *",
-  "min-players-placeholder": "Saisissez le nombre de joueurs minimum",
   "max-players-field": "Nombre de joueurs maximum *",
-  "max-players-placeholder": "Saisissez le nombre de joueurs maximum"
+  "currency-symbol": "€"
 
 }

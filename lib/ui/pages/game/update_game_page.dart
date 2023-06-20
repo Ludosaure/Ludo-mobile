@@ -10,6 +10,7 @@ import 'package:ludo_mobile/domain/models/game_category.dart';
 import 'package:ludo_mobile/domain/use_cases/get_categories/get_categories_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/update_game/update_game_bloc.dart';
 import 'package:ludo_mobile/ui/components/custom_file_picker.dart';
+import 'package:ludo_mobile/ui/components/form_field_decoration.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
 
 class UpdateGamePage extends StatefulWidget {
@@ -133,48 +134,46 @@ class _UpdateGamePageState extends State<UpdateGamePage> {
         children: [
           TextFormField(
             initialValue: game.name,
-            decoration: InputDecoration(
-              labelText: 'game-name-field'.tr(),
-              hintText: 'game-name-placeholder'.tr(),
-            ),
+            decoration: FormFieldDecoration.textField('game-name-field'.tr()),
             onChanged: (value) {
               context.read<UpdateGameBloc>().add(GameNameChangedEvent(value));
             },
           ),
+          const SizedBox(
+            height: 20,
+          ),
           TextFormField(
             initialValue: game.description,
             maxLines: 10,
-            decoration: InputDecoration(
-              labelText: 'game-description-field'.tr(),
-              hintText: 'game-description-placeholder'.tr(),
-            ),
+            decoration:
+                FormFieldDecoration.textField('game-description-field'.tr()),
             onChanged: (value) {
               context
                   .read<UpdateGameBloc>()
                   .add(GameDescriptionChangedEvent(value));
             },
           ),
+          const SizedBox(
+            height: 20,
+          ),
           TextFormField(
             initialValue: game.weeklyAmount.toString(),
-            decoration: InputDecoration(
-              labelText: 'weekly-amount-field'.tr(),
-              hintText: 'weekly-amount-placeholder'.tr(),
-              suffix: const Text('€'),
+            decoration: FormFieldDecoration.textField(
+              'weekly-amount-field'.tr(),
+              suffixText: 'currency-symbol'.tr(),
             ),
             onChanged: (value) {
               context.read<UpdateGameBloc>().add(
-                    GameWeeklyAmountChangedEvent(
-                      double.parse(value),
-                    ),
+                    GameWeeklyAmountChangedEvent(double.parse(value)),
                   );
             },
           ),
+          const SizedBox(
+            height: 20,
+          ),
           DropdownButtonFormField(
-            // value: game.categories.first.id,
-            decoration: InputDecoration(
-              labelText: 'game-category-field'.tr(),
-              hintText: 'game-category-placeholder'.tr(),
-            ),
+            decoration:
+                FormFieldDecoration.textField('game-category-field'.tr()),
             items: _categories.map((category) {
               return DropdownMenuItem(
                 value: category.id,
@@ -187,27 +186,28 @@ class _UpdateGamePageState extends State<UpdateGamePage> {
                   );
             },
           ),
+          const SizedBox(
+            height: 20,
+          ),
           TextFormField(
             initialValue: game.minAge.toString(),
             keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              labelText: 'min-age-field'.tr(),
-              hintText: 'min-age-placeholder'.tr(),
-            ),
+            decoration: FormFieldDecoration.textField('min-age-field'.tr()),
             onChanged: (value) {
               context
                   .read<UpdateGameBloc>()
                   .add(GameMinAgeChangedEvent(int.parse(value)));
             },
           ),
+          const SizedBox(
+            height: 20,
+          ),
           TextFormField(
             initialValue: game.averageDuration.toString(),
             keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              labelText: 'average-duration-field'.tr(),
-              hintText: 'average-duration-placeholder'.tr(),
-              isDense: true,
-              suffix: const Text('min'),
+            decoration: FormFieldDecoration.textField(
+              'average-duration-field'.tr(),
+              suffixText: 'min',
             ),
             onChanged: (value) {
               context.read<UpdateGameBloc>().add(
@@ -217,12 +217,14 @@ class _UpdateGamePageState extends State<UpdateGamePage> {
                   );
             },
           ),
+          const SizedBox(
+            height: 20,
+          ),
           TextFormField(
             initialValue: game.minPlayers.toString(),
             keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              labelText: 'min-players-field'.tr(),
-              hintText: 'min-players-placeholder'.tr(),
+            decoration: FormFieldDecoration.textField(
+              'min-players-field'.tr(),
             ),
             onChanged: (value) {
               context.read<UpdateGameBloc>().add(
@@ -232,12 +234,14 @@ class _UpdateGamePageState extends State<UpdateGamePage> {
                   );
             },
           ),
+          const SizedBox(
+            height: 20,
+          ),
           TextFormField(
             initialValue: game.maxPlayers.toString(),
             keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              labelText: 'max-players-field'.tr(),
-              hintText: 'max-players-placeholder'.tr(),
+            decoration: FormFieldDecoration.textField(
+              'max-players-field'.tr(),
             ),
             onChanged: (value) {
               context.read<UpdateGameBloc>().add(
@@ -259,7 +263,7 @@ class _UpdateGamePageState extends State<UpdateGamePage> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: const Text(
-                'game-created-successfully',
+                'game-updated-successfully',
               ).tr(),
             ),
           );
@@ -305,7 +309,7 @@ class _UpdateGamePageState extends State<UpdateGamePage> {
                     .add(const UpdateGameSubmitEvent());
               }
             },
-            child: const Text('Editer'),
+            child: const Text('update-game-btn').tr(),
           ),
         );
       },

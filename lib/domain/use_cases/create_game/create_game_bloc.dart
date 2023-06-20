@@ -7,6 +7,7 @@ import 'package:ludo_mobile/core/form_status.dart';
 import 'package:ludo_mobile/data/providers/game/new_game_request.dart';
 import 'package:ludo_mobile/data/repositories/game_repository.dart';
 import 'package:ludo_mobile/data/repositories/media_repository.dart';
+import 'package:ludo_mobile/domain/use_cases/session/session_cubit.dart';
 import 'package:meta/meta.dart';
 
 part 'create_game_event.dart';
@@ -15,10 +16,12 @@ part 'create_game_state.dart';
 
 @injectable
 class CreateGameBloc extends Bloc<CreateGameEvent, CreateGameInitial> {
+  final SessionCubit _sessionCubit;
   final GameRepository _createGameRepository;
   final MediaRepository _mediaRepository;
 
   CreateGameBloc(
+    this._sessionCubit,
     this._createGameRepository,
     this._mediaRepository,
   ) : super(CreateGameInitial()) {
@@ -46,6 +49,7 @@ class CreateGameBloc extends Bloc<CreateGameEvent, CreateGameInitial> {
         imageUrl = await _uploadImage(state.image!);
       } catch (error) {
         if (error is UserNotLoggedInException) {
+          _sessionCubit.logout();
           emit(UserMustLog);
           return;
         }
@@ -72,10 +76,15 @@ class CreateGameBloc extends Bloc<CreateGameEvent, CreateGameInitial> {
       image: imageUrl,
     );
 
-
     try {
       await _createGameRepository.createGame(newGameRequest);
     } catch (error) {
+      if(error is UserNotLoggedInException) {
+        _sessionCubit.logout();
+        emit(UserMustLog);
+        return;
+      }
+
       emit(
         state.copyWith(
           status: FormSubmissionFailed(message: error.toString()),
@@ -130,5 +139,10 @@ class CreateGameBloc extends Bloc<CreateGameEvent, CreateGameInitial> {
 
   Future<String> _uploadImage(File image) async {
     return await _mediaRepository.uploadPicture(image);
+  }
+
+  void dispose() {
+    _sessionCubit.close();
+    super.close();
   }
 }

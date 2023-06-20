@@ -3,7 +3,7 @@ import 'package:ludo_mobile/utils/custom_theme.dart';
 
 class FormFieldDecoration extends InputDecoration {
 
-  static InputDecoration textField(String label) {
+  static InputDecoration textField(String label, { String placeholder = '', String suffixText = '' }) {
     return InputDecoration(
       fillColor: CustomTheme.formColor,
       filled: true,
@@ -12,6 +12,7 @@ class FormFieldDecoration extends InputDecoration {
         borderSide: const BorderSide(color: Colors.transparent),
       ),
       labelText: label,
+      suffixText: suffixText,
       isDense: true,
     );
   }

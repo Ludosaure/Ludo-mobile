@@ -10,6 +10,7 @@ import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:ludo_mobile/domain/use_cases/create_game/create_game_bloc.dart';
 import 'package:ludo_mobile/domain/use_cases/get_categories/get_categories_cubit.dart';
 import 'package:ludo_mobile/ui/components/custom_file_picker.dart';
+import 'package:ludo_mobile/ui/components/form_field_decoration.dart';
 import 'package:ludo_mobile/ui/components/scaffold/admin_scaffold.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
 import 'package:ludo_mobile/utils/menu_items.dart';
@@ -97,9 +98,7 @@ class _AddGamePageState extends State<AddGamePage> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          CustomFilePicker(
-            onFileSelected: _onFileSelected
-          ),
+          CustomFilePicker(onFileSelected: _onFileSelected),
           _buildForm(context),
           _buildSubmitButton(context),
         ],
@@ -117,13 +116,10 @@ class _AddGamePageState extends State<AddGamePage> {
         mainAxisSize: MainAxisSize.min,
         children: [
           TextFormField(
-            decoration: InputDecoration(
-              labelText: 'game-name-field'.tr(),
-              hintText: 'game-name-placeholder'.tr(),
-            ),
+            decoration: FormFieldDecoration.textField('game-name-field'.tr()),
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Please enter the game name';
+                return 'Veuillez saisir le nom du jeu';
               }
               return null;
             },
@@ -131,28 +127,30 @@ class _AddGamePageState extends State<AddGamePage> {
               context.read<CreateGameBloc>().add(GameNameChangedEvent(value));
             },
           ),
+          const SizedBox(
+            height: 20,
+          ),
           TextFormField(
             maxLines: 10,
-            decoration: InputDecoration(
-              labelText: 'game-description-field'.tr(),
-              hintText: 'game-description-placeholder'.tr(),
-            ),
+            decoration:
+                FormFieldDecoration.textField('game-description-field'.tr()),
             onChanged: (value) {
               context
                   .read<CreateGameBloc>()
                   .add(GameDescriptionChangedEvent(value));
             },
           ),
+          const SizedBox(
+            height: 20,
+          ),
           TextFormField(
-            decoration: InputDecoration(
-              labelText: 'weekly-amount-field'.tr(),
-              hintText: 'weekly-amount-placeholder'.tr(),
-              suffix: const Text('€'),
-            ),
+            decoration: FormFieldDecoration.textField(
+                'weekly-amount-field'.tr(),
+                suffixText: 'currency-symbol'.tr()),
             keyboardType: TextInputType.number,
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Please enter the game price';
+                return 'Veuillez saisir le prix du jeu';
               }
               return null;
             },
@@ -164,14 +162,15 @@ class _AddGamePageState extends State<AddGamePage> {
                   );
             },
           ),
+          const SizedBox(
+            height: 20,
+          ),
           DropdownButtonFormField(
-            decoration: InputDecoration(
-              labelText: 'game-category-field'.tr(),
-              hintText: 'game-category-placeholder'.tr(),
-            ),
+            decoration:
+                FormFieldDecoration.textField('game-category-field'.tr()),
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Please enter the game category';
+                return 'Veuillez choisir une catégorie pour le jeu';
               }
               return null;
             },
@@ -187,15 +186,15 @@ class _AddGamePageState extends State<AddGamePage> {
                   );
             },
           ),
+          const SizedBox(
+            height: 20,
+          ),
           TextFormField(
             keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              labelText: 'min-age-field'.tr(),
-              hintText: 'min-age-placeholder'.tr(),
-            ),
+            decoration: FormFieldDecoration.textField('min-age-field'.tr()),
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Please enter min age';
+                return 'Veuillez saisir un âge minimum';
               }
               return null;
             },
@@ -205,17 +204,17 @@ class _AddGamePageState extends State<AddGamePage> {
                   .add(GameMinAgeChangedEvent(int.parse(value)));
             },
           ),
+          const SizedBox(
+            height: 20,
+          ),
           TextFormField(
             keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              labelText: 'average-duration-field'.tr(),
-              hintText: 'average-duration-placeholder'.tr(),
-              isDense: true,
-              suffix: const Text('min'),
-            ),
+            decoration: FormFieldDecoration.textField(
+                'average-duration-field'.tr(),
+                suffixText: 'min'),
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Please enter average duration';
+                return "Veuillez saisir la durée moyenne d'une partie";
               }
               return null;
             },
@@ -227,34 +226,33 @@ class _AddGamePageState extends State<AddGamePage> {
                   );
             },
           ),
-          TextFormField(
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: 'min-players-field'.tr(),
-                hintText: 'min-players-placeholder'.tr(),
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter min players';
-                }
-                return null;
-              },
-              onChanged: (value) {
-                context.read<CreateGameBloc>().add(
-                      GameMinPlayersChangedEvent(
-                        int.parse(value),
-                      ),
-                    );
-              }),
+          const SizedBox(
+            height: 20,
+          ),
           TextFormField(
             keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              labelText: 'max-players-field'.tr(),
-              hintText: 'max-players-placeholder'.tr(),
-            ),
+            decoration: FormFieldDecoration.textField('min-players-field'.tr()),
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Please enter max players';
+                return 'Veuillez saisir le nombre de joueurs minimum';
+              }
+              return null;
+            },
+            onChanged: (value) {
+              context.read<CreateGameBloc>().add(
+                    GameMinPlayersChangedEvent(int.parse(value)),
+                  );
+            },
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          TextFormField(
+            keyboardType: TextInputType.number,
+            decoration: FormFieldDecoration.textField('max-players-field'.tr()),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Veuillez saisir le nombre de joueurs maximum';
               }
               return null;
             },
@@ -310,7 +308,7 @@ class _AddGamePageState extends State<AddGamePage> {
           );
         }
 
-        if(state is UserMustLog){
+        if (state is UserMustLog) {
           context.go(Routes.login.path);
         }
 
@@ -324,7 +322,7 @@ class _AddGamePageState extends State<AddGamePage> {
                     .add(const CreateGameSubmitEvent());
               }
             },
-            child: const Text('Créer'),
+            child: const Text('add-game-btn').tr(),
           ),
         );
       },
