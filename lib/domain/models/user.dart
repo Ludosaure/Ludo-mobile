@@ -50,7 +50,9 @@ class User {
         "lastname": lastname,
         "phone": phone,
         "pseudo": pseudo,
-        "profilePicturePath": profilePicturePath,
+        "profilePicture": {
+          "url": profilePicturePath,
+        },
         "role": role,
         "isAccountVerified": hasVerifiedAccount,
         "isAccountClosed": isAccountClosed,
