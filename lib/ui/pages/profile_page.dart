@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/domain/models/user.dart';
@@ -46,22 +47,17 @@ class ProfilePage extends StatelessWidget {
       child: Column(
         verticalDirection: VerticalDirection.down,
         mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.max,
         children: [
           _buildUserInfosHeader(context),
           _buildUserInfosBody(context),
-          ElevatedButton(
-            onPressed: () {
-              _logout(context);
-            },
-            child: const Text('Se déconnecter'),
-          ),
+          const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
               context.push(Routes.userReservations.path);
             },
-            child: const Text('Mes réservations'),
+            child: Text('my-reservations-title'.tr()),
           ),
         ],
       ),
@@ -81,16 +77,16 @@ class ProfilePage extends StatelessWidget {
       children: [
         CustomCircleAvatar(
           userProfilePicture: connectedUser.profilePicturePath,
-          height: size.height * 0.2,
+          height: ResponsiveWrapper.of(context).isSmallerThan(DESKTOP) ? size.height * 0.15 : size.height * 0.2,
         ),
         SizedBox(width: size.width * 0.02),
         Text(
           fullName.length > maxCharName
               ? "${fullName.substring(0, maxCharName)}..."
               : fullName,
-          style: const TextStyle(
+          style: TextStyle(
             color: Colors.black,
-            fontSize: 26,
+            fontSize: ResponsiveWrapper.of(context).isSmallerThan(DESKTOP) ? 18 : 26,
             overflow: TextOverflow.ellipsis,
           ),
         ),
@@ -100,7 +96,13 @@ class ProfilePage extends StatelessWidget {
             // TODO modifier le profil
           },
           icon: const Icon(Icons.edit),
-        )
+        ),
+        IconButton(
+          onPressed: () {
+            _logout(context);
+          },
+          icon: const Icon(Icons.logout),
+        ),
       ],
     );
   }
