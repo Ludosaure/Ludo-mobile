@@ -7,7 +7,6 @@ import 'package:ludo_mobile/core/http_code.dart';
 import 'package:ludo_mobile/utils/app_constants.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:http/http.dart' as http;
-import 'package:ludo_mobile/utils/local_storage_helper.dart';
 import 'package:mime/mime.dart';
 
 @injectable
@@ -41,12 +40,11 @@ class MediaProvider {
     final response = await http.Response.fromStream(streamResponse);
 
     if (streamResponse.statusCode == HttpCode.UNAUTHORIZED) {
-      LocalStorageHelper.getTokenFromLocalStorage();
       throw const UserNotLoggedInException("errors.user-must-log-for-action");
     }
 
     if (streamResponse.statusCode != HttpCode.CREATED) {
-      throw Exception('Failed to upload picture');
+      throw Exception('errors.upload-picture-error');
     }
 
     return jsonDecode(response.body)["media"]["id"];

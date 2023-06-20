@@ -4,25 +4,35 @@ import 'package:bloc/bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/core/exception.dart';
 import 'package:ludo_mobile/core/form_status.dart';
-import 'package:ludo_mobile/data/providers/game/new_game_request.dart';
+import 'package:ludo_mobile/data/providers/game/update_game_request.dart';
 import 'package:ludo_mobile/data/repositories/game_repository.dart';
 import 'package:ludo_mobile/data/repositories/media_repository.dart';
+import 'package:ludo_mobile/domain/models/game.dart';
+import 'package:ludo_mobile/domain/use_cases/get_game/get_game_cubit.dart';
+import 'package:ludo_mobile/domain/use_cases/get_games/get_games_cubit.dart';
+import 'package:ludo_mobile/domain/use_cases/session/session_cubit.dart';
 import 'package:meta/meta.dart';
 
-part 'create_game_event.dart';
+part 'update_game_event.dart';
 
-part 'create_game_state.dart';
+part 'update_game_state.dart';
 
 @injectable
-class CreateGameBloc extends Bloc<CreateGameEvent, CreateGameInitial> {
-  final GameRepository _createGameRepository;
+class UpdateGameBloc extends Bloc<UpdateGameEvent, UpdateGameInitial> {
+  final SessionCubit _sessionCubit;
+  final GetGameCubit _getGameCubit;
+  final GetGamesCubit _getGamesCubit;
+  final GameRepository _updateGameRepository;
   final MediaRepository _mediaRepository;
 
-  CreateGameBloc(
-    this._createGameRepository,
+  UpdateGameBloc(
+    this._sessionCubit,
+    this._getGameCubit,
+    this._getGamesCubit,
+    this._updateGameRepository,
     this._mediaRepository,
-  ) : super(CreateGameInitial()) {
-    on<CreateGameSubmitEvent>(onSubmitForm);
+  ) : super(UpdateGameInitial()) {
+    on<UpdateGameSubmitEvent>(onSubmitForm);
     on<GameNameChangedEvent>(onNameChanged);
     on<GameDescriptionChangedEvent>(onDescriptionChanged);
     on<GameWeeklyAmountChangedEvent>(onWeeklyAmountChanged);
@@ -32,20 +42,24 @@ class CreateGameBloc extends Bloc<CreateGameEvent, CreateGameInitial> {
     on<GameMinPlayersChangedEvent>(onMinPlayersChanged);
     on<GameMaxPlayersChangedEvent>(onMaxPlayersChanged);
     on<GamePictureChangedEvent>(onPictureChanged);
+    on<GameIdChangedEvent>(onGameChanged);
   }
 
   void onSubmitForm(event, Emitter emit) async {
     String? imageUrl;
+
     emit(
       state.copyWith(
         status: const FormSubmitting(),
       ),
     );
+
     if (state.image != null) {
       try {
         imageUrl = await _uploadImage(state.image!);
       } catch (error) {
         if (error is UserNotLoggedInException) {
+          _sessionCubit.logout();
           emit(UserMustLog);
           return;
         }
@@ -60,7 +74,10 @@ class CreateGameBloc extends Bloc<CreateGameEvent, CreateGameInitial> {
       }
     }
 
-    NewGameRequest newGameRequest = NewGameRequest(
+    //TODO supprimer l'ancienne image s'il y en avait une
+
+    UpdateGameRequest gameRequest = UpdateGameRequest(
+      id: state.id,
       name: state.name,
       description: state.description,
       weeklyAmount: state.weeklyAmount,
@@ -72,10 +89,17 @@ class CreateGameBloc extends Bloc<CreateGameEvent, CreateGameInitial> {
       image: imageUrl,
     );
 
+    Game game;
 
     try {
-      await _createGameRepository.createGame(newGameRequest);
+      game = await _updateGameRepository.updateGame(gameRequest);
     } catch (error) {
+      if(error is UserNotLoggedInException || error is NotAllowedException) {
+        _sessionCubit.logout();
+        emit(UserMustLog);
+        return;
+      }
+
       emit(
         state.copyWith(
           status: FormSubmissionFailed(message: error.toString()),
@@ -85,6 +109,8 @@ class CreateGameBloc extends Bloc<CreateGameEvent, CreateGameInitial> {
       return;
     }
 
+    _getGamesCubit.findAndReplace(game);
+
     emit(
       state.copyWith(
         status: const FormSubmissionSuccessful(),
@@ -93,7 +119,11 @@ class CreateGameBloc extends Bloc<CreateGameEvent, CreateGameInitial> {
   }
 
   void onNameChanged(event, Emitter emit) async {
-    emit(state.copyWith(name: event.name));
+    emit(
+      state.copyWith(
+        name: event.name,
+      ),
+    );
   }
 
   void onDescriptionChanged(event, Emitter emit) async {
@@ -124,11 +154,22 @@ class CreateGameBloc extends Bloc<CreateGameEvent, CreateGameInitial> {
     emit(state.copyWith(maxPlayers: event.maxPlayers));
   }
 
-  void onPictureChanged(event, Emitter emit) async {
-    emit(state.copyWith(image: event.image));
+  void onPictureChanged(GamePictureChangedEvent event, Emitter emit) async {
+    emit(state.copyWith(image: event.picture));
   }
 
   Future<String> _uploadImage(File image) async {
     return await _mediaRepository.uploadPicture(image);
+  }
+
+  void onGameChanged(event, Emitter emit) async {
+    emit(state.copyWith(id: event.id));
+  }
+
+  void dispose() {
+    _sessionCubit.close();
+    _getGameCubit.close();
+    _getGamesCubit.close();
+    super.close();
   }
 }

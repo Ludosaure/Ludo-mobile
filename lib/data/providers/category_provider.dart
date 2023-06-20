@@ -6,7 +6,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/core/exception.dart';
 import 'package:ludo_mobile/core/http_code.dart';
-import 'package:ludo_mobile/domain/models/category.dart';
+import 'package:ludo_mobile/domain/models/game_category.dart';
 import 'package:ludo_mobile/utils/app_constants.dart';
 import 'package:http/http.dart' as http;
 
@@ -14,7 +14,7 @@ import 'package:http/http.dart' as http;
 class CategoryProvider {
   final String _endpoint = '${AppConstants.API_URL}/category';
 
-  Future<List<Category>> listCategories(String token) async {
+  Future<List<GameCategory>> listCategories(String token) async {
     final response = await http.get(
       Uri.parse(_endpoint),
       headers: {
@@ -34,10 +34,10 @@ class CategoryProvider {
       throw InternalServerException('errors.unknown'.tr());
     }
 
-    List<Category> categories = [];
+    List<GameCategory> categories = [];
 
     jsonDecode(response.body)["categories"].forEach((category) {
-      categories.add(Category.fromJson(category));
+      categories.add(GameCategory.fromJson(category));
     });
 
     return categories;

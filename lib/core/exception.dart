@@ -36,6 +36,10 @@ class EmailAlreadyUsedException extends BadRequestException {
   const EmailAlreadyUsedException(String message) : super(message);
 }
 
+class NameAlreadyUsedException extends BadRequestException {
+  const NameAlreadyUsedException(String message) : super(message);
+}
+
 class UnverifiedAccountException extends BadRequestException {
   const UnverifiedAccountException(String message) : super(message);
 }

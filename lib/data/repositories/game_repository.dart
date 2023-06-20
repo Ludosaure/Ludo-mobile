@@ -5,6 +5,7 @@ import 'package:ludo_mobile/data/providers/game/game_json.dart';
 import 'package:ludo_mobile/data/providers/game/game_listing_response.dart';
 import 'package:ludo_mobile/data/providers/game/game_provider.dart';
 import 'package:ludo_mobile/data/providers/game/new_game_request.dart';
+import 'package:ludo_mobile/data/providers/game/update_game_request.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
 import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:ludo_mobile/utils/local_storage_helper.dart';
@@ -32,7 +33,7 @@ class GameRepository {
     return gameJson.toGame();
   }
 
-  Future<String> createGame(NewGameRequest newGame) async {
+  Future<void> createGame(NewGameRequest newGame) async {
     final User? user = await LocalStorageHelper.getUserFromLocalStorage();
 
     if(user == null) {
@@ -45,7 +46,25 @@ class GameRepository {
 
     final String? token = await LocalStorageHelper.getTokenFromLocalStorage();
 
-    return await _gameProvider.createGame(token!, newGame);
+    await _gameProvider.createGame(token!, newGame);
+  }
+
+  Future<Game> updateGame(UpdateGameRequest game) async {
+    final User? user = await LocalStorageHelper.getUserFromLocalStorage();
+
+    if(user == null) {
+      throw UserNotLoggedInException('errors.user-must-log-for-action'.tr());
+    }
+
+    if(!user.isAdmin()) {
+      throw NotAllowedException('errors.user-must-be-admin-for-action'.tr());
+    }
+
+    final String? token = await LocalStorageHelper.getTokenFromLocalStorage();
+
+    GameJson updatedGameJson = await _gameProvider.updateGame(token!, game);
+
+    return updatedGameJson.toGame();
   }
 
   //TODO implémenter côté backend

@@ -1,3 +1,4 @@
+import 'package:ludo_mobile/domain/models/game_category.dart';
 import 'package:ludo_mobile/utils/extensions.dart';
 
 class Game {
@@ -9,7 +10,7 @@ class Game {
   final int minAge;
   final int minPlayers;
   final int maxPlayers;
-  final List<String> categories;
+  final List<GameCategory> categories;
   final double weeklyAmount;
   final double rating;
   final bool isArchived;
@@ -48,7 +49,7 @@ class Game {
       minAge: json['ageMin'],
       minPlayers: json['nbPlayersMin'],
       maxPlayers: json['nbPlayersMax'],
-      categories: [json["category"]["name"].toString().titleCase()],
+      categories: [GameCategory.fromJson(json['category'])],
       weeklyAmount: json['weeklyAmount'].toDouble(),
       rating: json['averageRating'] != null ? json['averageRating'].toDouble() : 0.0,
       isArchived: json['isArchived'],

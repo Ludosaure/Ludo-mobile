@@ -106,6 +106,8 @@
   "account-title": "Mon Compte",
   "favorites-title": "Mes Favoris",
   "add-game-title": "Ajouter un jeu",
+  "update-game-title": "Editer {name}",
+  "update-game-btn": "Editer",
   "reservation-title": "Réservations",
   "administration-title": "Administration",
   "cart-title": "Mon Panier",
@@ -120,6 +122,7 @@
     "authentication-failed": "Erreur d'authentification, votre email ou votre mot de passe sont invalides",
     "unverified-account": "Votre compte n'a pas encore été vérifié. Veuillez consulter vos mails pour confirmer votre adresse email.",
     "email-already-used": "Un compte utilisant cet email existe déjà.",
+    "name-already-used": "Un jeu utilisant ce nom existe déjà.",
     "forbidden-access": "Vous n'avez pas accès à cette page",
     "user-must-log-for-action": "Vous devez être connecté pour effectuer cette action",
     "user-must-log-for-access": "Vous devez être connecté pour accéder à cette page",
@@ -131,7 +134,8 @@
     "payment-sheet-display": "Erreur lors de l'affichage du formulaire de paiement",
     "payment-sheet-submit": "Erreur lors de la confirmation du paiement",
     "cancel-reservation": "Erreur lors de l'annulation de la réservation",
-    "game-creation-failed": "Erreur lors de la création du jeu"
+    "game-creation-failed": "Erreur lors de la création du jeu",
+    "game-edition-failed": "Erreur lors de la modification du jeu"
   },
   "select-date-range-label": "Durée de la réservation (une semaine minimum)",
   "booking-period-label-1": "Réservation du ",

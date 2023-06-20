@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:injectable/injectable.dart';
+import 'package:ludo_mobile/domain/models/game.dart';
 import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:ludo_mobile/domain/use_cases/cart/cart_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/create_game/create_game_bloc.dart';
@@ -17,6 +18,7 @@ import 'package:ludo_mobile/domain/use_cases/list_reduction_plan/list_reduction_
 import 'package:ludo_mobile/domain/use_cases/login/login_bloc.dart';
 import 'package:ludo_mobile/domain/use_cases/register/register_bloc.dart';
 import 'package:ludo_mobile/domain/use_cases/session/session_cubit.dart';
+import 'package:ludo_mobile/domain/use_cases/update_game/update_game_bloc.dart';
 import 'package:ludo_mobile/domain/use_cases/user_reservations/user_reservations_cubit.dart';
 import 'package:ludo_mobile/injection.dart';
 import 'package:ludo_mobile/ui/pages/cart/cart_page.dart';
@@ -25,6 +27,7 @@ import 'package:ludo_mobile/ui/pages/admin_dashboard_page.dart';
 import 'package:ludo_mobile/ui/pages/game/admin_game_page.dart';
 import 'package:ludo_mobile/ui/pages/game/favorite/favorite_games_page.dart';
 import 'package:ludo_mobile/ui/pages/game/detail/game_details_page.dart';
+import 'package:ludo_mobile/ui/pages/game/update_game_page.dart';
 import 'package:ludo_mobile/ui/pages/home/admin_home_page.dart';
 import 'package:ludo_mobile/ui/pages/home/user_home_page.dart';
 import 'package:ludo_mobile/ui/pages/messages/conversation_page.dart';
@@ -59,6 +62,7 @@ class AppRouter {
   final DownloadInvoiceCubit _downloadInvoiceCubit =
       locator<DownloadInvoiceCubit>();
   final CreateGameBloc _createGameBloc = locator<CreateGameBloc>();
+  final UpdateGameBloc _updateGameBloc = locator<UpdateGameBloc>();
   final GetCategoriesCubit _getCategoriesCubit = locator<GetCategoriesCubit>();
 
   late User? connectedUser;
@@ -228,6 +232,30 @@ class AppRouter {
             ],
             child: AddGamePage(
               user: connectedUser!,
+            ),
+          ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+        ),
+      ),
+      GoRoute(
+        path: '${Routes.game.path}/:id/${Routes.updateGame.path}',
+        pageBuilder: (context, state) => CustomTransitionPage(
+          child: MultiBlocProvider(
+            providers: [
+              BlocProvider.value(
+                value: _updateGameBloc,
+              ),
+              BlocProvider.value(
+                value: _getCategoriesCubit,
+              ),
+            ],
+            child: UpdateGamePage(
+              game: state.extra! as Game,
             ),
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -477,6 +505,7 @@ class AppRouter {
     _downloadInvoiceCubit.close();
     _deleteGameCubit.close();
     _createGameBloc.close();
+    _updateGameBloc.close();
     _getCategoriesCubit.close();
   }
 }

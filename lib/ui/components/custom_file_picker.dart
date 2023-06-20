@@ -5,10 +5,12 @@ import 'package:image_picker/image_picker.dart';
 
 class CustomFilePicker extends StatefulWidget {
   final Function onFileSelected;
+  final String? initialImage;
 
   const CustomFilePicker({
     Key? key,
     required this.onFileSelected,
+    this.initialImage,
   }) : super(key: key);
 
   @override
@@ -26,6 +28,8 @@ class _CustomFilePickerState extends State<CustomFilePicker> {
       ),
       child: Column(
         children: [
+          if(widget.initialImage != null && _selectedPicture == null)
+            Image.network(widget.initialImage!, height: 200, width: 200),
           if (_selectedPicture != null)
             Image.file(_selectedPicture!, height: 200, width: 200),
           Row(

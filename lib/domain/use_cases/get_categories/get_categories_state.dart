@@ -2,7 +2,7 @@ part of 'get_categories_cubit.dart';
 
 @immutable
 abstract class GetCategoriesState {
-  final List<Category> categories;
+  final List<GameCategory> categories;
 
   const GetCategoriesState({
     required this.categories,
@@ -18,7 +18,7 @@ class GetCategoriesLoading extends GetCategoriesState {
 }
 
 class GetCategoriesSuccess extends GetCategoriesState {
-  const GetCategoriesSuccess({required List<Category> categories})
+  const GetCategoriesSuccess({required List<GameCategory> categories})
       : super(categories: categories);
 }
 

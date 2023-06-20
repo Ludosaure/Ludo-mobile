@@ -2,8 +2,10 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
 import 'package:ludo_mobile/domain/use_cases/delete_game/delete_game_cubit.dart';
+import 'package:ludo_mobile/ui/router/routes.dart';
 
 class GameTile extends StatelessWidget {
   final Game game;
@@ -43,7 +45,7 @@ class GameTile extends StatelessWidget {
     return ListTile(
       leading: leading,
       title: Text(game.name),
-      subtitle: Text(game.categories.join(', ')),
+      subtitle: Text(game.categories.first.name),
       trailing: _buildTrailing(context),
     );
   }
@@ -52,54 +54,13 @@ class GameTile extends StatelessWidget {
     if (adminView) {
       return IconButton(
         onPressed: () {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                title: const Text(
-                  'delete-game-label',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ).tr(),
-                content: const Text(
-                  'delete-game-confirmation',
-                  style: TextStyle(
-                    fontSize: 15,
-                    height: 1.5,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ).tr(namedArgs: {'game': game.name}),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: Text(
-                      'cancel-label',
-                      style: Theme.of(context).textTheme.button,
-                    ).tr(),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      context.read<DeleteGameCubit>().deleteGame(game.id);
-                      Navigator.of(context).pop();
-                    },
-                    child: Text(
-                      'Supprimer',
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.error,
-                      ),
-                    ).tr(),
-                  ),
-                ],
-              );
-            },
+          context.push(
+            '${Routes.game.path}/${game.id}/${Routes.updateGame.path}',
+            extra: game,
           );
         },
         icon: const Icon(
-          Icons.delete,
+          Icons.edit,
           color: Colors.grey,
         ),
       );
@@ -113,5 +74,53 @@ class GameTile extends StatelessWidget {
         },
       );
     }
+  }
+
+  void _buildDeleteDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text(
+            'delete-game-label',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ).tr(),
+          content: const Text(
+            'delete-game-confirmation',
+            style: TextStyle(
+              fontSize: 15,
+              height: 1.5,
+              fontWeight: FontWeight.w400,
+            ),
+          ).tr(namedArgs: {'game': game.name}),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text(
+                'cancel-label',
+                style: Theme.of(context).textTheme.button,
+              ).tr(),
+            ),
+            TextButton(
+              onPressed: () {
+                context.read<DeleteGameCubit>().deleteGame(game.id);
+                Navigator.of(context).pop();
+              },
+              child: Text(
+                'Supprimer',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.error,
+                ),
+              ).tr(),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

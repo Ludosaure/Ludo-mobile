@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/data/repositories/category_repository.dart';
-import 'package:ludo_mobile/domain/models/category.dart';
+import 'package:ludo_mobile/domain/models/game_category.dart';
 import 'package:meta/meta.dart';
 
 part 'get_categories_state.dart';
@@ -21,7 +21,9 @@ class GetCategoriesCubit extends Cubit<GetCategoriesState> {
       final categories = await _categoryRepository.listCategories();
       emit(GetCategoriesSuccess(categories: categories));
     } catch (e) {
-      emit(GetCategoriesError(message: e.toString()));
+      emit(
+        GetCategoriesError(message: e.toString()),
+      );
     }
   }
 }
