@@ -83,6 +83,7 @@ class Reservation {
       id: json['id'],
       reservationNumber: json['reservationNumber'],
       createdBy: user,
+      user: user,
       games: [],
       amount: double.parse(json['totalAmount']),
       startDate: DateTime.parse(json['startDate']),
