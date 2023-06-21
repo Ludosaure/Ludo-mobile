@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_date_pickers/flutter_date_pickers.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
+import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:ludo_mobile/domain/use_cases/cart/cart_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/list_reduction_plan/list_reduction_plan_cubit.dart';
 import 'package:ludo_mobile/utils/app_constants.dart';
+import 'package:ludo_mobile/utils/local_storage_helper.dart';
 import 'package:responsive_framework/responsive_value.dart';
 import 'package:responsive_framework/responsive_wrapper.dart';
 
@@ -230,27 +232,46 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
                   }),
                 ],
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 20.0,
-                  horizontal: 5.0,
-                ),
-                child: _game.isAvailable!
-                    ? _buildAddToCartButton(context)
-                    : const Text(
-                        "game-unavailable-label",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontStyle: FontStyle.italic,
-                          fontWeight: FontWeight.w400,
-                        ),
-                        textAlign: TextAlign.center,
-                      ).tr(),
+              FutureBuilder<Widget>(
+                future: _buildActionGameButton(context),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else {
+                    return snapshot.data!;
+                  }
+                },
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Future<Widget> _buildActionGameButton(BuildContext context) async {
+    var connectedUser = await LocalStorageHelper.getUserFromLocalStorage();
+    if (connectedUser == null || connectedUser.isAdmin()) {
+    return Container();
+    }
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        vertical: 20.0,
+        horizontal: 5.0,
+      ),
+      child: _game.isAvailable!
+          ? _buildAddToCartButton(context)
+          : const Text(
+              "game-unavailable-label",
+              style: TextStyle(
+                color: Colors.white,
+                fontStyle: FontStyle.italic,
+                fontWeight: FontWeight.w400,
+              ),
+              textAlign: TextAlign.center,
+            ).tr(),
     );
   }
 

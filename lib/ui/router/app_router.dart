@@ -34,7 +34,7 @@ import 'package:ludo_mobile/ui/pages/messages/conversation_page.dart';
 import 'package:ludo_mobile/ui/pages/messages/inbox_page.dart';
 import 'package:ludo_mobile/ui/pages/landing_page.dart';
 import 'package:ludo_mobile/ui/pages/login_page.dart';
-import 'package:ludo_mobile/ui/pages/profile_page.dart';
+import 'package:ludo_mobile/ui/pages/profile/profile_page.dart';
 import 'package:ludo_mobile/ui/pages/register/register_page.dart';
 import 'package:ludo_mobile/ui/pages/register/register_success_page.dart';
 import 'package:ludo_mobile/ui/pages/reservation/reservation_detail_page.dart';
