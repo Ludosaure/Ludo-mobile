@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -37,7 +35,7 @@ class _AdminBottomNavBarState extends State<AdminBottomNavBar> {
         FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
             .hasUnseenConversationsStream();
     unreadConversationsStream.listen((hasUnreadConversations) {
-      setState(() => _hasUnseenConversations = hasUnreadConversations);
+      _hasUnseenConversations = hasUnreadConversations;
     });
   }
 

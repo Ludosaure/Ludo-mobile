@@ -36,7 +36,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
     FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
         .hasUnseenConversationsStream();
     unreadConversationsStream.listen((hasUnreadConversations) {
-      setState(() => _hasUnseenConversations = hasUnreadConversations);
+      _hasUnseenConversations = hasUnreadConversations;
     });
   }
 
