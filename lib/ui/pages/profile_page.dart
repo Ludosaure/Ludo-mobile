@@ -54,12 +54,13 @@ class ProfilePage extends StatelessWidget {
           const SizedBox(height: 20),
           _buildUserInfosBody(context),
           const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: () {
-              context.push(Routes.userReservations.path);
-            },
-            child: Text('my-reservations-title'.tr()),
-          ),
+          if (!connectedUser.isAdmin())
+            ElevatedButton(
+              onPressed: () {
+                context.push(Routes.userReservations.path);
+              },
+              child: Text('my-reservations-title'.tr()),
+            ),
         ],
       ),
     );
