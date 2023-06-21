@@ -9,6 +9,8 @@ enum Routes {
   profile,
   game,
   addGame,
+  updateGame,
+  adminGames,
   inbox,
   terms,
   favorites,
@@ -44,6 +46,10 @@ extension RoutesExtension on Routes {
         return '/game';
       case Routes.addGame:
         return '/game-add';
+      case Routes.updateGame:
+        return 'edit';
+      case Routes.adminGames:
+        return '/games';
       case Routes.inbox:
         return '/inbox';
       case Routes.favorites:
@@ -61,3 +67,4 @@ extension RoutesExtension on Routes {
     }
   }
 }
+

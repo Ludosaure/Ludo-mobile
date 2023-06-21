@@ -86,7 +86,7 @@ class LandingPage extends StatelessWidget {
             ).tr(),
           ),
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.03,
+            height: size.height * 0.02,
           ),
           ElevatedButton(
             onPressed: () {

@@ -66,7 +66,7 @@ class GameCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Text(
-              game.categories.join(', '),
+              game.categories.first.name,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             Text(

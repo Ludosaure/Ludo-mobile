@@ -3,29 +3,30 @@ import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/core/exception.dart';
 import 'package:ludo_mobile/data/repositories/reservation/reservation_repository.dart';
 import 'package:ludo_mobile/domain/models/reservation.dart';
+import 'package:ludo_mobile/domain/use_cases/session/session_cubit.dart';
 import 'package:meta/meta.dart';
 
 part 'list_all_reservations_state.dart';
 
 @injectable
 class ListAllReservationsCubit extends Cubit<ListAllReservationsState> {
+  final SessionCubit _sessionCubit;
   final ReservationRepository _listReservationRepository;
 
-  ListAllReservationsCubit(this._listReservationRepository)
-      : super(const ListAllReservationsInitial());
+  ListAllReservationsCubit(
+    this._sessionCubit,
+    this._listReservationRepository,
+  ) : super(const ListAllReservationsInitial());
 
   void listReservations() async {
     emit(const ListAllReservationsLoading());
-
+    List<Reservation> reservations;
     try {
-      final reservations = await _listReservationRepository.getReservations();
-      emit(ListReservationsSuccess(reservations: reservations));
+      reservations = await _listReservationRepository.getReservations();
     } catch (exception) {
-
-      if (
-        exception is UserNotLoggedInException ||
-        exception is ForbiddenException
-      ) {
+      if (exception is UserNotLoggedInException ||
+          exception is ForbiddenException) {
+        _sessionCubit.logout();
         emit(
           UserMustLogError(
             message: exception.toString(),
@@ -37,6 +38,15 @@ class ListAllReservationsCubit extends Cubit<ListAllReservationsState> {
       emit(
         ListAllReservationsError(message: exception.toString()),
       );
+      return;
     }
+
+    emit(ListReservationsSuccess(reservations: reservations));
+  }
+
+  @override
+  Future<void> close() {
+    _sessionCubit.close();
+    return super.close();
   }
 }

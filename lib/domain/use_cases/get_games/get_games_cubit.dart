@@ -7,7 +7,7 @@ import 'package:meta/meta.dart';
 
 part 'get_games_state.dart';
 
-@injectable
+@singleton
 class GetGamesCubit extends Cubit<GetGamesState> {
   final ListReductionPlanCubit _listReductionPlanCubit;
   final GameRepository _getGamesRepository;
@@ -28,6 +28,21 @@ class GetGamesCubit extends Cubit<GetGamesState> {
         GetGamesError(message: e.toString()),
       );
     }
+  }
+
+  void findAndReplace(Game updatedGame) {
+    final games = state.games;
+
+    final List<Game> updatedList = games.map((game) {
+      if (game.id == updatedGame.id) {
+        return updatedGame;
+      }
+      return game;
+    }).toList();
+
+    emit(
+      GetGamesSuccess(games: updatedList),
+    );
   }
 
   dispose() {

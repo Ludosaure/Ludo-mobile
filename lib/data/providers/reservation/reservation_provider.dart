@@ -41,6 +41,8 @@ class ReservationProvider {
     });
 
     if (response.statusCode == HttpCode.UNAUTHORIZED) {
+      await LocalStorageHelper.removeUserFromLocalStorage();
+
       throw ForbiddenException('errors.forbidden-access'.tr());
     } else if (response.statusCode != HttpCode.OK) {
       throw InternalServerException('errors.unknown'.tr());

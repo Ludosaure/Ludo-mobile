@@ -8,6 +8,7 @@ import 'package:ludo_mobile/data/providers/payment_provider.dart';
 import 'package:ludo_mobile/data/repositories/reservation/new_reservation.dart';
 import 'package:ludo_mobile/data/repositories/reservation/reservation_repository.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
+import 'package:ludo_mobile/domain/use_cases/session/session_cubit.dart';
 import 'package:ludo_mobile/utils/app_constants.dart';
 import 'package:meta/meta.dart';
 
@@ -15,10 +16,12 @@ part 'cart_state.dart';
 
 @singleton
 class CartCubit extends Cubit<CartState> {
+  final SessionCubit _sessionCubit;
   final PaymentProvider _paymentProvider;
   final ReservationRepository _reservationRepository;
 
   CartCubit(
+    this._sessionCubit,
     this._paymentProvider,
     this._reservationRepository,
   ) : super(AddToCartInitial());
@@ -118,7 +121,7 @@ class CartCubit extends Cubit<CartState> {
         );
       });
     }).catchError((error) {
-      if(error is UserNotLoggedInException) {
+      if (error is UserNotLoggedInException) {
         emit(UserNotLogged());
         return;
       }
@@ -147,8 +150,8 @@ class CartCubit extends Cubit<CartState> {
 
   Future<void> displayPaymentSheet() async {
     try {
-      NewReservation reservation = await _reservationRepository
-          .createReservation(
+      NewReservation reservation =
+          await _reservationRepository.createReservation(
         state.bookingPeriod,
         state.cartContent,
       );
@@ -157,7 +160,7 @@ class CartCubit extends Cubit<CartState> {
           .presentPaymentSheet(
         options: const PaymentSheetPresentOptions(),
       )
-      // Cas de succès
+          // Cas de succès
           .then((void value) async {
         emit(
           PaymentSheetDisplayed(
@@ -188,13 +191,13 @@ class CartCubit extends Cubit<CartState> {
           ),
         );
       }).whenComplete(
-            () {
+        () {
           Stripe.instance.resetPaymentSheetCustomer();
         },
       );
-
     } catch (error) {
-      if(error is UserNotLoggedInException) {
+      if (error is UserNotLoggedInException) {
+        _sessionCubit.logout();
         emit(UserNotLogged());
         return;
       }
@@ -207,7 +210,6 @@ class CartCubit extends Cubit<CartState> {
         ),
       );
     }
-
   }
 
   Future<void> _initPaymentSheet() async {
@@ -242,6 +244,12 @@ class CartCubit extends Cubit<CartState> {
       try {
         _reservationRepository.confirmReservationPayment(reservation);
       } catch (error) {
+        if (error is UserNotLoggedInException) {
+          _sessionCubit.logout();
+          emit(UserNotLogged());
+          return;
+        }
+
         emit(
           PaymentFailed(
             error: "errors.payment-sheet-submit".tr(),
@@ -282,6 +290,12 @@ class CartCubit extends Cubit<CartState> {
       // -d "cancellation_reason"="abandoned" \
       //   -u sk_test_4eC39HqLyjWDarjtT1zdp7dc:
     } catch (error) {
+      if (error is UserNotLoggedInException) {
+        _sessionCubit.logout();
+        emit(UserNotLogged());
+        return;
+      }
+
       emit(
         CancelReservationFailed(
           error: "errors.cancel-reservation".tr(),
@@ -291,5 +305,11 @@ class CartCubit extends Cubit<CartState> {
         ),
       );
     }
+  }
+
+  @override
+  Future<void> close() {
+    _sessionCubit.close();
+    return super.close();
   }
 }

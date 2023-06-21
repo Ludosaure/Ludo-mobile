@@ -392,7 +392,10 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
                   '${Routes.game.path}/${game.id}',
                 );
               },
-              child: GameTile(game: game),
+              child: GameTile(
+                adminView: false,
+                game: game,
+              ),
             );
           },
         ),

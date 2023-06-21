@@ -30,7 +30,7 @@ class CustomAppBar extends StatelessWidget {
             valueWhen: [
               const Condition.largerThan(name: MOBILE, value: 75.0),
               const Condition.largerThan(name: TABLET, value: 75.0),
-              const Condition.largerThan(name: DESKTOP, value: 80.0),
+              const Condition.largerThan(name: DESKTOP, value: 65.0),
             ],
           ).value,
           height: ResponsiveValue(

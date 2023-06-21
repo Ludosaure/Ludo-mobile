@@ -5,35 +5,53 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/core/form_status.dart';
+import 'package:ludo_mobile/domain/models/game.dart';
 import 'package:ludo_mobile/domain/models/game_category.dart';
-import 'package:ludo_mobile/domain/models/user.dart';
-import 'package:ludo_mobile/domain/use_cases/create_game/create_game_bloc.dart';
 import 'package:ludo_mobile/domain/use_cases/get_categories/get_categories_cubit.dart';
+import 'package:ludo_mobile/domain/use_cases/update_game/update_game_bloc.dart';
 import 'package:ludo_mobile/ui/components/custom_file_picker.dart';
 import 'package:ludo_mobile/ui/components/form_field_decoration.dart';
-import 'package:ludo_mobile/ui/components/scaffold/admin_scaffold.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
-import 'package:ludo_mobile/utils/menu_items.dart';
 
-class AddGamePage extends StatefulWidget {
-  final User user;
+class UpdateGamePage extends StatefulWidget {
+  final Game game;
 
-  const AddGamePage({
+  const UpdateGamePage({
     Key? key,
-    required this.user,
+    required this.game,
   }) : super(key: key);
 
   @override
-  State<AddGamePage> createState() => _AddGamePageState();
+  State<UpdateGamePage> createState() => _UpdateGamePageState();
 }
 
-class _AddGamePageState extends State<AddGamePage> {
+class _UpdateGamePageState extends State<UpdateGamePage> {
   final _formKey = GlobalKey<FormState>();
   late List<GameCategory> _categories;
 
+  Game get game => widget.game;
+
+  @override
+  void initState() {
+    context.read<UpdateGameBloc>().add(GameIdChangedEvent(game.id));
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return AdminScaffold(
+    return Scaffold(
+      appBar: AppBar(
+        leading: BackButton(
+          onPressed: () => context.pop(),
+        ),
+        title: const Text(
+          "update-game-title",
+        ).tr(
+          namedArgs: {
+            "name": game.name,
+          },
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
         child: BlocConsumer<GetCategoriesCubit, GetCategoriesState>(
@@ -87,10 +105,6 @@ class _AddGamePageState extends State<AddGamePage> {
           },
         ),
       ),
-      navBarIndex: AdminMenuItems.AddGame.index,
-      onSortPressed: null,
-      onSearch: null,
-      user: widget.user,
     );
   }
 
@@ -98,7 +112,10 @@ class _AddGamePageState extends State<AddGamePage> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          CustomFilePicker(onFileSelected: _onFileSelected),
+          CustomFilePicker(
+            initialImage: game.imageUrl,
+            onFileSelected: _onFileSelected,
+          ),
           _buildForm(context),
           _buildSubmitButton(context),
         ],
@@ -116,27 +133,23 @@ class _AddGamePageState extends State<AddGamePage> {
         mainAxisSize: MainAxisSize.min,
         children: [
           TextFormField(
+            initialValue: game.name,
             decoration: FormFieldDecoration.textField('game-name-field'.tr()),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Veuillez saisir le nom du jeu';
-              }
-              return null;
-            },
             onChanged: (value) {
-              context.read<CreateGameBloc>().add(GameNameChangedEvent(value));
+              context.read<UpdateGameBloc>().add(GameNameChangedEvent(value));
             },
           ),
           const SizedBox(
             height: 20,
           ),
           TextFormField(
+            initialValue: game.description,
             maxLines: 10,
             decoration:
                 FormFieldDecoration.textField('game-description-field'.tr()),
             onChanged: (value) {
               context
-                  .read<CreateGameBloc>()
+                  .read<UpdateGameBloc>()
                   .add(GameDescriptionChangedEvent(value));
             },
           ),
@@ -144,21 +157,14 @@ class _AddGamePageState extends State<AddGamePage> {
             height: 20,
           ),
           TextFormField(
+            initialValue: game.weeklyAmount.toString(),
             decoration: FormFieldDecoration.textField(
-                'weekly-amount-field'.tr(),
-                suffixText: 'currency-symbol'.tr()),
-            keyboardType: TextInputType.number,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Veuillez saisir le prix du jeu';
-              }
-              return null;
-            },
+              'weekly-amount-field'.tr(),
+              suffixText: 'currency-symbol'.tr(),
+            ),
             onChanged: (value) {
-              context.read<CreateGameBloc>().add(
-                    GameWeeklyAmountChangedEvent(
-                      double.parse(value),
-                    ),
+              context.read<UpdateGameBloc>().add(
+                    GameWeeklyAmountChangedEvent(double.parse(value)),
                   );
             },
           ),
@@ -168,12 +174,6 @@ class _AddGamePageState extends State<AddGamePage> {
           DropdownButtonFormField(
             decoration:
                 FormFieldDecoration.textField('game-category-field'.tr()),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Veuillez choisir une catégorie pour le jeu';
-              }
-              return null;
-            },
             items: _categories.map((category) {
               return DropdownMenuItem(
                 value: category.id,
@@ -181,7 +181,7 @@ class _AddGamePageState extends State<AddGamePage> {
               );
             }).toList(),
             onChanged: (value) {
-              context.read<CreateGameBloc>().add(
+              context.read<UpdateGameBloc>().add(
                     GameCategoryChangedEvent(value!),
                   );
             },
@@ -190,17 +190,12 @@ class _AddGamePageState extends State<AddGamePage> {
             height: 20,
           ),
           TextFormField(
+            initialValue: game.minAge.toString(),
             keyboardType: TextInputType.number,
             decoration: FormFieldDecoration.textField('min-age-field'.tr()),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Veuillez saisir un âge minimum';
-              }
-              return null;
-            },
             onChanged: (value) {
               context
-                  .read<CreateGameBloc>()
+                  .read<UpdateGameBloc>()
                   .add(GameMinAgeChangedEvent(int.parse(value)));
             },
           ),
@@ -208,18 +203,14 @@ class _AddGamePageState extends State<AddGamePage> {
             height: 20,
           ),
           TextFormField(
+            initialValue: game.averageDuration.toString(),
             keyboardType: TextInputType.number,
             decoration: FormFieldDecoration.textField(
-                'average-duration-field'.tr(),
-                suffixText: 'min'),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return "Veuillez saisir la durée moyenne d'une partie";
-              }
-              return null;
-            },
+              'average-duration-field'.tr(),
+              suffixText: 'min',
+            ),
             onChanged: (value) {
-              context.read<CreateGameBloc>().add(
+              context.read<UpdateGameBloc>().add(
                     GameAverageDurationChangedEvent(
                       int.parse(value),
                     ),
@@ -230,17 +221,16 @@ class _AddGamePageState extends State<AddGamePage> {
             height: 20,
           ),
           TextFormField(
+            initialValue: game.minPlayers.toString(),
             keyboardType: TextInputType.number,
-            decoration: FormFieldDecoration.textField('min-players-field'.tr()),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Veuillez saisir le nombre de joueurs minimum';
-              }
-              return null;
-            },
+            decoration: FormFieldDecoration.textField(
+              'min-players-field'.tr(),
+            ),
             onChanged: (value) {
-              context.read<CreateGameBloc>().add(
-                    GameMinPlayersChangedEvent(int.parse(value)),
+              context.read<UpdateGameBloc>().add(
+                    GameMinPlayersChangedEvent(
+                      int.parse(value),
+                    ),
                   );
             },
           ),
@@ -248,16 +238,13 @@ class _AddGamePageState extends State<AddGamePage> {
             height: 20,
           ),
           TextFormField(
+            initialValue: game.maxPlayers.toString(),
             keyboardType: TextInputType.number,
-            decoration: FormFieldDecoration.textField('max-players-field'.tr()),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Veuillez saisir le nombre de joueurs maximum';
-              }
-              return null;
-            },
+            decoration: FormFieldDecoration.textField(
+              'max-players-field'.tr(),
+            ),
             onChanged: (value) {
-              context.read<CreateGameBloc>().add(
+              context.read<UpdateGameBloc>().add(
                     GameMaxPlayersChangedEvent(
                       int.parse(value),
                     ),
@@ -270,13 +257,13 @@ class _AddGamePageState extends State<AddGamePage> {
   }
 
   Widget _buildSubmitButton(BuildContext context) {
-    return BlocConsumer<CreateGameBloc, CreateGameInitial>(
+    return BlocConsumer<UpdateGameBloc, UpdateGameInitial>(
       listener: (context, state) {
         if (state.status is FormSubmissionSuccessful) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: const Text(
-                'game-created-successfully',
+                'game-updated-successfully',
               ).tr(),
             ),
           );
@@ -318,11 +305,11 @@ class _AddGamePageState extends State<AddGamePage> {
             onPressed: () {
               if (_formKey.currentState!.validate()) {
                 context
-                    .read<CreateGameBloc>()
-                    .add(const CreateGameSubmitEvent());
+                    .read<UpdateGameBloc>()
+                    .add(const UpdateGameSubmitEvent());
               }
             },
-            child: const Text('add-game-btn').tr(),
+            child: const Text('update-game-btn').tr(),
           ),
         );
       },
@@ -330,6 +317,6 @@ class _AddGamePageState extends State<AddGamePage> {
   }
 
   void _onFileSelected(File? file) {
-    context.read<CreateGameBloc>().add(GamePictureChangedEvent(file));
+    context.read<UpdateGameBloc>().add(GamePictureChangedEvent(file!));
   }
 }

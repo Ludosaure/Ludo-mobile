@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:injectable/injectable.dart';
+import 'package:ludo_mobile/core/exception.dart';
 import 'package:ludo_mobile/data/repositories/favorite/favorite_game.dart';
 import 'package:ludo_mobile/data/repositories/favorite/favorite_games_repository.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
@@ -26,10 +27,17 @@ class FavoriteGamesCubit extends Cubit<FavoriteGamesState> {
         return;
       }
 
-      final favorites = await _favoriteRepository
-          .getFavorites((_sessionCubit.state as UserLoggedIn).user.id);
+      final favorites = await _favoriteRepository.getFavorites(
+        (_sessionCubit.state as UserLoggedIn).user.id,
+      );
       emit(GetFavoriteGamesSuccess(favorites: favorites));
     } catch (exception) {
+      if(exception is UserNotLoggedInException) {
+        _sessionCubit.logout();
+        emit(UserNotLogged());
+        return;
+      }
+
       emit(
         GetFavoriteGamesError(message: exception.toString()),
       );
@@ -65,6 +73,12 @@ class FavoriteGamesCubit extends Cubit<FavoriteGamesState> {
 
       emit(OperationSuccess(favorites: favorites));
     } catch (exception) {
+      if(exception is UserNotLoggedInException) {
+        _sessionCubit.logout();
+        emit(UserNotLogged());
+        return;
+      }
+
       emit(
         OperationFailure(
           message: exception.toString(),
@@ -93,6 +107,12 @@ class FavoriteGamesCubit extends Cubit<FavoriteGamesState> {
         OperationSuccess(favorites: favorites),
       );
     } catch (exception) {
+      if(exception is UserNotLoggedInException) {
+        _sessionCubit.logout();
+        emit(UserNotLogged());
+        return;
+      }
+
       emit(
         OperationFailure(
             message: exception.toString(), favorites: state.favorites),
@@ -100,8 +120,9 @@ class FavoriteGamesCubit extends Cubit<FavoriteGamesState> {
     }
   }
 
-  dispose() {
+  @override
+  Future<void> close() {
     _sessionCubit.close();
-    close();
+    return super.close();
   }
 }

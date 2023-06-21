@@ -36,6 +36,10 @@ class EmailAlreadyUsedException extends BadRequestException {
   const EmailAlreadyUsedException(String message) : super(message);
 }
 
+class NameAlreadyUsedException extends BadRequestException {
+  const NameAlreadyUsedException(String message) : super(message);
+}
+
 class UnverifiedAccountException extends BadRequestException {
   const UnverifiedAccountException(String message) : super(message);
 }
@@ -47,6 +51,14 @@ class ServiceUnavailableException extends InternalServerException {
 class UserNotLoggedInException implements Exception {
   final String message;
   const UserNotLoggedInException(this.message);
+
+  @override
+  String toString() => message;
+}
+
+class NotAllowedException implements Exception {
+  final String message;
+  const NotAllowedException(this.message);
 
   @override
   String toString() => message;
