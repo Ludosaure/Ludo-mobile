@@ -381,9 +381,7 @@ class AppRouter {
                 value: _sessionCubit,
               ),
             ],
-            child: ProfilePage(
-              connectedUser: connectedUser!,
-            ),
+            child: const ProfilePage(),
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(

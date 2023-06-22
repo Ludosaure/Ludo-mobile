@@ -10,34 +10,54 @@ import 'package:ludo_mobile/ui/components/circle-avatar.dart';
 import 'package:ludo_mobile/ui/components/scaffold/admin_scaffold.dart';
 import 'package:ludo_mobile/ui/components/scaffold/home_scaffold.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
+import 'package:ludo_mobile/utils/local_storage_helper.dart';
 import 'package:ludo_mobile/utils/menu_items.dart';
 import 'package:responsive_framework/responsive_wrapper.dart';
 
-class ProfilePage extends StatelessWidget {
-  final User connectedUser;
-
-  late final SessionCubit _sessionCubit = locator<SessionCubit>();
-
-  ProfilePage({
+class ProfilePage extends StatefulWidget {
+  const ProfilePage({
     Key? key,
-    required this.connectedUser,
   }) : super(key: key);
 
   @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  late final SessionCubit _sessionCubit = locator<SessionCubit>();
+  late User connectedUser;
+
+  Future<void> initializeUser() async {
+    connectedUser = (await LocalStorageHelper.getUserFromLocalStorage())!;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    if (connectedUser.isAdmin()) {
-      return AdminScaffold(
-        body: _buildPage(context),
-        user: connectedUser,
-        onSearch: null,
-        onSortPressed: null,
-        navBarIndex: MenuItems.Profile.index,
-      );
-    }
-    return HomeScaffold(
-      body: _buildPage(context),
-      navBarIndex: MenuItems.Profile.index,
-      user: connectedUser,
+    return FutureBuilder<void>(
+      future: initializeUser(),
+      builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(body: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Text('error-loading-user-data'.tr());
+        } else {
+          if (connectedUser.isAdmin()) {
+            return AdminScaffold(
+              body: _buildPage(context),
+              user: connectedUser,
+              onSearch: null,
+              onSortPressed: null,
+              navBarIndex: MenuItems.Profile.index,
+            );
+          } else {
+            return HomeScaffold(
+              body: _buildPage(context),
+              navBarIndex: MenuItems.Profile.index,
+              user: connectedUser,
+            );
+          }
+        }
+      },
     );
   }
 
