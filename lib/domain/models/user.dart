@@ -11,8 +11,8 @@ class User {
   final String role;
   final bool hasVerifiedAccount;
   final bool isAccountClosed;
-  final bool hasEnabledMailNotifications;
-  final bool hasEnabledPhoneNotifications;
+  bool hasEnabledMailNotifications;
+  bool hasEnabledPhoneNotifications;
 
 
   User({

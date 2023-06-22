@@ -112,6 +112,9 @@ class _UpdateProfilePageState extends State<UpdateProfilePage> {
             trailing: Switch(
               value: user.hasEnabledMailNotifications,
               onChanged: (value) {
+                setState(() {
+                  user.hasEnabledMailNotifications = value;
+                });
                 context.read<UpdateUserBloc>().add(
                   UserHasEnabledMailNotificationsChangedEvent(value),
                 );
@@ -130,6 +133,9 @@ class _UpdateProfilePageState extends State<UpdateProfilePage> {
             trailing: Switch(
               value: user.hasEnabledPhoneNotifications,
               onChanged: (value) {
+                setState(() {
+                  user.hasEnabledPhoneNotifications = value;
+                });
                 context.read<UpdateUserBloc>().add(
                   UserHasEnabledPhoneNotificationsChangedEvent(value),
                 );

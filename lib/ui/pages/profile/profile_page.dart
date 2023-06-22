@@ -33,6 +33,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    // TODO plutôt passer par un cubit de get user
     return FutureBuilder<void>(
       future: initializeUser(),
       builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
@@ -268,7 +269,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
           ),
-          title: connectedUser.hasEnabledPhoneNotifications
+          title: connectedUser.hasEnabledMailNotifications
               ? const Icon(Icons.check)
               : const Icon(Icons.close),
         ),
