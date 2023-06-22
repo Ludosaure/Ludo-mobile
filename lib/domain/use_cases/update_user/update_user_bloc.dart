@@ -7,7 +7,9 @@ import 'package:ludo_mobile/core/form_status.dart';
 import 'package:ludo_mobile/data/providers/user/update_user_request.dart';
 import 'package:ludo_mobile/data/repositories/media_repository.dart';
 import 'package:ludo_mobile/data/repositories/user_repository.dart';
+import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:ludo_mobile/domain/use_cases/session/session_cubit.dart';
+import 'package:ludo_mobile/utils/local_storage_helper.dart';
 import 'package:meta/meta.dart';
 
 part 'update_user_event.dart';
@@ -78,8 +80,10 @@ class UpdateUserBloc extends Bloc<UpdateUserEvent, UpdateUserInitial> {
       image: imageUrl,
     );
 
+    User user;
+
     try {
-      await _userRepository.updateUser(userRequest);
+      user = await _userRepository.updateUser(userRequest);
     } catch (error) {
       if(error is UserNotLoggedInException || error is NotAllowedException) {
         _sessionCubit.logout();
@@ -95,6 +99,10 @@ class UpdateUserBloc extends Bloc<UpdateUserEvent, UpdateUserInitial> {
 
       return;
     }
+
+    String? token = await LocalStorageHelper.getTokenFromLocalStorage();
+
+    LocalStorageHelper.saveUserToLocalStorage(user, token!);
 
     emit(
       state.copyWith(

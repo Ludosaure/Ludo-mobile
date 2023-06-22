@@ -7,13 +7,14 @@ import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/core/exception.dart';
 import 'package:ludo_mobile/core/http_code.dart';
 import 'package:ludo_mobile/data/providers/user/update_user_request.dart';
+import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:ludo_mobile/utils/app_constants.dart';
 
 @injectable
 class UserProvider {
   final String baseUrl = '${AppConstants.API_URL}/user';
 
-  Future<void> updateUser(String token, UpdateUserRequest user) async {
+  Future<User> updateUser(String token, UpdateUserRequest user) async {
     final http.Response response = await http
         .put(
       Uri.parse(baseUrl),
@@ -43,5 +44,7 @@ class UserProvider {
         "errors.unknown".tr(),
       );
     }
+
+    return User.fromJson(jsonDecode(response.body));
   }
 }

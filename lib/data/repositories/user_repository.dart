@@ -12,7 +12,7 @@ class UserRepository {
 
   UserRepository(this._userProvider);
 
-  Future<void> updateUser(UpdateUserRequest updateUserRequest) async {
+  Future<User> updateUser(UpdateUserRequest updateUserRequest) async {
     final User? user = await LocalStorageHelper.getUserFromLocalStorage();
 
     if(user == null) {
@@ -21,7 +21,7 @@ class UserRepository {
 
     final String? token = await LocalStorageHelper.getTokenFromLocalStorage();
 
-    await _userProvider.updateUser(token!, updateUserRequest);
+    return await _userProvider.updateUser(token!, updateUserRequest);
   }
 
 }
