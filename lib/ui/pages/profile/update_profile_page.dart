@@ -30,6 +30,12 @@ class _UpdateProfilePageState extends State<UpdateProfilePage> {
   User get user => widget.user;
 
   @override
+  void initState() {
+    context.read<UpdateUserBloc>().add(UserIdChangedEvent(user.id));
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(

@@ -50,3 +50,9 @@ class UserPictureChangedEvent extends UpdateUserEvent {
 
   const UserPictureChangedEvent(this.picture);
 }
+
+class UserIdChangedEvent extends UpdateUserEvent {
+  final String userId;
+
+  const UserIdChangedEvent(this.userId);
+}

@@ -33,6 +33,7 @@ class UpdateUserBloc extends Bloc<UpdateUserEvent, UpdateUserInitial> {
     on<UserHasEnabledMailNotificationsChangedEvent>(onHasEnabledMailNotificationsChanged);
     on<UserHasEnabledPhoneNotificationsChangedEvent>(onHasEnabledPhoneNotificationsChanged);
     on<UserPictureChangedEvent>(onPictureChanged);
+    on<UserIdChangedEvent>(onUserChanged);
   }
 
   void onSubmitForm(event, Emitter emit) async {
@@ -136,6 +137,10 @@ class UpdateUserBloc extends Bloc<UpdateUserEvent, UpdateUserInitial> {
 
   void onPictureChanged(UserPictureChangedEvent event, Emitter emit) async {
     emit(state.copyWith(image: event.picture));
+  }
+
+  void onUserChanged(event, Emitter emit) async {
+    emit(state.copyWith(userId: event.userId));
   }
 
   Future<String> _uploadImage(File image) async {
