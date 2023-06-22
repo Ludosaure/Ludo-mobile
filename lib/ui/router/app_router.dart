@@ -19,6 +19,7 @@ import 'package:ludo_mobile/domain/use_cases/login/login_bloc.dart';
 import 'package:ludo_mobile/domain/use_cases/register/register_bloc.dart';
 import 'package:ludo_mobile/domain/use_cases/session/session_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/update_game/update_game_bloc.dart';
+import 'package:ludo_mobile/domain/use_cases/update_user/update_user_bloc.dart';
 import 'package:ludo_mobile/domain/use_cases/user_reservations/user_reservations_cubit.dart';
 import 'package:ludo_mobile/injection.dart';
 import 'package:ludo_mobile/ui/pages/cart/cart_page.dart';
@@ -35,6 +36,7 @@ import 'package:ludo_mobile/ui/pages/messages/inbox_page.dart';
 import 'package:ludo_mobile/ui/pages/landing_page.dart';
 import 'package:ludo_mobile/ui/pages/login_page.dart';
 import 'package:ludo_mobile/ui/pages/profile/profile_page.dart';
+import 'package:ludo_mobile/ui/pages/profile/update_profile_page.dart';
 import 'package:ludo_mobile/ui/pages/register/register_page.dart';
 import 'package:ludo_mobile/ui/pages/register/register_success_page.dart';
 import 'package:ludo_mobile/ui/pages/reservation/reservation_detail_page.dart';
@@ -61,6 +63,7 @@ class AppRouter {
       locator<DownloadInvoiceCubit>();
   final CreateGameBloc _createGameBloc = locator<CreateGameBloc>();
   final UpdateGameBloc _updateGameBloc = locator<UpdateGameBloc>();
+  final UpdateUserBloc _updateUserBloc = locator<UpdateUserBloc>();
   final GetCategoriesCubit _getCategoriesCubit = locator<GetCategoriesCubit>();
 
   late User? connectedUser;
@@ -254,6 +257,27 @@ class AppRouter {
             ],
             child: UpdateGamePage(
               game: state.extra! as Game,
+            ),
+          ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+        ),
+      ),
+      GoRoute(
+        path: '${Routes.profile.path}/${Routes.updateProfile.path}',
+        pageBuilder: (context, state) => CustomTransitionPage(
+          child: MultiBlocProvider(
+            providers: [
+              BlocProvider.value(
+                value: _updateUserBloc,
+              ),
+            ],
+            child: UpdateProfilePage(
+              user: connectedUser!,
             ),
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -503,6 +527,7 @@ class AppRouter {
     _deleteGameCubit.close();
     _createGameBloc.close();
     _updateGameBloc.close();
+    _updateUserBloc.close();
     _getCategoriesCubit.close();
   }
 }

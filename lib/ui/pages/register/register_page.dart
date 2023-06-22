@@ -12,6 +12,7 @@ import 'package:ludo_mobile/ui/components/form_field_decoration.dart';
 import 'package:ludo_mobile/ui/components/sized_box_20.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
 import 'package:ludo_mobile/utils/app_dimensions.dart';
+import 'package:ludo_mobile/utils/validator_utils.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
@@ -106,7 +107,7 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
           const SizedBox20(),
           TextFormField(
-            validator: _validatePhoneNumber,
+            validator: ValidatorUtils.validatePhoneNumber,
             onChanged: (value) {
               context.read<RegisterBloc>().add(PhoneChangedEvent(value));
             },
@@ -291,22 +292,6 @@ class _RegisterPageState extends State<RegisterPage> {
         ],
       ),
     );
-  }
-
-  //TODO voir pour mettre dans un fichier à part et pouvoir le réutiliser
-  String? _validatePhoneNumber(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'form.phone-number-required-msg'.tr();
-    }
-    if (value.length != 10) {
-      return 'form.phone-number-invalid-msg'.tr();
-    }
-
-    if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
-      return 'form.phone-number-invalid-msg'.tr();
-    }
-
-    return null;
   }
 
   void _togglePasswordVisibility() {

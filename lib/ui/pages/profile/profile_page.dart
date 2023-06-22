@@ -42,26 +42,30 @@ class ProfilePage extends StatelessWidget {
   }
 
   Widget _buildPage(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
-      child: Column(
-        verticalDirection: VerticalDirection.down,
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          _buildUserInfosHeader(context),
-          const SizedBox(height: 20),
-          _buildUserInfosBody(context),
-          const SizedBox(height: 20),
-          if (!connectedUser.isAdmin())
-            ElevatedButton(
-              onPressed: () {
-                context.push(Routes.userReservations.path);
-              },
-              child: Text('my-reservations-title'.tr()),
-            ),
-        ],
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
+        child: Column(
+          verticalDirection: VerticalDirection.down,
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            _buildUserInfosHeader(context),
+            const SizedBox(height: 20),
+            _buildUserInfosBody(context),
+            const SizedBox(height: 20),
+            _buildNotifsInfosBody(context),
+            const SizedBox(height: 20),
+            if (!connectedUser.isAdmin())
+              ElevatedButton(
+                onPressed: () {
+                  context.push(Routes.userReservations.path);
+                },
+                child: Text('my-reservations-title'.tr()),
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -129,7 +133,9 @@ class ProfilePage extends StatelessWidget {
       children: [
         IconButton(
           onPressed: () {
-            // TODO modifier le profil
+            context.push(
+              '${Routes.profile.path}/${Routes.updateProfile.path}',
+            );
           },
           icon: const Icon(Icons.edit),
         ),
@@ -143,13 +149,24 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
+  // TODO ajouter un bouton pour modifier le mot de passe
   Widget _buildUserInfosBody(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: size.height * 0.01),
+        ListTile(
+          leading: const Icon(Icons.account_circle),
+          title: Text(
+            'personal-informations-title'.tr(),
+            style: const TextStyle(
+              color: Colors.black,
+              fontSize: 20,
+            ),
+          ),
+        ),
+        const SizedBox(height: 20),
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -198,6 +215,58 @@ class ProfilePage extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildNotifsInfosBody(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ListTile(
+          leading: const Icon(Icons.notifications),
+          title: Text(
+            'notifications-parameters-title'.tr(),
+            style: const TextStyle(
+              color: Colors.black,
+              fontSize: 20,
+            ),
+          ),
+        ),
+        const SizedBox(height: 20),
+        ListTile(
+          leading: SizedBox(
+            width: size.width * 0.6,
+            child: Text(
+              'activate-mail-notifications-label'.tr(),
+              style: const TextStyle(
+                color: Colors.black,
+                fontSize: 18,
+              ),
+            ),
+          ),
+          title: connectedUser.hasEnabledPhoneNotifications
+              ? const Icon(Icons.check)
+              : const Icon(Icons.close),
+        ),
+        SizedBox(height: size.height * 0.01),
+        ListTile(
+          leading: SizedBox(
+            width: size.width * 0.6,
+            child: Text(
+              'activate-app-notifications-label'.tr(),
+              style: const TextStyle(
+                color: Colors.black,
+                fontSize: 18,
+              ),
+            ),
+          ),
+          title: connectedUser.hasEnabledPhoneNotifications
+              ? const Icon(Icons.check)
+              : const Icon(Icons.close),
         ),
       ],
     );

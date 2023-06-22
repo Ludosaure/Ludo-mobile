@@ -85,6 +85,7 @@
   "reduction": "Réduction : ",
   "validate-games-returned": "Valider le retour des jeux",
   "games-returned-successfully": "Les jeux ont été retournés avec succès.",
+  "user-updated-successfully": "L'utilisateur a bien été modifié.",
   "validate-games-returned-confirm": "Etes-vous sûr de vouloir valider le retour des jeux ?",
   "irreversible-action": "Cette action est irréversible.",
   "contact-user": "Contacter l'utilisateur",
@@ -109,7 +110,9 @@
   "add-game-title": "Ajouter un jeu",
   "add-game-btn": "Créer",
   "update-game-title": "Editer {name}",
+  "update-user-title": "Modification des informations de {firstname} {lastname}",
   "update-game-btn": "Editer",
+  "update-user-btn": "Modifier",
   "reservation-title": "Réservations",
   "administration-title": "Administration",
   "cart-title": "Mon panier",
@@ -137,7 +140,8 @@
     "payment-sheet-submit": "Erreur lors de la confirmation du paiement",
     "cancel-reservation": "Erreur lors de l'annulation de la réservation",
     "game-creation-failed": "Erreur lors de la création du jeu",
-    "game-edition-failed": "Erreur lors de la modification du jeu"
+    "game-edition-failed": "Erreur lors de la modification du jeu",
+    "user-edition-failed": "Erreur lors de la modification de l'utilisateur"
   },
   "select-date-range-label": "Durée de la réservation (une semaine minimum)",
   "booking-period-label-1": "Réservation du ",
@@ -166,11 +170,15 @@
   "game-name-field": "Nom du jeu *",
   "game-description-field": "Description du jeu",
   "weekly-amount-field": "Prix à la semaine *",
+  "pseudo-field": "Pseudo",
+  "personal-informations-title": "Informations personnelles",
+  "notifications-parameters-title": "Paramètres des notifications",
+  "activate-mail-notifications-label": "Notifications par mail activées : ",
+  "activate-app-notifications-label": "Notifications internes à l'application activées : ",
   "game-category-field": "Type de jeu ",
   "min-age-field": "Age minimum *",
   "average-duration-field": "Durée moyenne d'une partie en min *",
   "min-players-field": "Nombre de joueurs minimum *",
   "max-players-field": "Nombre de joueurs maximum *",
   "currency-symbol": "€"
-
 }
