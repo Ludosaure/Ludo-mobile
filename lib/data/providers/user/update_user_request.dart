@@ -6,7 +6,7 @@ class UpdateUserRequest {
   final String? pseudo;
   final bool? hasEnabledMailNotifications;
   final bool? hasEnabledPhoneNotifications;
-  final String? image;
+  final String? profilePictureId;
 
   UpdateUserRequest({
     required this.userId,
@@ -16,7 +16,7 @@ class UpdateUserRequest {
     this.pseudo,
     this.hasEnabledMailNotifications,
     this.hasEnabledPhoneNotifications,
-    this.image,
+    this.profilePictureId,
   });
 
   Map<String, dynamic> toJson() {
@@ -28,7 +28,7 @@ class UpdateUserRequest {
       'pseudo': pseudo,
       'hasEnabledMailNotifications': hasEnabledMailNotifications,
       'hasEnabledPhoneNotifications': hasEnabledPhoneNotifications,
-      'image': image,
+      'profilePictureId': profilePictureId,
     };
   }
 }

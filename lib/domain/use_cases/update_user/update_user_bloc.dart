@@ -39,7 +39,7 @@ class UpdateUserBloc extends Bloc<UpdateUserEvent, UpdateUserInitial> {
   }
 
   void onSubmitForm(event, Emitter emit) async {
-    String? imageUrl;
+    String? imageId;
 
     emit(
       state.copyWith(
@@ -49,7 +49,7 @@ class UpdateUserBloc extends Bloc<UpdateUserEvent, UpdateUserInitial> {
 
     if (state.image != null) {
       try {
-        imageUrl = await _uploadImage(state.image!);
+        imageId = await _uploadImage(state.image!);
       } catch (error) {
         if (error is UserNotLoggedInException) {
           _sessionCubit.logout();
@@ -77,7 +77,7 @@ class UpdateUserBloc extends Bloc<UpdateUserEvent, UpdateUserInitial> {
       pseudo: state.pseudo,
       hasEnabledMailNotifications: state.hasEnabledMailNotifications,
       hasEnabledPhoneNotifications: state.hasEnabledPhoneNotifications,
-      image: imageUrl,
+      profilePictureId: imageId,
     );
 
     User user;

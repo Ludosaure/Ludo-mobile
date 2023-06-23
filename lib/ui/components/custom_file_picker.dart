@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -28,9 +29,11 @@ class _CustomFilePickerState extends State<CustomFilePicker> {
       ),
       child: Column(
         children: [
-          if(widget.initialImage != null && _selectedPicture == null)
+          if (widget.initialImage != null && _selectedPicture == null)
             Image.network(widget.initialImage!, height: 200, width: 200),
-          if (_selectedPicture != null)
+          if (_selectedPicture != null && kIsWeb)
+            Image.network(_selectedPicture!.path, height: 200, width: 200),
+          if (_selectedPicture != null && !kIsWeb)
             Image.file(_selectedPicture!, height: 200, width: 200),
           Row(
             mainAxisSize: MainAxisSize.min,
