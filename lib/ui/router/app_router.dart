@@ -12,6 +12,7 @@ import 'package:ludo_mobile/domain/use_cases/get_categories/get_categories_cubit
 import 'package:ludo_mobile/domain/use_cases/get_game/get_game_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/get_games/get_games_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/get_reservation/get_reservation_cubit.dart';
+import 'package:ludo_mobile/domain/use_cases/get_user/get_user_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/invoice/download_invoice_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/list_all_reservations/list_all_reservations_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/list_reduction_plan/list_reduction_plan_cubit.dart';
@@ -275,9 +276,12 @@ class AppRouter {
               BlocProvider.value(
                 value: _updateUserBloc,
               ),
+              BlocProvider.value(
+                value: locator<GetUserCubit>(),
+              ),
             ],
             child: UpdateProfilePage(
-              user: connectedUser!,
+              user: state.extra! as User,
             ),
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -379,6 +383,9 @@ class AppRouter {
             providers: [
               BlocProvider.value(
                 value: _sessionCubit,
+              ),
+              BlocProvider.value(
+                value: locator<GetUserCubit>(),
               ),
             ],
             child: const ProfilePage(),

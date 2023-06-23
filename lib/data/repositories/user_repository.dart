@@ -12,6 +12,18 @@ class UserRepository {
 
   UserRepository(this._userProvider);
 
+  Future<User> getMyInfos() async {
+    final User? user = await LocalStorageHelper.getUserFromLocalStorage();
+
+    if(user == null) {
+      throw UserNotLoggedInException('errors.user-must-log-for-action'.tr());
+    }
+
+    final String? token = await LocalStorageHelper.getTokenFromLocalStorage();
+
+    return await _userProvider.getMyInfos(token!);
+  }
+
   Future<User> updateUser(UpdateUserRequest updateUserRequest) async {
     final User? user = await LocalStorageHelper.getUserFromLocalStorage();
 

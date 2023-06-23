@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/core/form_status.dart';
 import 'package:ludo_mobile/domain/models/user.dart';
+import 'package:ludo_mobile/domain/use_cases/get_user/get_user_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/update_user/update_user_bloc.dart';
 import 'package:ludo_mobile/ui/components/custom_file_picker.dart';
 import 'package:ludo_mobile/ui/components/form_field_decoration.dart';
@@ -158,6 +159,7 @@ class _UpdateProfilePageState extends State<UpdateProfilePage> {
               ).tr(),
             ),
           );
+          BlocProvider.of<GetUserCubit>(context).getUser();
           context.go(Routes.profile.path);
         } else if (state.status is FormSubmissionFailed) {
           ScaffoldMessenger.of(context).showSnackBar(

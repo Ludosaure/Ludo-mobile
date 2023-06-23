@@ -2,15 +2,16 @@ import 'dart:async';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/domain/models/user.dart';
+import 'package:ludo_mobile/domain/use_cases/get_user/get_user_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/session/session_cubit.dart';
 import 'package:ludo_mobile/injection.dart';
 import 'package:ludo_mobile/ui/components/circle-avatar.dart';
 import 'package:ludo_mobile/ui/components/scaffold/admin_scaffold.dart';
 import 'package:ludo_mobile/ui/components/scaffold/home_scaffold.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
-import 'package:ludo_mobile/utils/local_storage_helper.dart';
 import 'package:ludo_mobile/utils/menu_items.dart';
 import 'package:responsive_framework/responsive_wrapper.dart';
 
@@ -27,39 +28,53 @@ class _ProfilePageState extends State<ProfilePage> {
   late final SessionCubit _sessionCubit = locator<SessionCubit>();
   late User connectedUser;
 
-  Future<void> initializeUser() async {
-    connectedUser = (await LocalStorageHelper.getUserFromLocalStorage())!;
-  }
-
   @override
   Widget build(BuildContext context) {
-    // TODO plutôt passer par un cubit de get user
-    return FutureBuilder<void>(
-      future: initializeUser(),
-      builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(body: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Text('error-loading-user-data'.tr());
+    return BlocConsumer<GetUserCubit, GetUserState>(builder: (context, state) {
+      if (state is GetUserInitial) {
+        BlocProvider.of<GetUserCubit>(context).getUser();
+        return const Scaffold(
+          body: Center(
+            child: CircularProgressIndicator(),
+          ),
+        );
+      }
+      if (state is GetUserLoading) {
+        return const Scaffold(
+          body: Center(
+            child: CircularProgressIndicator(),
+          ),
+        );
+      }
+      if (state is GetUserSuccess) {
+        connectedUser = state.user;
+        if (connectedUser.isAdmin()) {
+          return AdminScaffold(
+            body: _buildPage(context),
+            user: connectedUser,
+            onSearch: null,
+            onSortPressed: null,
+            navBarIndex: MenuItems.Profile.index,
+          );
         } else {
-          if (connectedUser.isAdmin()) {
-            return AdminScaffold(
-              body: _buildPage(context),
-              user: connectedUser,
-              onSearch: null,
-              onSortPressed: null,
-              navBarIndex: MenuItems.Profile.index,
-            );
-          } else {
-            return HomeScaffold(
-              body: _buildPage(context),
-              navBarIndex: MenuItems.Profile.index,
-              user: connectedUser,
-            );
-          }
+          return HomeScaffold(
+            body: _buildPage(context),
+            navBarIndex: MenuItems.Profile.index,
+            user: connectedUser,
+          );
         }
-      },
-    );
+      }
+      return Container();
+    }, listener: (context, state) {
+      if (state is GetUserError) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(state.message),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    });
   }
 
   Widget _buildPage(BuildContext context) {
@@ -156,6 +171,7 @@ class _ProfilePageState extends State<ProfilePage> {
           onPressed: () {
             context.push(
               '${Routes.profile.path}/${Routes.updateProfile.path}',
+                extra: connectedUser,
             );
           },
           icon: const Icon(Icons.edit),
