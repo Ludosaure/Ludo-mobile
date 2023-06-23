@@ -3,13 +3,13 @@ import 'package:ludo_mobile/ui/components/search_bar.dart';
 import 'package:ludo_mobile/utils/app_constants.dart';
 
 class AdminAppBar extends StatelessWidget {
-  final void Function<T>(T selectedFilter)? onSortPressed;
-  final void Function(String toSearch)? onSearch;
+  // final void Function<T>(T selectedFilter)? onSortPressed;
+  // final void Function(String toSearch)? onSearch;
 
   const AdminAppBar({
     Key? key,
-    required this.onSearch,
-    required this.onSortPressed,
+    // required this.onSearch,
+    // required this.onSortPressed,
   }) : super(key: key);
 
   @override
@@ -34,35 +34,35 @@ class AdminAppBar extends StatelessWidget {
         ),
       ),
       leadingWidth: MediaQuery.of(context).size.width * 0.25,
-      actions: [
-        IconButton(
-          onPressed: () {
-            //TODO
-            // onSortPressed?.call(ReservationStatus.all);
-          },
-          icon: const Icon(
-            Icons.filter_list_sharp,
-            color: Colors.black,
-          ),
-        ),
-        IconButton(
-          onPressed: () {
-            showDialog(
-              context: context,
-              builder: (context) {
-                return SearchBar(
-                  showFilter: false,
-                  onSearch: onSearch,
-                );
-              },
-            );
-          },
-          icon: const Icon(
-            Icons.search,
-            color: Colors.black,
-          ),
-        ),
-      ],
+      // actions: [
+      //   IconButton(
+      //     onPressed: () {
+      //       //TODO
+      //       // onSortPressed?.call(ReservationStatus.all);
+      //     },
+      //     icon: const Icon(
+      //       Icons.filter_list_sharp,
+      //       color: Colors.black,
+      //     ),
+      //   ),
+      //   IconButton(
+      //     onPressed: () {
+      //       showDialog(
+      //         context: context,
+      //         builder: (context) {
+      //           return SearchBar(
+      //             showFilter: false,
+      //             onSearch: onSearch,
+      //           );
+      //         },
+      //       );
+      //     },
+      //     icon: const Icon(
+      //       Icons.search,
+      //       color: Colors.black,
+      //     ),
+      //   ),
+      // ],
       elevation: 1.0,
     );
   }

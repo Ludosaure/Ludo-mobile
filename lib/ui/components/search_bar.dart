@@ -35,7 +35,7 @@ class SearchBar extends StatelessWidget {
                 },
                 decoration: InputDecoration(
                   isDense: true,
-                  hintText: 'Search',
+                  hintText: 'Search not yet available',
                   prefixIcon: IconButton(
                     onPressed: () {
                       onSearch?.call(searched);
@@ -48,6 +48,7 @@ class SearchBar extends StatelessWidget {
                     borderSide: BorderSide.none,
                   ),
                 ),
+                enabled: false,
               ),
             ),
             if (showFilter)

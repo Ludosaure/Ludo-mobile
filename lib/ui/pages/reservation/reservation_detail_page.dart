@@ -442,10 +442,7 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
         leadingWidth: MediaQuery.of(context).size.width * 0.20,
       );
     }
-    return const AdminAppBar(
-      onSortPressed: null, // TODO
-      onSearch: null, // TODO
-    ).build(context);
+    return const AdminAppBar().build(context);
   }
 
   _showConfirmReturnedGamesDialog(BuildContext parentContext) {
