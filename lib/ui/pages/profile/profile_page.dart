@@ -10,6 +10,7 @@ import 'package:ludo_mobile/domain/use_cases/session/session_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/update_user/update_user_bloc.dart';
 import 'package:ludo_mobile/injection.dart';
 import 'package:ludo_mobile/ui/components/circle-avatar.dart';
+import 'package:ludo_mobile/ui/components/custom_back_button.dart';
 import 'package:ludo_mobile/ui/components/scaffold/admin_scaffold.dart';
 import 'package:ludo_mobile/ui/components/scaffold/home_scaffold.dart';
 import 'package:ludo_mobile/ui/pages/profile/update_password_alert.dart';
@@ -35,11 +36,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return BlocConsumer<GetUserCubit, GetUserState>(builder: (context, state) {
       if (state is GetUserInitial) {
         BlocProvider.of<GetUserCubit>(context).getUser();
-        return const Scaffold(
-          body: Center(
-            child: CircularProgressIndicator(),
-          ),
-        );
+        return _chargingScaffold();
       }
       if (state is GetUserLoading) {
         return const Scaffold(
@@ -77,6 +74,17 @@ class _ProfilePageState extends State<ProfilePage> {
         );
       }
     });
+  }
+
+  Widget _chargingScaffold() {
+    return Scaffold(
+      appBar: AppBar(
+        leading: const CustomBackButton(),
+      ),
+      body: const Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
   }
 
   Widget _buildPage(BuildContext context) {

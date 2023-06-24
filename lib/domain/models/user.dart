@@ -5,7 +5,7 @@ class User {
   final String email;
   final String firstname;
   final String lastname;
-  final String phone;
+  String phone;
   final String? pseudo;
   final String? profilePicturePath;
   final String role;

@@ -34,7 +34,7 @@ class UserProvider {
 
     if (response.statusCode == HttpCode.BAD_REQUEST) {
       throw BadRequestException(
-        "errors.user-edition-failed".tr(),
+        "errors.error-loading-user-data".tr(),
       );
     }
 
@@ -67,9 +67,7 @@ class UserProvider {
     });
 
     if (response.statusCode == HttpCode.BAD_REQUEST) {
-      throw BadRequestException(
-        "errors.user-edition-failed".tr(),
-      );
+      throw BadRequestException("${'errors.user-edition-failed'.tr()} ${response.body}");
     }
 
     if (response.statusCode != HttpCode.OK) {

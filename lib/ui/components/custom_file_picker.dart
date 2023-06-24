@@ -29,7 +29,9 @@ class _CustomFilePickerState extends State<CustomFilePicker> {
       ),
       child: Column(
         children: [
-          if (widget.initialImage != null && _selectedPicture == null)
+          if (widget.initialImage != null &&
+              widget.initialImage != "" &&
+              _selectedPicture == null)
             Image.network(widget.initialImage!, height: 200, width: 200),
           if (_selectedPicture != null && kIsWeb)
             Image.network(_selectedPicture!.path, height: 200, width: 200),

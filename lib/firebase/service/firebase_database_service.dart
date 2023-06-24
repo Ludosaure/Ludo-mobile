@@ -41,6 +41,13 @@ class FirebaseDatabaseService {
     }
   }
 
+  Future<void> updateUserProfilePicture(String profilePicture) async {
+    final userDoc = userCollection.doc(uid);
+    return userDoc.set({
+      'profilePicture': profilePicture,
+    }, SetOptions(merge: true));
+  }
+
   Future<QuerySnapshot<Object?>> getUserDataByEmail(String email) async {
     return await userCollection.where('email', isEqualTo: email).limit(1).get();
   }

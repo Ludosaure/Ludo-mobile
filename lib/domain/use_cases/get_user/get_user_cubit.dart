@@ -18,6 +18,9 @@ class GetUserCubit extends Cubit<GetUserState> {
     emit(GetUserLoading());
     try {
       final User user = await _userRepository.getMyInfos();
+      if (user.phone.startsWith('+33')) {
+        user.phone = user.phone.replaceFirst('+33', '0');
+      }
       emit(GetUserSuccess(user: user));
     } catch (exception) {
       emit(

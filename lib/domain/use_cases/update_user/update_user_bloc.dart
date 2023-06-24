@@ -12,6 +12,7 @@ import 'package:ludo_mobile/data/repositories/user_repository.dart';
 import 'package:ludo_mobile/domain/models/user.dart' as db_user;
 import 'package:ludo_mobile/domain/use_cases/session/session_cubit.dart';
 import 'package:ludo_mobile/firebase/service/firebase_auth_service.dart';
+import 'package:ludo_mobile/firebase/service/firebase_database_service.dart';
 import 'package:ludo_mobile/utils/local_storage_helper.dart';
 import 'package:meta/meta.dart';
 
@@ -75,11 +76,17 @@ class UpdateUserBloc extends Bloc<UpdateUserEvent, UpdateUserInitial> {
 
     //TODO supprimer l'ancienne image s'il y en avait une
 
+    var formattedPhoneNumber = state.phoneNumber;
+    if(state.phoneNumber != null) {
+      if(state.phoneNumber!.startsWith('0')) {
+        formattedPhoneNumber = state.phoneNumber!.replaceFirst('0', '+33');
+      }
+    }
     UpdateUserRequest userRequest = UpdateUserRequest(
       userId: state.userId!,
       password: state.password,
       confirmPassword: state.confirmPassword,
-      phoneNumber: state.phoneNumber,
+      phoneNumber: formattedPhoneNumber,
       pseudo: state.pseudo,
       hasEnabledMailNotifications: state.hasEnabledMailNotifications,
       hasEnabledPhoneNotifications: state.hasEnabledPhoneNotifications,
@@ -93,6 +100,10 @@ class UpdateUserBloc extends Bloc<UpdateUserEvent, UpdateUserInitial> {
         await _firebaseAuthService.updateUserPassword(userRequest.password!);
       }
       user = await _userRepository.updateUser(userRequest);
+      if (user.profilePicturePath != null) {
+        FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+            .updateUserProfilePicture(user.profilePicturePath!);
+      }
     } catch (error) {
       if (error is UserNotLoggedInException || error is NotAllowedException) {
         _sessionCubit.logout();
@@ -100,10 +111,11 @@ class UpdateUserBloc extends Bloc<UpdateUserEvent, UpdateUserInitial> {
         return;
       }
 
-      if(error is FirebaseAuthException) {
+      if (error is FirebaseAuthException) {
         emit(
           state.copyWith(
-            status: FormSubmissionFailed(message: 'errors.firebase-update-password-error'.tr()),
+            status: FormSubmissionFailed(
+                message: 'errors.firebase-update-password-error'.tr()),
           ),
         );
       } else {
