@@ -22,7 +22,7 @@ class Reservation {
   DateTime? canceledAt;
   User? user;
   List<Invoice>? invoices;
-  Plan appliedPlan;
+  Plan? appliedPlan;
 
   Reservation({
     required this.id,
@@ -41,7 +41,7 @@ class Reservation {
     this.canceledAt,
     this.user,
     this.invoices,
-    required this.appliedPlan,
+    this.appliedPlan,
   });
 
   factory Reservation.fromJson(Map<String, dynamic> json) {
@@ -74,7 +74,7 @@ class Reservation {
       canceledAt: json['cancelledDate'] != null ? DateTime.parse(json['cancelledDate']) : null,
       user: json['user'] != null ? User.fromJson(json['user']) : null,
       invoices: invoices,
-      appliedPlan: Plan.fromJson(json['appliedPlan']),
+      appliedPlan: json['appliedPlan'] != null ? Plan.fromJson(json['appliedPlan']) : null,
     );
   }
 

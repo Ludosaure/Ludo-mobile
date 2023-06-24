@@ -342,14 +342,15 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
               ),
             ),
             const SizedBox(height: 10),
-            Text(
-              "reduction".tr(),
-              style: TextStyle(
-                fontSize: 18,
-                color: Theme.of(context).colorScheme.onPrimary,
-                fontWeight: FontWeight.bold,
+            if (reservation.appliedPlan != null)
+              Text(
+                "reduction".tr(),
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Theme.of(context).colorScheme.onPrimary,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
           ],
         ),
         Column(
@@ -364,13 +365,14 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
               ),
             ),
             const SizedBox(height: 10),
-            Text(
-              "${reservation.appliedPlan.reduction}%",
-              style: TextStyle(
-                fontSize: 18,
-                color: Theme.of(context).colorScheme.onPrimary,
+            if (reservation.appliedPlan != null)
+              Text(
+                "${reservation.appliedPlan!.reduction}%",
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Theme.of(context).colorScheme.onPrimary,
+                ),
               ),
-            ),
           ],
         ),
       ],
