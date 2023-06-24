@@ -202,7 +202,7 @@ class _UpdateProfilePageState extends State<UpdateProfilePage> {
                     .add(const UpdateUserSubmitEvent());
               }
             },
-            child: const Text('update-user-btn').tr(),
+            child: const Text('update-label').tr(),
           ),
         );
       },

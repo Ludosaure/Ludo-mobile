@@ -146,7 +146,7 @@ class _RegisterPageState extends State<RegisterPage> {
             controller: _confirmPasswordController,
             validator: (String? value) {
               if (value != _passwordController.text) {
-                return 'form.password-not-matching-msg'.tr();
+                return 'form.passwords-not-matching-msg'.tr();
               }
               return null;
             },

@@ -7,10 +7,12 @@ import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:ludo_mobile/domain/use_cases/get_user/get_user_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/session/session_cubit.dart';
+import 'package:ludo_mobile/domain/use_cases/update_user/update_user_bloc.dart';
 import 'package:ludo_mobile/injection.dart';
 import 'package:ludo_mobile/ui/components/circle-avatar.dart';
 import 'package:ludo_mobile/ui/components/scaffold/admin_scaffold.dart';
 import 'package:ludo_mobile/ui/components/scaffold/home_scaffold.dart';
+import 'package:ludo_mobile/ui/pages/profile/update_password_alert.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
 import 'package:ludo_mobile/utils/menu_items.dart';
 import 'package:responsive_framework/responsive_wrapper.dart';
@@ -100,9 +102,22 @@ class _ProfilePageState extends State<ProfilePage> {
                 },
                 child: Text('my-reservations-title'.tr()),
               ),
+            _buildUpdatePasswordButton(context),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildUpdatePasswordButton(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () {
+        _showUpdatePasswordAlert(context);
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Theme.of(context).colorScheme.secondary,
+      ),
+      child: Text('update-password-title'.tr()),
     );
   }
 
@@ -171,7 +186,7 @@ class _ProfilePageState extends State<ProfilePage> {
           onPressed: () {
             context.push(
               '${Routes.profile.path}/${Routes.updateProfile.path}',
-                extra: connectedUser,
+              extra: connectedUser,
             );
           },
           icon: const Icon(Icons.edit),
@@ -306,6 +321,22 @@ class _ProfilePageState extends State<ProfilePage> {
               : const Icon(Icons.close),
         ),
       ],
+    );
+  }
+
+  _showUpdatePasswordAlert(BuildContext parentContext) {
+    showDialog(
+      context: parentContext,
+      builder: (BuildContext context) {
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider.value(
+              value: locator<UpdateUserBloc>(),
+            ),
+          ],
+          child: UpdatePasswordAlert(user: connectedUser),
+        );
+      },
     );
   }
 

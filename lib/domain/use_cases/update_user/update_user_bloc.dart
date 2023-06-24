@@ -9,6 +9,7 @@ import 'package:ludo_mobile/data/repositories/media_repository.dart';
 import 'package:ludo_mobile/data/repositories/user_repository.dart';
 import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:ludo_mobile/domain/use_cases/session/session_cubit.dart';
+import 'package:ludo_mobile/firebase/service/firebase_auth_service.dart';
 import 'package:ludo_mobile/utils/local_storage_helper.dart';
 import 'package:meta/meta.dart';
 
@@ -21,6 +22,7 @@ class UpdateUserBloc extends Bloc<UpdateUserEvent, UpdateUserInitial> {
   final SessionCubit _sessionCubit;
   final UserRepository _userRepository;
   final MediaRepository _mediaRepository;
+  final FirebaseAuthService _firebaseAuthService = FirebaseAuthService();
 
   UpdateUserBloc(
     this._sessionCubit,
@@ -32,8 +34,10 @@ class UpdateUserBloc extends Bloc<UpdateUserEvent, UpdateUserInitial> {
     on<UserConfirmPasswordChangedEvent>(onConfirmPasswordChanged);
     on<UserPhoneNumberChangedEvent>(onPhoneNumberChanged);
     on<UserPseudoChangedEvent>(onPseudoChanged);
-    on<UserHasEnabledMailNotificationsChangedEvent>(onHasEnabledMailNotificationsChanged);
-    on<UserHasEnabledPhoneNotificationsChangedEvent>(onHasEnabledPhoneNotificationsChanged);
+    on<UserHasEnabledMailNotificationsChangedEvent>(
+        onHasEnabledMailNotificationsChanged);
+    on<UserHasEnabledPhoneNotificationsChangedEvent>(
+        onHasEnabledPhoneNotificationsChanged);
     on<UserPictureChangedEvent>(onPictureChanged);
     on<UserIdChangedEvent>(onUserChanged);
   }
@@ -70,7 +74,7 @@ class UpdateUserBloc extends Bloc<UpdateUserEvent, UpdateUserInitial> {
     //TODO supprimer l'ancienne image s'il y en avait une
 
     UpdateUserRequest userRequest = UpdateUserRequest(
-      userId: state.userId,
+      userId: state.userId!,
       password: state.password,
       confirmPassword: state.confirmPassword,
       phoneNumber: state.phoneNumber,
@@ -83,9 +87,12 @@ class UpdateUserBloc extends Bloc<UpdateUserEvent, UpdateUserInitial> {
     User user;
 
     try {
+      if (userRequest.password != null) {
+        _firebaseAuthService.updateUserPassword(userRequest.password!);
+      }
       user = await _userRepository.updateUser(userRequest);
     } catch (error) {
-      if(error is UserNotLoggedInException || error is NotAllowedException) {
+      if (error is UserNotLoggedInException || error is NotAllowedException) {
         _sessionCubit.logout();
         emit(UserMustLog);
         return;
@@ -136,11 +143,13 @@ class UpdateUserBloc extends Bloc<UpdateUserEvent, UpdateUserInitial> {
   }
 
   void onHasEnabledMailNotificationsChanged(event, Emitter emit) async {
-    emit(state.copyWith(hasEnabledMailNotifications: event.hasEnabledMailNotifications));
+    emit(state.copyWith(
+        hasEnabledMailNotifications: event.hasEnabledMailNotifications));
   }
 
   void onHasEnabledPhoneNotificationsChanged(event, Emitter emit) async {
-    emit(state.copyWith(hasEnabledPhoneNotifications: event.hasEnabledPhoneNotifications));
+    emit(state.copyWith(
+        hasEnabledPhoneNotifications: event.hasEnabledPhoneNotifications));
   }
 
   void onPictureChanged(UserPictureChangedEvent event, Emitter emit) async {

@@ -4,7 +4,7 @@ part of 'update_user_bloc.dart';
 abstract class UpdateUserState {}
 
 class UpdateUserInitial extends UpdateUserState {
-  final String userId;
+  final String? userId;
   final String? password;
   final String? confirmPassword;
   final String? phoneNumber;
@@ -15,7 +15,7 @@ class UpdateUserInitial extends UpdateUserState {
   final FormStatus status;
 
   UpdateUserInitial({
-    this.userId = '',
+    this.userId,
     this.password,
     this.confirmPassword,
     this.phoneNumber,
