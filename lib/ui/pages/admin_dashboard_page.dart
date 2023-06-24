@@ -63,7 +63,6 @@ class AdminDashboardPage extends StatelessWidget {
         crossAxisCount: _getItemNb(context),
       ),
       scrollDirection: Axis.vertical,
-      shrinkWrap: true,
       itemCount: dashboardCards.length,
       itemBuilder: (context, index) {
         final Widget dashboardCard = dashboardCards[index];
