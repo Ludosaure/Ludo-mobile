@@ -1,13 +1,15 @@
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/core/exception.dart';
 import 'package:ludo_mobile/core/form_status.dart';
 import 'package:ludo_mobile/data/providers/user/update_user_request.dart';
 import 'package:ludo_mobile/data/repositories/media_repository.dart';
 import 'package:ludo_mobile/data/repositories/user_repository.dart';
-import 'package:ludo_mobile/domain/models/user.dart';
+import 'package:ludo_mobile/domain/models/user.dart' as db_user;
 import 'package:ludo_mobile/domain/use_cases/session/session_cubit.dart';
 import 'package:ludo_mobile/firebase/service/firebase_auth_service.dart';
 import 'package:ludo_mobile/utils/local_storage_helper.dart';
@@ -84,11 +86,11 @@ class UpdateUserBloc extends Bloc<UpdateUserEvent, UpdateUserInitial> {
       profilePictureId: imageId,
     );
 
-    User user;
+    db_user.User user;
 
     try {
       if (userRequest.password != null) {
-        _firebaseAuthService.updateUserPassword(userRequest.password!);
+        await _firebaseAuthService.updateUserPassword(userRequest.password!);
       }
       user = await _userRepository.updateUser(userRequest);
     } catch (error) {
@@ -98,12 +100,19 @@ class UpdateUserBloc extends Bloc<UpdateUserEvent, UpdateUserInitial> {
         return;
       }
 
-      emit(
-        state.copyWith(
-          status: FormSubmissionFailed(message: error.toString()),
-        ),
-      );
-
+      if(error is FirebaseAuthException) {
+        emit(
+          state.copyWith(
+            status: FormSubmissionFailed(message: 'errors.firebase-update-password-error'.tr()),
+          ),
+        );
+      } else {
+        emit(
+          state.copyWith(
+            status: FormSubmissionFailed(message: error.toString()),
+          ),
+        );
+      }
       return;
     }
 
