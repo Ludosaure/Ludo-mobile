@@ -50,16 +50,16 @@ class FirebaseDatabaseService {
     }, SetOptions(merge: true));
   }
 
-  UserFirebase userFirebaseFromDocumentSnapshot(
+  UserFirebase? userFirebaseFromDocumentSnapshot(
       DocumentSnapshot<Map<String, dynamic>> snapshot) {
     var data = snapshot.data();
     if (data == null) {
-      throw Exception("User not found");
+      return null;
     }
     return UserFirebase.fromMap(data);
   }
 
-  List<UserFirebase> userFirebaseListFromQuerySnapshot(
+  List<UserFirebase?> userFirebaseListFromQuerySnapshot(
       QuerySnapshot<Object?> snapshot) {
     return snapshot.docs
         .map((doc) => userFirebaseFromDocumentSnapshot(
@@ -79,12 +79,21 @@ class FirebaseDatabaseService {
   Future<UserFirebase?> getUserDataByEmail(String email) async {
     QuerySnapshot<Object?> usersQuerySnapshot =
         await userCollection.where('email', isEqualTo: email).limit(1).get();
-    List<UserFirebase> users = userFirebaseListFromQuerySnapshot(usersQuerySnapshot);
+    List<UserFirebase?> users = userFirebaseListFromQuerySnapshot(usersQuerySnapshot);
     return users.isNotEmpty ? users.first : null;
   }
 
-  Future<DocumentSnapshot<Object?>> getUserDataById(String id) async {
-    return await userCollection.doc(id).get();
+  Future<UserFirebase?> getUserDataById(String id) async {
+    DocumentSnapshot<Object?> userDoc = await userCollection.doc(id).get();
+    return userFirebaseFromDocumentSnapshot(
+        userDoc as DocumentSnapshot<Map<String, dynamic>>);
+  }
+
+  Stream<UserFirebase> getUserData(String id) {
+    return userCollection.doc(id).snapshots().map((userSnapshot) {
+      return userFirebaseFromDocumentSnapshot(
+          userSnapshot as DocumentSnapshot<Map<String, dynamic>>)!;
+    });
   }
 
   Future<DocumentSnapshot<Object?>> getTargetUserDataByConversationId(

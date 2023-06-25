@@ -201,38 +201,34 @@ class _ConversationPageState extends State<ConversationPage> {
     return StreamBuilder(
       stream:
           FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
-              .getUserDataById(userId)
-              .asStream(),
+              .getUserData(userId),
       builder: (context, snapshot) {
-        final data = snapshot.data;
-        if (!snapshot.hasData ||
-            snapshot.connectionState == ConnectionState.waiting) {
-          if (data == null) {
-            return Text(
-              'errors.error-loading-user-data'.tr(),
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 14.0,
-              ),
-            );
-          }
+        if (snapshot.hasData) {
+          final userFirebase = snapshot.data!;
           return Text(
-            'loading-label'.tr(),
+            '${userFirebase.firstname} ${userFirebase.name}',
             style: const TextStyle(
               color: Colors.white,
               fontSize: 14.0,
             ),
           );
+        } else if (snapshot.hasError) {
+          return const Text(
+            'errors.error-loading-user-data',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 14.0,
+            ),
+          ).tr();
+        } else {
+          return const Text(
+            'loading-label',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 14.0,
+            ),
+          ).tr();
         }
-
-        final userData = data!.data()! as Map<String, dynamic>;
-        return Text(
-          '${userData['firstname']} ${userData['name']}',
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 14.0,
-          ),
-        );
       },
     );
   }

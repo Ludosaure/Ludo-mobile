@@ -165,29 +165,26 @@ class _InboxPageState extends State<InboxPage> {
     bool isSeen,
     String conversationId,
   ) {
-    return StreamBuilder<DocumentSnapshot<Object?>>(
+    return StreamBuilder(
       stream:
           FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
-              .getUserDataById(targetUserId)
-              .asStream(),
+              .getUserData(targetUserId),
       builder: (context, snapshot) {
-        if (snapshot.hasData && snapshot.data!.exists) {
-          final userData = snapshot.data!.data()! as Map<String, dynamic>;
-          final userFirstName = userData['firstname'] as String;
-          final userLastName = userData['name'] as String;
-          final userProfilePicture = userData['profilePicture'] as String?;
+        if (snapshot.hasData) {
+          final userFirebase = snapshot.data!;
 
           return _buildConversationTile(
-            userProfilePicture,
-            userFirstName,
-            userLastName,
+            userFirebase.profilePicture,
+            userFirebase.firstname,
+            userFirebase.name,
             isSeen,
             recentMessage,
             conversationId,
           );
         } else if (snapshot.hasError) {
-          return const ListTile(
-            title: Text('errors.error-loading-user-data'),
+          return ListTile(
+            title: const Text('errors.error-loading-user-data').tr(),
+            subtitle: Text(snapshot.error.toString()),
           );
         } else {
           return Center(

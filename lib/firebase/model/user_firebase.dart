@@ -33,11 +33,15 @@ class UserFirebase {
   }
 
   factory UserFirebase.fromMap(Map<String, dynamic> map) {
+    List<UserConversation> conversations = [];
+    if (map['conversations'] != null) {
+      for(var conversation in map['conversations']) {
+        conversations.add(UserConversation.fromMap(conversation));
+      }
+    }
+
     return UserFirebase(
-      conversations: map['conversations'] != null
-          ? List<UserConversation>.from(map['conversations']
-              .map((conversation) => UserConversation.fromMap(conversation)))
-          : [],
+      conversations: conversations,
       email: map['email'],
       firstname: map['firstname'],
       name: map['name'],
