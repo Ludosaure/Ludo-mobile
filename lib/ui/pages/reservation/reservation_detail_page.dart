@@ -85,6 +85,7 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
           children: [
             _buildDesktopReservationHeader(context),
             _buildDesktopReservationBody(context),
+            _buildReservationInfoText(context),
           ],
         ),
       ),
@@ -92,6 +93,8 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
   }
 
   Widget _buildDesktopReservationBody(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -105,14 +108,14 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
             Padding(
               padding: const EdgeInsets.only(top: 40),
               child: SizedBox(
-                width: MediaQuery.of(context).size.width * 0.35,
+                width: size.width * 0.35,
                 child: _buildReservationSynthesis(context),
               ),
             ),
           ],
         ),
         SizedBox(
-          width: MediaQuery.of(context).size.width * 0.5,
+          width: size.width * 0.5,
           child: InvoicesList(invoices: reservation.invoices!),
         ),
       ],
@@ -156,6 +159,7 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
             _buildReservationSynthesis(context),
             const SizedBox(height: 20),
             InvoicesList(invoices: reservation.invoices!),
+            _buildReservationInfoText(context),
           ],
         ),
       ),
@@ -174,12 +178,14 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
       children: [
         const SizedBox(height: 10),
         Text(
-          "date-period".tr(namedArgs: {
-            "startDate": DateFormat(AppConstants.DATE_TIME_FORMAT_LONG, 'FR')
-                .format(reservation.startDate),
-            "endDate": DateFormat(AppConstants.DATE_TIME_FORMAT_LONG, 'FR')
-                .format(reservation.endDate)
-          }),
+          "date-period".tr(
+            namedArgs: {
+              "startDate": DateFormat(AppConstants.DATE_TIME_FORMAT_LONG, 'FR')
+                  .format(reservation.startDate),
+              "endDate": DateFormat(AppConstants.DATE_TIME_FORMAT_LONG, 'FR')
+                  .format(reservation.endDate)
+            },
+          ),
           style: const TextStyle(fontSize: 16),
         ),
         const SizedBox(height: 10),
@@ -315,7 +321,7 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
                 color: Theme.of(context).colorScheme.onPrimary,
               ),
               onPressed: () async {
-                await _showNewMessageDialog(context);
+                _showNewMessageDialog(context);
               },
             ),
           ],
@@ -447,7 +453,7 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
     return const AdminAppBar().build(context);
   }
 
-  _showConfirmReturnedGamesDialog(BuildContext parentContext) {
+  void _showConfirmReturnedGamesDialog(BuildContext parentContext) {
     showDialog(
       context: parentContext,
       builder: (BuildContext context) {
@@ -503,11 +509,11 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
     );
   }
 
-  _showNewMessageDialog(BuildContext parentContext) async {
+  Future<void> _showNewMessageDialog(BuildContext parentContext) async {
     var connectedUserId =
         (await LocalStorageHelper.getUserFromLocalStorage())!.id;
     if (connectedUserId == reservation.user!.id) {
-      return ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text("cant-send-message-to-yourself").tr(),
           duration: const Duration(seconds: 4),
@@ -520,6 +526,23 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
       builder: (BuildContext context) {
         return NewConversationAlert(userTargetMail: reservation.user!.email);
       },
+    );
+  }
+
+  Widget _buildReservationInfoText(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+
+    return Container(
+      width: size.width,
+      margin: const EdgeInsets.only(top: 10, bottom: 10),
+      child: const Text(
+        "reservation-details-info",
+        style: TextStyle(
+          fontSize: 15,
+          fontStyle: FontStyle.italic,
+        ),
+        textAlign: TextAlign.end,
+      ).tr(),
     );
   }
 }

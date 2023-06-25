@@ -24,6 +24,7 @@ import 'package:ludo_mobile/domain/use_cases/update_user/update_user_bloc.dart';
 import 'package:ludo_mobile/domain/use_cases/user_reservations/user_reservations_cubit.dart';
 import 'package:ludo_mobile/injection.dart';
 import 'package:ludo_mobile/ui/pages/cart/cart_page.dart';
+import 'package:ludo_mobile/ui/pages/categories/category_list_page.dart';
 import 'package:ludo_mobile/ui/pages/game/add_game_page.dart';
 import 'package:ludo_mobile/ui/pages/admin_dashboard_page.dart';
 import 'package:ludo_mobile/ui/pages/game/admin_game_page.dart';
@@ -36,6 +37,7 @@ import 'package:ludo_mobile/ui/pages/messages/conversation_page.dart';
 import 'package:ludo_mobile/ui/pages/messages/inbox_page.dart';
 import 'package:ludo_mobile/ui/pages/landing_page.dart';
 import 'package:ludo_mobile/ui/pages/login_page.dart';
+import 'package:ludo_mobile/ui/pages/plans/plan_list_page.dart';
 import 'package:ludo_mobile/ui/pages/profile/profile_page.dart';
 import 'package:ludo_mobile/ui/pages/profile/update_profile_page.dart';
 import 'package:ludo_mobile/ui/pages/register/register_page.dart';
@@ -462,6 +464,36 @@ class AppRouter {
             child: AdminGamesPage(
               user: connectedUser!,
             ),
+          ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+        ),
+      ),
+      GoRoute(
+        path: Routes.categoryList.path,
+        pageBuilder: (context, state) => CustomTransitionPage(
+          child: BlocProvider.value(
+            value: _getCategoriesCubit,
+            child: const CategoryListPage(),
+          ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+        ),
+      ),
+      GoRoute(
+        path: Routes.planList.path,
+        pageBuilder: (context, state) => CustomTransitionPage(
+          child: BlocProvider.value(
+            value: _listReductionPlanCubit,
+            child: const PlanListPage(),
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(

@@ -7,7 +7,8 @@ import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/core/form_status.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
 import 'package:ludo_mobile/domain/models/game_category.dart';
-import 'package:ludo_mobile/domain/use_cases/delete_game/delete_game_cubit.dart' as delete_game;
+import 'package:ludo_mobile/domain/use_cases/delete_game/delete_game_cubit.dart'
+    as delete_game;
 import 'package:ludo_mobile/domain/use_cases/get_categories/get_categories_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/update_game/update_game_bloc.dart';
 import 'package:ludo_mobile/ui/components/custom_file_picker.dart';
@@ -329,14 +330,17 @@ class _UpdateGamePageState extends State<UpdateGamePage> {
   }
 
   Widget _buildDeleteGameButton(BuildContext context) {
-    return BlocConsumer<delete_game.DeleteGameCubit, delete_game.DeleteGameState>(
+    return BlocConsumer<delete_game.DeleteGameCubit,
+        delete_game.DeleteGameState>(
       listener: (context, state) {
         if (state is delete_game.DeleteGameSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: const Text(
                 'game-deleted-successfully',
-              ).tr(),
+              ).tr(
+                namedArgs: {"game": game.name},
+              ),
             ),
           );
           context.go(Routes.adminGames.path);
@@ -423,7 +427,9 @@ class _UpdateGamePageState extends State<UpdateGamePage> {
             ),
             TextButton(
               onPressed: () {
-                parentContext.read<delete_game.DeleteGameCubit>().deleteGame(game.id);
+                parentContext
+                    .read<delete_game.DeleteGameCubit>()
+                    .deleteGame(game.id);
                 Navigator.of(context).pop();
               },
               child: Text(
@@ -438,7 +444,6 @@ class _UpdateGamePageState extends State<UpdateGamePage> {
       },
     );
   }
-
 
   void _onFileSelected(File? file) {
     context.read<UpdateGameBloc>().add(GamePictureChangedEvent(file!));

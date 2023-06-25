@@ -89,7 +89,7 @@
   "validate-games-returned-confirm": "Etes-vous sûr de vouloir valider le retour des jeux ?",
   "irreversible-action": "Cette action est irréversible.",
   "contact-user": "Contacter l'utilisateur",
-  "details": "Détails",
+  "details": "Détails *",
   "date-period": "Du {startDate} au {endDate}",
   "send-label": "Envoyer",
   "edited-at-label": "Modifié le {date}",
@@ -175,6 +175,7 @@
   "delete-label": "Supprimer",
   "delete-game-label": "Supprimer le jeu",
   "delete-game-confirmation": "Êtes-vous sûr de vouloir supprimer le jeu {game} ?",
+  "game-deleted-successfully": "Le jeu {game} a bien été supprimé.",
   "game-name-field": "Nom du jeu *",
   "game-description-field": "Description du jeu",
   "weekly-amount-field": "Prix à la semaine *",
@@ -188,5 +189,8 @@
   "average-duration-field": "Durée moyenne d'une partie en min *",
   "min-players-field": "Nombre de joueurs minimum *",
   "max-players-field": "Nombre de joueurs maximum *",
-  "currency-symbol": "€"
+  "currency-symbol": "€",
+  "reservation-details-info": "* Il se peut que certains jeux n'apparaissent plus dans le détails suite à leur suppression. Seule la facture consèrve l'intégralité de la commande dans le temps.",
+  "list-plans-title": "Liste des réductions",
+  "list-categories-title": "Liste des catégories"
 }

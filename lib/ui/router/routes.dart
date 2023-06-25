@@ -20,6 +20,8 @@ enum Routes {
   success,
   cart,
   userReservations,
+  planList,
+  categoryList,
 }
 
 extension RoutesExtension on Routes {
@@ -67,6 +69,10 @@ extension RoutesExtension on Routes {
         return '/cart';
       case Routes.userReservations:
         return '/reservations';
+      case Routes.planList:
+        return '/plans';
+      case Routes.categoryList:
+        return '/categories';
     }
   }
 }

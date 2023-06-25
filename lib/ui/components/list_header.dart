@@ -8,7 +8,7 @@ class ListHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      width: MediaQuery.of(context).size.width * 0.85,
+      width: MediaQuery.of(context).size.width * 0.9,
       decoration: const BoxDecoration(
         border: Border(
           bottom: BorderSide(
@@ -22,7 +22,7 @@ class ListHeader extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         verticalDirection: VerticalDirection.down,
         children: [
-          Text(title),
+          Text(title, style: const TextStyle(fontSize: 18.0)),
         ],
       ),
     );

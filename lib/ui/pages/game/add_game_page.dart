@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:form_field_validator/form_field_validator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/core/form_status.dart';
 import 'package:ludo_mobile/domain/models/game_category.dart';
@@ -117,12 +118,9 @@ class _AddGamePageState extends State<AddGamePage> {
         children: [
           TextFormField(
             decoration: FormFieldDecoration.textField('game-name-field'.tr()),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Veuillez saisir le nom du jeu';
-              }
-              return null;
-            },
+            validator: RequiredValidator(
+              errorText: "form.field-required-msg".tr(),
+            ),
             onChanged: (value) {
               context.read<CreateGameBloc>().add(GameNameChangedEvent(value));
             },
@@ -148,12 +146,9 @@ class _AddGamePageState extends State<AddGamePage> {
                 'weekly-amount-field'.tr(),
                 suffixText: 'currency-symbol'.tr()),
             keyboardType: TextInputType.number,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Veuillez saisir le prix du jeu';
-              }
-              return null;
-            },
+            validator: RequiredValidator(
+              errorText: "form.field-required-msg".tr(),
+            ),
             onChanged: (value) {
               context.read<CreateGameBloc>().add(
                     GameWeeklyAmountChangedEvent(
@@ -170,7 +165,7 @@ class _AddGamePageState extends State<AddGamePage> {
                 FormFieldDecoration.textField('game-category-field'.tr()),
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Veuillez choisir une catégorie pour le jeu';
+                return "form.field-required-msg".tr();
               }
               return null;
             },
@@ -192,12 +187,9 @@ class _AddGamePageState extends State<AddGamePage> {
           TextFormField(
             keyboardType: TextInputType.number,
             decoration: FormFieldDecoration.textField('min-age-field'.tr()),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Veuillez saisir un âge minimum';
-              }
-              return null;
-            },
+            validator: RequiredValidator(
+              errorText: "form.field-required-msg".tr(),
+            ),
             onChanged: (value) {
               context
                   .read<CreateGameBloc>()
@@ -210,14 +202,12 @@ class _AddGamePageState extends State<AddGamePage> {
           TextFormField(
             keyboardType: TextInputType.number,
             decoration: FormFieldDecoration.textField(
-                'average-duration-field'.tr(),
-                suffixText: 'min'),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return "Veuillez saisir la durée moyenne d'une partie";
-              }
-              return null;
-            },
+              'average-duration-field'.tr(),
+              suffixText: 'min',
+            ),
+            validator: RequiredValidator(
+              errorText: "form.field-required-msg".tr(),
+            ),
             onChanged: (value) {
               context.read<CreateGameBloc>().add(
                     GameAverageDurationChangedEvent(
@@ -232,12 +222,9 @@ class _AddGamePageState extends State<AddGamePage> {
           TextFormField(
             keyboardType: TextInputType.number,
             decoration: FormFieldDecoration.textField('min-players-field'.tr()),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Veuillez saisir le nombre de joueurs minimum';
-              }
-              return null;
-            },
+            validator: RequiredValidator(
+              errorText: "form.field-required-msg".tr(),
+            ),
             onChanged: (value) {
               context.read<CreateGameBloc>().add(
                     GameMinPlayersChangedEvent(int.parse(value)),
@@ -250,12 +237,9 @@ class _AddGamePageState extends State<AddGamePage> {
           TextFormField(
             keyboardType: TextInputType.number,
             decoration: FormFieldDecoration.textField('max-players-field'.tr()),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Veuillez saisir le nombre de joueurs maximum';
-              }
-              return null;
-            },
+            validator: RequiredValidator(
+              errorText: "form.field-required-msg".tr(),
+            ),
             onChanged: (value) {
               context.read<CreateGameBloc>().add(
                     GameMaxPlayersChangedEvent(
