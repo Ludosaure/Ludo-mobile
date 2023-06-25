@@ -69,29 +69,37 @@ class _InboxPageState extends State<InboxPage> {
   }
 
   Widget _buildClientNewConversationButton() {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
+    return Padding(
+      padding: const EdgeInsets.all(15.0),
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
-      ),
-      onPressed: () async {
-        await _showNewMessageDialog(context);
-      },
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(
-              Icons.add_circle,
-              color: Colors.white,
-            ),
-            const SizedBox(width: 10),
-            Text("start-conv-with-admins".tr()),
-          ],
+        onPressed: () async {
+          await _showNewMessageDialog(context);
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.add_circle,
+                color: Colors.white,
+              ),
+              const SizedBox(width: 10),
+              Flexible(
+                child: Text(
+                  "start-conv-with-admins".tr(),
+                  overflow: TextOverflow.visible,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
