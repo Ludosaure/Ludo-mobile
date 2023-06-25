@@ -79,7 +79,8 @@ class FirebaseDatabaseService {
   Future<UserFirebase?> getUserDataByEmail(String email) async {
     QuerySnapshot<Object?> usersQuerySnapshot =
         await userCollection.where('email', isEqualTo: email).limit(1).get();
-    List<UserFirebase?> users = userFirebaseListFromQuerySnapshot(usersQuerySnapshot);
+    List<UserFirebase?> users =
+        userFirebaseListFromQuerySnapshot(usersQuerySnapshot);
     return users.isNotEmpty ? users.first : null;
   }
 
@@ -96,11 +97,12 @@ class FirebaseDatabaseService {
     });
   }
 
-  Future<DocumentSnapshot<Object?>> getTargetUserDataByConversationId(
-      String id) async {
+  Future<UserFirebase?> getTargetUserDataByConversationId(String id) async {
     final conversationDoc = await conversationsCollection.doc(id).get();
     final targetUserId = conversationDoc['targetUserId'] as String;
-    return await userCollection.doc(targetUserId).get();
+    final userSnapshot = await userCollection.doc(targetUserId).get();
+    return userFirebaseFromDocumentSnapshot(
+        userSnapshot as DocumentSnapshot<Map<String, dynamic>>);
   }
 
   Stream<List<String>> getConversationIds() {
