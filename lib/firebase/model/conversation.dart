@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ludo_mobile/firebase/model/message.dart';
 
 class Conversation {
@@ -6,7 +7,7 @@ class Conversation {
   final List<Message> messages;
   final String recentMessage;
   final String recentMessageSender;
-  final String recentMessageTime;
+  final DateTime recentMessageTime;
   final String targetUserId;
 
   Conversation({
@@ -32,18 +33,27 @@ class Conversation {
   }
 
   factory Conversation.fromMap(Map<String, dynamic> map) {
+    List<String> members = [];
+    if (map['members'] != null) {
+      for (var member in map['members']) {
+        members.add(member);
+      }
+    }
+
+    List<Message> messages = [];
+    if (map['messages'] != null) {
+      for (var message in map['messages']) {
+        messages.add(Message.fromMap(message));
+      }
+    }
+
     return Conversation(
       conversationId: map['conversationId'],
-      members: map['members'] != null
-          ? List<String>.from(map['members'])
-          : [],
-      messages: map['messages'] != null
-          ? List<Message>.from(
-              map['messages'].map((message) => Message.fromMap(message)))
-          : [],
+      members: members,
+      messages: messages.reversed.toList(),
       recentMessage: map['recentMessage'],
       recentMessageSender: map['recentMessageSender'],
-      recentMessageTime: map['recentMessageTime'],
+      recentMessageTime: (map['recentMessageTime'] as Timestamp).toDate(),
       targetUserId: map['targetUserId'],
     );
   }

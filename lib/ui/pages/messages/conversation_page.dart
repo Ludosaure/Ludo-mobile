@@ -1,9 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:form_field_validator/form_field_validator.dart';
-import 'package:intl/intl.dart';
+import 'package:ludo_mobile/firebase/model/conversation.dart';
+import 'package:ludo_mobile/firebase/model/message.dart';
 import 'package:ludo_mobile/firebase/service/firebase_database_service.dart';
 import 'package:ludo_mobile/ui/components/circle-avatar.dart';
 import 'package:ludo_mobile/ui/components/custom_back_button.dart';
@@ -20,7 +20,7 @@ class ConversationPage extends StatefulWidget {
 }
 
 class _ConversationPageState extends State<ConversationPage> {
-  Stream<DocumentSnapshot<Object?>>? _conversation;
+  Stream<Conversation>? _conversation;
   final _newMessageFormKey = GlobalKey<FormState>();
   final _messageController = TextEditingController();
 
@@ -62,19 +62,19 @@ class _ConversationPageState extends State<ConversationPage> {
       child: StreamBuilder(
         stream: _conversation,
         builder: (context, snapshot) {
-          if (snapshot.hasData && snapshot.data!.exists) {
-            final conversationData =
-                snapshot.data!.data()! as Map<String, dynamic>;
-            List<dynamic> messages =
-                (conversationData['messages'] as List<dynamic>)
-                    .reversed
-                    .toList();
+          if (snapshot.hasData) {
+            final conversation = snapshot.data!;
             return ListView.builder(
-              itemCount: messages.length,
+              itemCount: conversation.messages.length,
               reverse: true,
               itemBuilder: (context, index) {
-                return _buildMessage(context, messages[index]);
+                return _buildMessage(context, conversation.messages[index]);
               },
+            );
+          } else if (snapshot.hasError) {
+            return ListTile(
+              title: const Text('errors.error-loading-conversation-data').tr(),
+              subtitle: Text(snapshot.error.toString()),
             );
           } else {
             return Center(
@@ -140,10 +140,10 @@ class _ConversationPageState extends State<ConversationPage> {
 
   Widget _buildMessage(
     BuildContext context,
-    dynamic message,
+    Message message,
   ) {
     var isCurrentUserMessage =
-        message['sender'] == FirebaseAuth.instance.currentUser!.uid;
+        message.sender == FirebaseAuth.instance.currentUser!.uid;
     return ListTile(
       title: FractionallySizedBox(
         alignment:
@@ -162,10 +162,10 @@ class _ConversationPageState extends State<ConversationPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              _buildSenderName(context, message['sender']),
+              _buildSenderName(context, message.sender),
               const SizedBox(height: 5.0),
               Text(
-                message['message'],
+                message.message,
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 16.0,
@@ -177,9 +177,7 @@ class _ConversationPageState extends State<ConversationPage> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    DateFormat('dd/MM/yyyy HH:mm').format(
-                      (message['time'] as Timestamp).toDate(),
-                    ),
+                    DateFormat('dd/MM/yyyy HH:mm').format(message.time),
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 12.0,
@@ -258,7 +256,8 @@ class _ConversationPageState extends State<ConversationPage> {
             }
             return Row(
               children: [
-                CustomCircleAvatar(userProfilePicture: userFirebase.profilePicture),
+                CustomCircleAvatar(
+                    userProfilePicture: userFirebase.profilePicture),
                 const SizedBox(width: 10),
                 Text(
                   fullName.length > maxCharName

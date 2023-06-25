@@ -84,7 +84,7 @@ class FirebaseDatabaseService {
     return users.isNotEmpty ? users.first : null;
   }
 
-  Future<UserFirebase?> getUserDataById(String id) async {
+  Future<UserFirebase?> getUserFirebaseById(String id) async {
     DocumentSnapshot<Object?> userDoc = await userCollection.doc(id).get();
     return userFirebaseFromDocumentSnapshot(
         userDoc as DocumentSnapshot<Map<String, dynamic>>);
@@ -97,6 +97,13 @@ class FirebaseDatabaseService {
     });
   }
 
+  Stream<Conversation> getConversationData(String id) {
+    return conversationsCollection.doc(id).snapshots().map((conversationSnapshot) {
+      return conversationFromSnapshot(
+          conversationSnapshot as DocumentSnapshot<Map<String, dynamic>>);
+    });
+  }
+
   Future<UserFirebase?> getTargetUserDataByConversationId(String id) async {
     final conversationDoc = await conversationsCollection.doc(id).get();
     final targetUserId = conversationDoc['targetUserId'] as String;
@@ -105,6 +112,7 @@ class FirebaseDatabaseService {
         userSnapshot as DocumentSnapshot<Map<String, dynamic>>);
   }
 
+  // TODO corriger l'ajout de la conversation dans la liste des conversations de l'utilisateur (admin ?)
   Stream<List<String>> getConversationIds() {
     return userCollection.doc(uid).snapshots().map((userSnapshot) {
       final userFirebase = userFirebaseFromDocumentSnapshot(
@@ -117,36 +125,7 @@ class FirebaseDatabaseService {
     });
   }
 
-  List<String> initConversationIdsList(List<dynamic> conversations) {
-    final List<String> conversationIds = [];
-    for (final conversation in conversations) {
-      conversationIds.add(conversation['conversationId'] as String);
-    }
-    return conversationIds;
-  }
-
-  Future<List<dynamic>> sortConversationsByRecentMessage(
-      List<dynamic> conversationsIdsNotSorted) async {
-    final conversations = [];
-    for (final conversationId in conversationsIdsNotSorted) {
-      final conversationSnapshot =
-          await conversationsCollection.doc(conversationId).get();
-      final conversationData =
-          conversationSnapshot.data()! as Map<String, dynamic>;
-
-      conversations.add({
-        'conversationId': conversationData['conversationId'],
-        'time': conversationData['recentMessageTime'] as Timestamp,
-      });
-    }
-    conversations.sort((a, b) => b['time'].compareTo(a['time']));
-    final sortedConversations = [];
-    for (final conversation in conversations) {
-      sortedConversations.add(conversation['conversationId']);
-    }
-    return sortedConversations;
-  }
-
+  // TODO faire cette méthode à la fin
   Stream<List<Map<String, dynamic>>> getUserConversations() {
     final userSnapshotStream = userCollection.doc(uid).snapshots();
 
@@ -190,9 +169,39 @@ class FirebaseDatabaseService {
     });
   }
 
-  Future<Stream<DocumentSnapshot<Object?>>> getConversationById(
+  Future<List<dynamic>> sortConversationsByRecentMessage(
+      List<dynamic> conversationsIdsNotSorted) async {
+    final conversations = [];
+    for (final conversationId in conversationsIdsNotSorted) {
+      final conversationSnapshot =
+      await conversationsCollection.doc(conversationId).get();
+      final conversationData =
+      conversationSnapshot.data()! as Map<String, dynamic>;
+
+      conversations.add({
+        'conversationId': conversationData['conversationId'],
+        'time': conversationData['recentMessageTime'] as Timestamp,
+      });
+    }
+    conversations.sort((a, b) => b['time'].compareTo(a['time']));
+    final sortedConversations = [];
+    for (final conversation in conversations) {
+      sortedConversations.add(conversation['conversationId']);
+    }
+    return sortedConversations;
+  }
+
+  List<String> initConversationIdsList(List<dynamic> conversations) {
+    final List<String> conversationIds = [];
+    for (final conversation in conversations) {
+      conversationIds.add(conversation['conversationId'] as String);
+    }
+    return conversationIds;
+  }
+
+  Future<Stream<Conversation>> getConversationById(
       String id) async {
-    return conversationsCollection.doc(id).snapshots();
+    return getConversationData(id);
   }
 
   Future<List<dynamic>> getConversationMembers(String conversationId) async {
