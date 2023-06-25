@@ -207,7 +207,6 @@ class FirebaseDatabaseService {
       throw Exception("Sender id not found");
     }
 
-    // TODO notif
     if (existingConversation.isEmpty) {
       DocumentReference conversationDocumentReference =
           await conversationsCollection.add({
