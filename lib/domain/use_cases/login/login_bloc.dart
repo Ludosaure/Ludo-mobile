@@ -17,11 +17,12 @@ part 'login_state.dart';
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final AuthenticationRepository _authenticationRepository;
   final SessionCubit _sessionCubit;
-  final FirebaseAuthService _firebaseAuthService = FirebaseAuthService();
+  final FirebaseAuthService _firebaseAuthService;
 
   LoginBloc(
     this._authenticationRepository,
     this._sessionCubit,
+    this._firebaseAuthService,
   ) : super(LoginState()) {
     on<LoginSubmitEvent>(onSubmitForm);
     on<EmailChangedEvent>(onEmailChanged);

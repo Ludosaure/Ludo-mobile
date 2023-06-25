@@ -7,14 +7,18 @@ import 'package:ludo_mobile/firebase/service/firebase_auth_service.dart';
 import 'package:meta/meta.dart';
 
 part 'register_event.dart';
+
 part 'register_state.dart';
 
 @injectable
 class RegisterBloc extends Bloc<RegisterEvent, RegisterInitial> {
   final AuthenticationRepository _registerRepository;
-  final FirebaseAuthService _firebaseAuthService = FirebaseAuthService();
+  final FirebaseAuthService _firebaseAuthService;
 
-  RegisterBloc(this._registerRepository) : super(RegisterInitial()) {
+  RegisterBloc(
+    this._registerRepository,
+    this._firebaseAuthService,
+  ) : super(RegisterInitial()) {
     on<FirstnameChangedEvent>(onFirstnameChanged);
     on<LastnameChangedEvent>(onLastnameChanged);
     on<PasswordChangedEvent>(onPasswordChanged);
@@ -51,7 +55,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterInitial> {
   void onSubmitForm(event, Emitter emit) async {
     String formattedPhoneNumber = state.phone;
 
-    if(state.phone.startsWith('0')) {
+    if (state.phone.startsWith('0')) {
       formattedPhoneNumber = state.phone.replaceFirst('0', '+33');
     }
 
@@ -66,7 +70,8 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterInitial> {
 
     try {
       await _registerRepository.register(registerRequest);
-      await _firebaseAuthService.register(state.lastname, state.firstname, state.email, state.password);
+      await _firebaseAuthService.register(
+          state.lastname, state.firstname, state.email, state.password);
     } catch (exception) {
       emit(state.copyWith(
         status: FormSubmissionFailed(message: exception.toString()),
