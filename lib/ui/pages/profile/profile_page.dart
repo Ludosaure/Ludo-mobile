@@ -55,13 +55,12 @@ class _ProfilePageState extends State<ProfilePage> {
             onSortPressed: null,
             navBarIndex: MenuItems.Profile.index,
           );
-        } else {
-          return HomeScaffold(
-            body: _buildPage(context),
-            navBarIndex: MenuItems.Profile.index,
-            user: connectedUser,
-          );
         }
+        return HomeScaffold(
+          body: _buildPage(context),
+          navBarIndex: MenuItems.Profile.index,
+          user: connectedUser,
+        );
       }
       return Container();
     }, listener: (context, state) {
@@ -132,18 +131,22 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget _buildUserInfosHeader(BuildContext context) {
     final logoutButtonSeparated =
         ResponsiveWrapper.of(context).isSmallerThan(MOBILE);
+
     final fullName = '${connectedUser.firstname} ${connectedUser.lastname}';
     var maxCharName = 45;
     if (ResponsiveWrapper.of(context).isSmallerThan(DESKTOP)) {
       maxCharName = 20;
     }
+
     final size = MediaQuery.of(context).size;
+
     var avatarHeight = size.height * 0.1;
     if (ResponsiveWrapper.of(context).isSmallerThan(MOBILE)) {
       avatarHeight = size.height * 0.05;
     } else if (ResponsiveWrapper.of(context).isSmallerThan(DESKTOP)) {
       avatarHeight = size.height * 0.07;
     }
+
     return Column(
       children: [
         Row(
@@ -268,7 +271,7 @@ class _ProfilePageState extends State<ProfilePage> {
             Text(
               (connectedUser.pseudo != null && connectedUser.pseudo != "")
                   ? connectedUser.pseudo!
-                  : 'Pseudo à renseigner',
+                  : 'pseudo-to-set-field'.tr(),
               style: const TextStyle(
                 color: Colors.black,
                 fontSize: 18,
