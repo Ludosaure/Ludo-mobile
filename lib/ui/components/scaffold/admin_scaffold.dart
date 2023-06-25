@@ -26,10 +26,7 @@ class AdminScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _buildBody(context),
-      appBar: AdminAppBar(
-        onSortPressed: onSortPressed,
-        onSearch: onSearch,
-      ).build(context),
+      appBar: const AdminAppBar().build(context),
       bottomNavigationBar: ResponsiveWrapper.of(context).isSmallerThan(TABLET)
           ? AdminBottomNavBar(index: navBarIndex, user: user)
           : null,

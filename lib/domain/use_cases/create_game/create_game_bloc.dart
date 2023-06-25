@@ -134,7 +134,7 @@ class CreateGameBloc extends Bloc<CreateGameEvent, CreateGameInitial> {
   }
 
   void onPictureChanged(event, Emitter emit) async {
-    emit(state.copyWith(image: event.image));
+    emit(state.copyWith(image: event.profilePictureId));
   }
 
   Future<String> _uploadImage(File image) async {

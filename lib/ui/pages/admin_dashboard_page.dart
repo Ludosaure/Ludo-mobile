@@ -5,6 +5,7 @@ import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:ludo_mobile/ui/components/scaffold/admin_scaffold.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
 import 'package:ludo_mobile/utils/menu_items.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 
 class AdminDashboardPage extends StatelessWidget {
   final User user;
@@ -28,38 +29,45 @@ class AdminDashboardPage extends StatelessWidget {
     );
   }
 
+  List<Widget> _buildDashboardCards(BuildContext context) {
+    return [
+      _buildCard(
+        title: 'Bibliothèque de jeux',
+        icon: FontAwesomeIcons.gamepad,
+        onTap: () {
+          context.push(Routes.adminGames.path);
+        },
+      ),
+      _buildCard(
+        title: 'Suivi des réservervations',
+        icon: Icons.calendar_month_outlined,
+        onTap: () {},
+      ),
+      _buildCard(
+        title: 'Gestion des réductions',
+        icon: Icons.money_off_csred_sharp,
+        onTap: () {},
+      ),
+      _buildCard(
+        title: 'Gestion des catégories',
+        icon: Icons.list_alt,
+        onTap: () {},
+      ),
+    ];
+  }
+
   Widget _buildBody(BuildContext context) {
-    return GridView.count(
-      padding: const EdgeInsets.all(5),
-      mainAxisSpacing: 10,
-      crossAxisSpacing: 10,
+    List<Widget> dashboardCards = _buildDashboardCards(context);
+    return GridView.builder(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: _getItemNb(context),
+      ),
       scrollDirection: Axis.vertical,
-      shrinkWrap: true,
-      crossAxisCount: 2,
-      children: [
-        _buildCard(
-          title: 'Bibliothèque de jeux',
-          icon: FontAwesomeIcons.gamepad,
-          onTap: () {
-            context.push(Routes.adminGames.path);
-          },
-        ),
-        _buildCard(
-          title: 'Suivi des réservervations',
-          icon: Icons.calendar_month_outlined,
-          onTap: () {},
-        ),
-        _buildCard(
-          title: 'Gestion des réductions',
-          icon: Icons.money_off_csred_sharp,
-          onTap: () {},
-        ),
-        _buildCard(
-          title: 'Gestion des catégories',
-          icon: Icons.list_alt,
-          onTap: () {},
-        ),
-      ],
+      itemCount: dashboardCards.length,
+      itemBuilder: (context, index) {
+        final Widget dashboardCard = dashboardCards[index];
+        return dashboardCard;
+      },
     );
   }
 
@@ -127,5 +135,18 @@ class AdminDashboardPage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  int _getItemNb(BuildContext context) {
+    if (ResponsiveWrapper.of(context).isSmallerThan(MOBILE)) {
+      return 2;
+    } else if (ResponsiveWrapper.of(context).isSmallerThan(TABLET)) {
+      return 3;
+    } else if (ResponsiveWrapper.of(context).isSmallerThan(DESKTOP)) {
+      return 4;
+    } else if (ResponsiveWrapper.of(context).isSmallerThan("4K")) {
+      return 5;
+    }
+    return 6;
   }
 }

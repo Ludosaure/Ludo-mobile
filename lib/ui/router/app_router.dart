@@ -12,6 +12,7 @@ import 'package:ludo_mobile/domain/use_cases/get_categories/get_categories_cubit
 import 'package:ludo_mobile/domain/use_cases/get_game/get_game_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/get_games/get_games_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/get_reservation/get_reservation_cubit.dart';
+import 'package:ludo_mobile/domain/use_cases/get_user/get_user_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/invoice/download_invoice_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/list_all_reservations/list_all_reservations_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/list_reduction_plan/list_reduction_plan_cubit.dart';
@@ -19,6 +20,7 @@ import 'package:ludo_mobile/domain/use_cases/login/login_bloc.dart';
 import 'package:ludo_mobile/domain/use_cases/register/register_bloc.dart';
 import 'package:ludo_mobile/domain/use_cases/session/session_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/update_game/update_game_bloc.dart';
+import 'package:ludo_mobile/domain/use_cases/update_user/update_user_bloc.dart';
 import 'package:ludo_mobile/domain/use_cases/user_reservations/user_reservations_cubit.dart';
 import 'package:ludo_mobile/injection.dart';
 import 'package:ludo_mobile/ui/pages/cart/cart_page.dart';
@@ -34,7 +36,8 @@ import 'package:ludo_mobile/ui/pages/messages/conversation_page.dart';
 import 'package:ludo_mobile/ui/pages/messages/inbox_page.dart';
 import 'package:ludo_mobile/ui/pages/landing_page.dart';
 import 'package:ludo_mobile/ui/pages/login_page.dart';
-import 'package:ludo_mobile/ui/pages/profile_page.dart';
+import 'package:ludo_mobile/ui/pages/profile/profile_page.dart';
+import 'package:ludo_mobile/ui/pages/profile/update_profile_page.dart';
 import 'package:ludo_mobile/ui/pages/register/register_page.dart';
 import 'package:ludo_mobile/ui/pages/register/register_success_page.dart';
 import 'package:ludo_mobile/ui/pages/reservation/reservation_detail_page.dart';
@@ -54,8 +57,6 @@ class AppRouter {
       locator<ListAllReservationsCubit>();
   final FavoriteGamesCubit _getFavoriteGamesCubit =
       locator<FavoriteGamesCubit>();
-  final UserReservationsCubit _userReservationsCubit =
-      locator<UserReservationsCubit>();
   final ListReductionPlanCubit _listReductionPlanCubit =
       locator<ListReductionPlanCubit>();
   final DeleteGameCubit _deleteGameCubit = locator<DeleteGameCubit>();
@@ -63,6 +64,7 @@ class AppRouter {
       locator<DownloadInvoiceCubit>();
   final CreateGameBloc _createGameBloc = locator<CreateGameBloc>();
   final UpdateGameBloc _updateGameBloc = locator<UpdateGameBloc>();
+  final UpdateUserBloc _updateUserBloc = locator<UpdateUserBloc>();
   final GetCategoriesCubit _getCategoriesCubit = locator<GetCategoriesCubit>();
 
   late User? connectedUser;
@@ -267,6 +269,30 @@ class AppRouter {
         ),
       ),
       GoRoute(
+        path: '${Routes.profile.path}/${Routes.updateProfile.path}',
+        pageBuilder: (context, state) => CustomTransitionPage(
+          child: MultiBlocProvider(
+            providers: [
+              BlocProvider.value(
+                value: _updateUserBloc,
+              ),
+              BlocProvider.value(
+                value: locator<GetUserCubit>(),
+              ),
+            ],
+            child: UpdateProfilePage(
+              user: state.extra! as User,
+            ),
+          ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+        ),
+      ),
+      GoRoute(
         path: '${Routes.reservations.path}/:id',
         pageBuilder: (context, state) => CustomTransitionPage(
           child: MultiBlocProvider(
@@ -275,7 +301,7 @@ class AppRouter {
                 value: locator<GetReservationCubit>(),
               ),
               BlocProvider.value(
-                value: _userReservationsCubit,
+                value: locator<UserReservationsCubit>(),
               ),
               BlocProvider.value(
                 value: _downloadInvoiceCubit,
@@ -358,10 +384,11 @@ class AppRouter {
               BlocProvider.value(
                 value: _sessionCubit,
               ),
+              BlocProvider.value(
+                value: locator<GetUserCubit>(),
+              ),
             ],
-            child: ProfilePage(
-              connectedUser: connectedUser!,
-            ),
+            child: const ProfilePage(),
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(
@@ -375,7 +402,7 @@ class AppRouter {
         path: Routes.userReservations.path,
         pageBuilder: (context, state) => CustomTransitionPage(
           child: BlocProvider.value(
-            value: _userReservationsCubit,
+            value: locator<UserReservationsCubit>(),
             child: const UserReservationsPage(),
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -500,12 +527,12 @@ class AppRouter {
     _listAllReservationsCubit.close();
     _getFavoriteGamesCubit.close();
     _cartBloc.close();
-    _userReservationsCubit.close();
     _listReductionPlanCubit.close();
     _downloadInvoiceCubit.close();
     _deleteGameCubit.close();
     _createGameBloc.close();
     _updateGameBloc.close();
+    _updateUserBloc.close();
     _getCategoriesCubit.close();
   }
 }

@@ -5,12 +5,14 @@ class User {
   final String email;
   final String firstname;
   final String lastname;
-  final String phone;
+  String phone;
   final String? pseudo;
   final String? profilePicturePath;
   final String role;
   final bool hasVerifiedAccount;
   final bool isAccountClosed;
+  bool hasEnabledMailNotifications;
+  bool hasEnabledPhoneNotifications;
 
 
   User({
@@ -24,6 +26,8 @@ class User {
     required this.role,
     required this.hasVerifiedAccount,
     required this.isAccountClosed,
+    required this.hasEnabledMailNotifications,
+    required this.hasEnabledPhoneNotifications,
   });
 
   bool isAdmin() {
@@ -41,6 +45,8 @@ class User {
         role: json["role"],
         hasVerifiedAccount: json["isAccountVerified"],
         isAccountClosed: json["isAccountClosed"],
+        hasEnabledMailNotifications: json["hasEnabledMailNotifications"],
+        hasEnabledPhoneNotifications: json["hasEnabledPhoneNotifications"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -50,9 +56,13 @@ class User {
         "lastname": lastname,
         "phone": phone,
         "pseudo": pseudo,
-        "profilePicturePath": profilePicturePath,
+        "profilePicture": {
+          "url": profilePicturePath,
+        },
         "role": role,
         "isAccountVerified": hasVerifiedAccount,
         "isAccountClosed": isAccountClosed,
+        "hasEnabledMailNotifications": hasEnabledMailNotifications,
+        "hasEnabledPhoneNotifications": hasEnabledPhoneNotifications,
       };
 }

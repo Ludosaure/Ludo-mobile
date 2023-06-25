@@ -16,7 +16,7 @@ class ReservationRepository {
   }
 
   Future<List<Reservation>> getMyReservations() async {
-    return await _reservationProvider.listUserReservations(null);
+    return await _reservationProvider.listUserReservations();
   }
 
   Future<Reservation> getReservation(String reservationId) async {

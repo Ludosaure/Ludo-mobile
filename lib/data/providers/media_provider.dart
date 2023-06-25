@@ -25,6 +25,7 @@ class MediaProvider {
 
     final mimeType = lookupMimeType(picture.path)?.split('/').last;
 
+    // TODO incompatible web
     request.files.add(
       http.MultipartFile(
         'file',

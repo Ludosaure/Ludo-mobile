@@ -34,4 +34,14 @@ class FirebaseAuthService {
       rethrow;
     }
   }
+
+  Future updateUserPassword(String password) async {
+    try {
+      await firebaseAuth.currentUser!.updatePassword(password);
+    } on FirebaseAuthException {
+      rethrow;
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

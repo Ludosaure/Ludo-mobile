@@ -246,7 +246,18 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
           children: [
             _buildTotalAmount(context),
             const SizedBox(height: 10),
-            _buildContactUser(context),
+            FutureBuilder<Widget>(
+              future: _buildContactUser(context),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const CircularProgressIndicator();
+                } else if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                } else {
+                  return snapshot.data!;
+                }
+              },
+            ),
             if (reservation.status != ReservationStatus.RETURNED &&
                 reservation.status != ReservationStatus.CANCELED)
               _buildReturnedGamesButton(context),
@@ -256,7 +267,12 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
     );
   }
 
-  Widget _buildContactUser(BuildContext context) {
+  Future<Widget> _buildContactUser(BuildContext context) async {
+    var connectedUserId =
+        (await LocalStorageHelper.getUserFromLocalStorage())!.id;
+    if (reservation.user!.id == connectedUserId) {
+      return Container();
+    }
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -326,14 +342,15 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
               ),
             ),
             const SizedBox(height: 10),
-            Text(
-              "reduction".tr(),
-              style: TextStyle(
-                fontSize: 18,
-                color: Theme.of(context).colorScheme.onPrimary,
-                fontWeight: FontWeight.bold,
+            if (reservation.appliedPlan != null)
+              Text(
+                "reduction".tr(),
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Theme.of(context).colorScheme.onPrimary,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
           ],
         ),
         Column(
@@ -348,13 +365,14 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
               ),
             ),
             const SizedBox(height: 10),
-            Text(
-              "${reservation.appliedPlan.reduction}%",
-              style: TextStyle(
-                fontSize: 18,
-                color: Theme.of(context).colorScheme.onPrimary,
+            if (reservation.appliedPlan != null)
+              Text(
+                "${reservation.appliedPlan!.reduction}%",
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Theme.of(context).colorScheme.onPrimary,
+                ),
               ),
-            ),
           ],
         ),
       ],
@@ -426,10 +444,7 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
         leadingWidth: MediaQuery.of(context).size.width * 0.20,
       );
     }
-    return const AdminAppBar(
-      onSortPressed: null, // TODO
-      onSearch: null, // TODO
-    ).build(context);
+    return const AdminAppBar().build(context);
   }
 
   _showConfirmReturnedGamesDialog(BuildContext parentContext) {

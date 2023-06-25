@@ -122,7 +122,7 @@ class ReservationProvider {
     }
   }
 
-  Future<List<Reservation>> listUserReservations(String? userId) async {
+  Future<List<Reservation>> listUserReservations({String? userId}) async {
     String? token = await LocalStorageHelper.getTokenFromLocalStorage();
 
     if (token == null) {
@@ -137,8 +137,7 @@ class ReservationProvider {
 
     userId ??= user.id;
 
-    late http.Response response;
-    response = await http.get(
+    final http.Response response = await http.get(
       Uri.parse("$endpoint/userId/$userId"),
       headers: {
         'Content-Type': 'application/json',
