@@ -106,12 +106,14 @@ class FirebaseDatabaseService {
   }
 
   Stream<List<String>> getConversationIds() {
-    final userSnapshotStream = userCollection.doc(uid).snapshots();
+    return userCollection.doc(uid).snapshots().map((userSnapshot) {
+      final userFirebase = userFirebaseFromDocumentSnapshot(
+          userSnapshot as DocumentSnapshot<Map<String, dynamic>>)!;
 
-    return userSnapshotStream.map((userSnapshot) {
-      final userMap = userSnapshot.data()! as Map<String, dynamic>;
-      final conversations = userMap['conversations'] as List<dynamic>;
-      return initConversationIdsList(conversations);
+      final conversationIds = userFirebase.conversations.map((conversation) {
+        return conversation.conversationId;
+      }).toList();
+      return conversationIds;
     });
   }
 
