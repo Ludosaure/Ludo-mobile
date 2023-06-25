@@ -255,6 +255,9 @@ class AppRouter {
               BlocProvider.value(
                 value: _getCategoriesCubit,
               ),
+              BlocProvider.value(
+                value: _deleteGameCubit,
+              ),
             ],
             child: UpdateGamePage(
               game: state.extra! as Game,
@@ -388,7 +391,9 @@ class AppRouter {
                 value: locator<GetUserCubit>(),
               ),
             ],
-            child: const ProfilePage(),
+            child: ProfilePage(
+              connectedUser: connectedUser!,
+            ),
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(

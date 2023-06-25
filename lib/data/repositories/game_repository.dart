@@ -34,42 +34,37 @@ class GameRepository {
   }
 
   Future<void> createGame(NewGameRequest newGame) async {
-    final User? user = await LocalStorageHelper.getUserFromLocalStorage();
-
-    if(user == null) {
-      throw UserNotLoggedInException('errors.user-must-log-for-action'.tr());
-    }
-
-    if(!user.isAdmin()) {
-      throw NotAllowedException('errors.user-must-be-admin-for-action'.tr());
-    }
-
-    final String? token = await LocalStorageHelper.getTokenFromLocalStorage();
+    final String? token = await _getAdminToken();
 
     await _gameProvider.createGame(token!, newGame);
   }
 
   Future<Game> updateGame(UpdateGameRequest game) async {
-    final User? user = await LocalStorageHelper.getUserFromLocalStorage();
-
-    if(user == null) {
-      throw UserNotLoggedInException('errors.user-must-log-for-action'.tr());
-    }
-
-    if(!user.isAdmin()) {
-      throw NotAllowedException('errors.user-must-be-admin-for-action'.tr());
-    }
-
-    final String? token = await LocalStorageHelper.getTokenFromLocalStorage();
+    final String? token = await _getAdminToken();
 
     GameJson updatedGameJson = await _gameProvider.updateGame(token!, game);
 
     return updatedGameJson.toGame();
   }
 
-  //TODO implémenter côté backend
   Future<void> deleteGame(String gameId) async {
-    await _gameProvider.deleteGame(gameId);
+    final String? token = await _getAdminToken();
+
+    await _gameProvider.deleteGame(gameId, token!);
+  }
+
+  Future<String?> _getAdminToken() async {
+    final User? user = await LocalStorageHelper.getUserFromLocalStorage();
+
+    if(user == null) {
+      throw UserNotLoggedInException('errors.user-must-log-for-action'.tr());
+    }
+
+    if(!user.isAdmin()) {
+      throw NotAllowedException('errors.user-must-be-admin-for-action'.tr());
+    }
+
+    return LocalStorageHelper.getTokenFromLocalStorage();
   }
 
 }

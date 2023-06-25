@@ -45,6 +45,8 @@ class _UpdateProfilePageState extends State<UpdateProfilePage> {
         ),
         title: const Text(
           "update-user-title",
+          softWrap: true,
+          overflow: TextOverflow.visible,
         ).tr(
           namedArgs: {
             "firstname": user.firstname,
@@ -58,6 +60,7 @@ class _UpdateProfilePageState extends State<UpdateProfilePage> {
   
   Widget _updateUserForm(BuildContext context) {
     return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       child: Column(
         children: [
           const SizedBox(height: 20),
@@ -111,6 +114,7 @@ class _UpdateProfilePageState extends State<UpdateProfilePage> {
               ),
             ),
             trailing: Switch(
+              activeColor: Theme.of(context).colorScheme.primary,
               value: user.hasEnabledMailNotifications,
               onChanged: (value) {
                 setState(() {
@@ -132,6 +136,7 @@ class _UpdateProfilePageState extends State<UpdateProfilePage> {
               ),
             ),
             trailing: Switch(
+              activeColor: Theme.of(context).colorScheme.primary,
               value: user.hasEnabledPhoneNotifications,
               onChanged: (value) {
                 setState(() {

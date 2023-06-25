@@ -36,9 +36,13 @@ class Game {
 
   factory Game.fromJson(Map<String, dynamic> json) {
     final List<DateTime> unavailableDates = [];
-    json["unavailabilities"] != null ? json["unavailabilities"].forEach((unavailability) {
-      unavailableDates.add(DateTime.parse(unavailability['date']).toLocal());
-    }) : [];
+
+    if(json["unavailabilities"] != null) {
+      json["unavailabilities"].forEach((unavailability) {
+        final DateTime date = DateTime.parse(unavailability['date']);
+        unavailableDates.add(DateTime(date.year, date.month, date.day));
+      });
+    }
 
     return Game(
       id: json['id'],

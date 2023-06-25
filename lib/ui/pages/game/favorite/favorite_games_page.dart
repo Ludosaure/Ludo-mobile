@@ -69,8 +69,13 @@ class FavoriteGamesPage extends StatelessWidget {
           if (state is GetFavoriteGamesSuccess || state is OperationSuccess) {
             favorites = state.favorites;
 
-            return FavoriteGamesList(
-              favorites: favorites,
+            return RefreshIndicator(
+              child: FavoriteGamesList(
+                favorites: favorites,
+              ),
+              onRefresh: () async {
+                BlocProvider.of<FavoriteGamesCubit>(context).getFavorites();
+              },
             );
           }
 

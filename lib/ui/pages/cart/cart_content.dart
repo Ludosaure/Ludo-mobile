@@ -62,7 +62,7 @@ class CartContent extends StatelessWidget {
           ),
           const Spacer(),
           Text(
-            '${game.weeklyAmount * (1 - reduction / 100)} €',
+            '${(game.weeklyAmount * (1 - reduction / 100)).toStringAsFixed(2)} €',
             style: const TextStyle(
               fontWeight: FontWeight.bold,
             ),
@@ -73,14 +73,17 @@ class CartContent extends StatelessWidget {
   }
 
   Widget _buildSummary(BuildContext context) {
+    final Size size = MediaQuery.of(context).size;
     int nbWeeks = (bookingPeriod.duration.inDays / 7).ceil();
 
-    if(nbWeeks == 0) {
+    if (nbWeeks == 0) {
       nbWeeks = 1;
     }
 
-    final String start = DateFormat(AppConstants.DATE_TIME_FORMAT_LONG, 'FR').format(bookingPeriod.start);
-    final String end = DateFormat(AppConstants.DATE_TIME_FORMAT_LONG, 'FR').format(bookingPeriod.end);
+    final String start = DateFormat(AppConstants.DATE_TIME_FORMAT_LONG, 'FR')
+        .format(bookingPeriod.start);
+    final String end = DateFormat(AppConstants.DATE_TIME_FORMAT_LONG, 'FR')
+        .format(bookingPeriod.end);
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -121,67 +124,79 @@ class CartContent extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 15),
-        Row(
-          children: [
-            const Text(
-              "booking-duration-label",
-              style: TextStyle(
-                fontSize: 18,
-              ),
-            ).tr(),
-            const Spacer(),
-            Text(
-              "booking-nb-weeks-label".plural(nbWeeks),
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ).tr(namedArgs: {
-              'nbWeeks': nbWeeks.toString(),
-            }),
-          ],
+        SizedBox(
+          width: size.width,
+          child: Wrap(
+            direction: Axis.horizontal,
+            crossAxisAlignment: WrapCrossAlignment.start,
+            alignment: WrapAlignment.spaceBetween,
+            children: [
+              const Text(
+                "booking-duration-label",
+                style: TextStyle(
+                  fontSize: 18,
+                ),
+              ).tr(),
+              Text(
+                "booking-nb-weeks-label".plural(nbWeeks),
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ).tr(namedArgs: {
+                'nbWeeks': nbWeeks.toString(),
+              }),
+            ],
+          ),
         ),
         SizedBox(height: reduction > 0 ? 15 : 0),
-        reduction > 0 ? Row(
-          children: [
-            const Text(
-              "applied-reduction-label",
-              style: TextStyle(
-                fontSize: 18,
-              ),
-            ).tr(),
-            const Spacer(),
-            Text(
-              "${reduction.toString()} %",
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ) : const SizedBox(),
+        reduction > 0
+            ? Row(
+                children: [
+                  const Text(
+                    "applied-reduction-label",
+                    style: TextStyle(
+                      fontSize: 18,
+                    ),
+                  ).tr(),
+                  const Spacer(),
+                  Text(
+                    "${reduction.toString()} %",
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              )
+            : const SizedBox(),
         const SizedBox(height: 15),
-        Row(
-          children: [
-            const Text(
-              "booking-total-amount-label",
-              style: TextStyle(
-                fontSize: 20,
+        SizedBox(
+          width: size.width,
+          child: Wrap(
+            direction: Axis.horizontal,
+            crossAxisAlignment: WrapCrossAlignment.start,
+            alignment: WrapAlignment.spaceBetween,
+            children: [
+              const Text(
+                "booking-total-amount-label",
+                style: TextStyle(
+                  fontSize: 20,
+                ),
+              ).tr(),
+              const Text(
+                "amount",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ).tr(
+                namedArgs: {
+                  'amount': totalAmount.toString(),
+                },
               ),
-            ).tr(),
-            const Spacer(),
-            const Text(
-              "amount",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ).tr(
-              namedArgs: {
-                'amount': totalAmount.toString(),
-              },
-            ),
-          ],
+            ],
+          ),
         ),
       ],
     );

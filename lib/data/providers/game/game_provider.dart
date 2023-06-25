@@ -83,11 +83,7 @@ class GameProvider {
     final http.Response response = await http
         .post(
       Uri.parse(baseUrl),
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
+      headers: _getHeaders(token),
       body: jsonEncode(newGame),
     )
         .catchError((error) {
@@ -121,11 +117,7 @@ class GameProvider {
     final http.Response response = await http
         .put(
       Uri.parse(baseUrl),
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
+      headers: _getHeaders(token),
       body: jsonEncode(game),
     )
         .catchError((error) {
@@ -169,10 +161,14 @@ class GameProvider {
     );
   }
 
-  Future<void> deleteGame(String gameId) async {
+  Future<void> deleteGame(
+    String gameId,
+    String token,
+  ) async {
     final http.Response response = await http
         .delete(
-      Uri.parse("$baseUrl/id/$gameId"),
+      Uri.parse("$baseUrl/$gameId"),
+      headers: _getHeaders(token),
     )
         .catchError((error) {
       if (error is SocketException) {
@@ -190,6 +186,16 @@ class GameProvider {
       );
     }
 
+    if (response.statusCode == HttpCode.BAD_REQUEST) {
+      throw BadRequestException(
+        "${"errors.game-deletion-failed".tr()} ${"errors.error-detail".tr(
+              namedArgs: {
+                "error": jsonDecode(response.body)["message"],
+              },
+            )}",
+      );
+    }
+
     if (response.statusCode == HttpCode.FORBIDDEN) {
       throw ForbiddenException(
         "errors.forbidden".tr(),
@@ -201,5 +207,13 @@ class GameProvider {
         "errors.unknown".tr(),
       );
     }
+  }
+
+  Map<String, String> _getHeaders(String token) {
+    return {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
   }
 }

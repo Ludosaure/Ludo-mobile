@@ -16,4 +16,4 @@ class DeleteGameError extends DeleteGameState {
   const DeleteGameError({required this.message});
 }
 
-class UserNotAdmin extends DeleteGameState {}
+class UserMustLog extends DeleteGameState {}

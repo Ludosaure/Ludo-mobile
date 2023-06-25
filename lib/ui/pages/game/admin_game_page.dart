@@ -23,7 +23,6 @@ class AdminGamesPage extends StatefulWidget {
 class _AdminGamesPageState extends State<AdminGamesPage> {
   late List<Game> games;
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -83,13 +82,14 @@ class _AdminGamesPageState extends State<AdminGamesPage> {
           if (state is GetGamesSuccess) {
             games = state.games;
             return RefreshIndicator(
-                child: GameTileList(
-                  adminView: true,
-                  games: state.games,
-                ),
-                onRefresh: () async {
-                  BlocProvider.of<GetGamesCubit>(context).getGames();
-                });
+              child: GameTileList(
+                adminView: true,
+                games: state.games,
+              ),
+              onRefresh: () async {
+                BlocProvider.of<GetGamesCubit>(context).getGames();
+              },
+            );
           }
 
           if (state is GetGamesError) {

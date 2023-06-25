@@ -76,20 +76,21 @@ class CartCubit extends Cubit<CartState> {
     });
   }
 
-  void onChangeDate(DateTimeRange bookingPeriod) async {
+  void onChangeDate(DateTimeRange bookingPeriod, int reduction) async {
     emit(
       BookingOperationLoading(
         content: state.cartContent,
         bookingPeriod: bookingPeriod,
-        reduction: state.reduction,
+        reduction: reduction,
       ),
     );
+
     await Future.delayed(const Duration(seconds: 0), () {
       emit(
         BookingDateUpdated(
           content: state.cartContent,
           bookingPeriod: bookingPeriod,
-          reduction: state.reduction,
+          reduction: reduction,
         ),
       );
     });
@@ -110,7 +111,20 @@ class CartCubit extends Cubit<CartState> {
       return;
     }
 
-    _initPaymentSheet().then((void value) {
+    final double amount = getCartTotalAmount();
+    if(amount > AppConstants.MAX_TOTAL_AMOUNT) {
+      emit(
+        PaymentTooHigh(
+          error: "errors.payment-threshold-exceeded".tr(),
+          content: state.cartContent,
+          bookingPeriod: state.bookingPeriod,
+          reduction: state.reduction,
+        ),
+      );
+      return;
+    }
+
+    _initPaymentSheet(amount).then((void value) {
       Future.delayed(const Duration(seconds: 0), () {
         emit(
           CartContentLoaded(
@@ -170,8 +184,8 @@ class CartCubit extends Cubit<CartState> {
           ),
         );
         await _confirmPayment(reservation);
-      }, onError: (e) {
-        if (e is StripeException && e.error.code == FailureCode.Canceled) {
+      }, onError: (error) {
+        if (error is StripeException && error.error.code == FailureCode.Canceled) {
           _removeUnpaidReservation(reservation.id);
           emit(
             PaymentCanceled(
@@ -182,6 +196,7 @@ class CartCubit extends Cubit<CartState> {
           );
           return;
         }
+
         emit(
           PaymentPresentFailed(
             error: "errors.payment-sheet-display".tr(),
@@ -201,6 +216,7 @@ class CartCubit extends Cubit<CartState> {
         emit(UserNotLogged());
         return;
       }
+
       emit(
         PaymentPresentFailed(
           error: error.toString(),
@@ -212,10 +228,10 @@ class CartCubit extends Cubit<CartState> {
     }
   }
 
-  Future<void> _initPaymentSheet() async {
+  Future<void> _initPaymentSheet(double amount) async {
     // 1. create payment intent
     final paymentIntent =
-        await _paymentProvider.createPaymentIntent(getCartTotalAmount());
+        await _paymentProvider.createPaymentIntent(amount);
 
     // 2. initialize the payment sheet
     await Stripe.instance.initPaymentSheet(
