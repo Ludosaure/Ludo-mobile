@@ -61,31 +61,33 @@ class _ConversationPageState extends State<ConversationPage> {
   Widget _buildMessageList() {
     return Flexible(
       child: StreamBuilder(
-        stream: _conversation,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            final conversation = snapshot.data!;
-            return ListView.builder(
-              itemCount: conversation.messages.length,
-              reverse: true,
-              itemBuilder: (context, index) {
-                return _buildMessage(context, conversation.messages[index]);
-              },
-            );
-          } else if (snapshot.hasError) {
-            return ListTile(
-              title: const Text('errors.error-loading-conversation-data').tr(),
-              subtitle: Text(snapshot.error.toString()),
-            );
-          } else {
+          stream: _conversation,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              final conversation = snapshot.data!;
+              return ListView.builder(
+                itemCount: conversation.messages.length,
+                reverse: true,
+                itemBuilder: (context, index) {
+                  return _buildMessage(context, conversation.messages[index]);
+                },
+              );
+            }
+
+            if (snapshot.hasError) {
+              return ListTile(
+                title:
+                    const Text('errors.error-loading-conversation-data').tr(),
+                subtitle: Text(snapshot.error.toString()),
+              );
+            }
+
             return Center(
               child: CircularProgressIndicator(
                 color: Theme.of(context).colorScheme.primary,
               ),
             );
-          }
-        },
-      ),
+          }),
     );
   }
 
@@ -211,7 +213,9 @@ class _ConversationPageState extends State<ConversationPage> {
               fontSize: 14.0,
             ),
           );
-        } else if (snapshot.hasError) {
+        }
+
+        if (snapshot.hasError) {
           return const Text(
             'errors.error-loading-user-data',
             style: TextStyle(
@@ -219,15 +223,15 @@ class _ConversationPageState extends State<ConversationPage> {
               fontSize: 14.0,
             ),
           ).tr();
-        } else {
-          return const Text(
-            'loading-label',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 14.0,
-            ),
-          ).tr();
         }
+
+        return const Text(
+          'loading-label',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 14.0,
+          ),
+        ).tr();
       },
     );
   }

@@ -104,14 +104,16 @@ extension ReservationExtension on Reservation {
   ReservationStatus get status {
     if (canceled) {
       return ReservationStatus.CANCELED;
-    } else if (returned) {
-      return ReservationStatus.RETURNED;
-    } else if (endDate.isBefore(DateTime.now()) && !returned) {
-      return ReservationStatus.LATE;
-    } else if (!paid) {
-      return ReservationStatus.PENDING_PAIEMENT;
-    } else {
-      return ReservationStatus.RUNNING;
     }
+    if (returned) {
+      return ReservationStatus.RETURNED;
+    }
+    if (endDate.isBefore(DateTime.now()) && !returned) {
+      return ReservationStatus.LATE;
+    }
+    if (!paid) {
+      return ReservationStatus.PENDING_PAIEMENT;
+    }
+    return ReservationStatus.RUNNING;
   }
 }

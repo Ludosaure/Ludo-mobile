@@ -141,16 +141,18 @@ class _InboxPageState extends State<InboxPage> {
             return _buildNoConversations();
           }
           return _buildConversationList(conversations);
-        } else if (snapshot.hasError) {
+        }
+
+        if (snapshot.hasError) {
           return ListTile(
             title: const Text('errors.error-loading-user-data').tr(),
             subtitle: Text(snapshot.error.toString()),
           );
-        } else {
-          return CircularProgressIndicator(
-            color: Theme.of(context).colorScheme.primary,
-          );
         }
+
+        return CircularProgressIndicator(
+          color: Theme.of(context).colorScheme.primary,
+        );
       },
     );
   }
@@ -200,18 +202,20 @@ class _InboxPageState extends State<InboxPage> {
             recentMessage,
             conversationId,
           );
-        } else if (snapshot.hasError) {
+        }
+
+        if (snapshot.hasError) {
           return ListTile(
             title: const Text('errors.error-loading-user-data').tr(),
             subtitle: Text(snapshot.error.toString()),
           );
-        } else {
-          return Center(
-            child: CircularProgressIndicator(
-              color: Theme.of(context).colorScheme.primary,
-            ),
-          );
         }
+
+        return Center(
+          child: CircularProgressIndicator(
+            color: Theme.of(context).colorScheme.primary,
+          ),
+        );
       },
     );
   }

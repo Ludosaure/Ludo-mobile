@@ -237,11 +237,11 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const CircularProgressIndicator();
-                  } else if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  } else {
-                    return snapshot.data!;
                   }
+                  if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  }
+                  return snapshot.data!;
                 },
               ),
             ],
@@ -254,7 +254,7 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
   Future<Widget> _buildActionGameButton(BuildContext context) async {
     var connectedUser = await LocalStorageHelper.getUserFromLocalStorage();
     if (connectedUser == null || connectedUser.isAdmin()) {
-    return Container();
+      return Container();
     }
     return Padding(
       padding: const EdgeInsets.symmetric(

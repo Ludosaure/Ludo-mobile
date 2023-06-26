@@ -251,11 +251,13 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const CircularProgressIndicator();
-                } else if (snapshot.hasError) {
-                  return Text('Error: ${snapshot.error}');
-                } else {
-                  return snapshot.data!;
                 }
+
+                if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                }
+
+                return snapshot.data!;
               },
             ),
             if (reservation.status != ReservationStatus.RETURNED &&
