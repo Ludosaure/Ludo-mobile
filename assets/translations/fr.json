@@ -100,6 +100,7 @@
   "message-sent": "Message envoyé",
   "infos": "Informations",
   "conversation-members": "Membres de la conversation",
+  "administrators": "Administrateurs",
   "start-conv-with-admins": "Commencer une conversation avec les administrateurs",
   "type-message": "Tapez votre message ici...",
   "cant-send-message-to-yourself": "Vous ne pouvez pas envoyer de message à vous-même.",
@@ -124,6 +125,7 @@
   "errors": {
     "error-detail": "Erreur : {error}",
     "error-loading-user-data": "Erreur lors du chargement des données de l'utilisateur",
+    "error-loading-conversation-data": "Erreur lors du chargement des données de la conversation",
     "unknown": "Erreur inconnue",
     "service-unavailable": "Service indisponible. Veuillez réessayer ultérieurement",
     "authentication-failed": "Erreur d'authentification, votre email ou votre mot de passe sont invalides",
@@ -174,6 +176,7 @@
   "game-description-field": "Description du jeu",
   "weekly-amount-field": "Prix à la semaine *",
   "pseudo-field": "Pseudo",
+  "pseudo-to-set-field": "Pseudo à renseigner",
   "personal-informations-title": "Informations personnelles",
   "notifications-parameters-title": "Paramètres des notifications",
   "activate-mail-notifications-label": "Notifications par mail activées : ",

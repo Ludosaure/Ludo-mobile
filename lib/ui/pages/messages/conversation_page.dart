@@ -1,9 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:form_field_validator/form_field_validator.dart';
-import 'package:intl/intl.dart';
+import 'package:ludo_mobile/firebase/model/conversation.dart';
+import 'package:ludo_mobile/firebase/model/message.dart';
+import 'package:ludo_mobile/firebase/model/user_firebase.dart';
 import 'package:ludo_mobile/firebase/service/firebase_database_service.dart';
 import 'package:ludo_mobile/ui/components/circle-avatar.dart';
 import 'package:ludo_mobile/ui/components/custom_back_button.dart';
@@ -20,7 +21,7 @@ class ConversationPage extends StatefulWidget {
 }
 
 class _ConversationPageState extends State<ConversationPage> {
-  Stream<DocumentSnapshot<Object?>>? _conversation;
+  Stream<Conversation>? _conversation;
   final _newMessageFormKey = GlobalKey<FormState>();
   final _messageController = TextEditingController();
 
@@ -60,31 +61,33 @@ class _ConversationPageState extends State<ConversationPage> {
   Widget _buildMessageList() {
     return Flexible(
       child: StreamBuilder(
-        stream: _conversation,
-        builder: (context, snapshot) {
-          if (snapshot.hasData && snapshot.data!.exists) {
-            final conversationData =
-                snapshot.data!.data()! as Map<String, dynamic>;
-            List<dynamic> messages =
-                (conversationData['messages'] as List<dynamic>)
-                    .reversed
-                    .toList();
-            return ListView.builder(
-              itemCount: messages.length,
-              reverse: true,
-              itemBuilder: (context, index) {
-                return _buildMessage(context, messages[index]);
-              },
-            );
-          } else {
+          stream: _conversation,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              final conversation = snapshot.data!;
+              return ListView.builder(
+                itemCount: conversation.messages.length,
+                reverse: true,
+                itemBuilder: (context, index) {
+                  return _buildMessage(context, conversation.messages[index]);
+                },
+              );
+            }
+
+            if (snapshot.hasError) {
+              return ListTile(
+                title:
+                    const Text('errors.error-loading-conversation-data').tr(),
+                subtitle: Text(snapshot.error.toString()),
+              );
+            }
+
             return Center(
               child: CircularProgressIndicator(
                 color: Theme.of(context).colorScheme.primary,
               ),
             );
-          }
-        },
-      ),
+          }),
     );
   }
 
@@ -140,10 +143,10 @@ class _ConversationPageState extends State<ConversationPage> {
 
   Widget _buildMessage(
     BuildContext context,
-    dynamic message,
+    Message message,
   ) {
     var isCurrentUserMessage =
-        message['sender'] == FirebaseAuth.instance.currentUser!.uid;
+        message.sender == FirebaseAuth.instance.currentUser!.uid;
     return ListTile(
       title: FractionallySizedBox(
         alignment:
@@ -162,10 +165,10 @@ class _ConversationPageState extends State<ConversationPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              _buildSenderName(context, message['sender']),
+              _buildSenderName(context, message.sender),
               const SizedBox(height: 5.0),
               Text(
-                message['message'],
+                message.message,
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 16.0,
@@ -177,9 +180,7 @@ class _ConversationPageState extends State<ConversationPage> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    DateFormat('dd/MM/yyyy HH:mm').format(
-                      (message['time'] as Timestamp).toDate(),
-                    ),
+                    DateFormat('dd/MM/yyyy HH:mm').format(message.time),
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 12.0,
@@ -201,23 +202,12 @@ class _ConversationPageState extends State<ConversationPage> {
     return StreamBuilder(
       stream:
           FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
-              .getUserDataById(userId)
-              .asStream(),
+              .getUserData(userId),
       builder: (context, snapshot) {
-        final data = snapshot.data;
-        if (!snapshot.hasData ||
-            snapshot.connectionState == ConnectionState.waiting) {
-          if (data == null) {
-            return Text(
-              'errors.error-loading-user-data'.tr(),
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 14.0,
-              ),
-            );
-          }
+        if (snapshot.hasData) {
+          final userFirebase = snapshot.data!;
           return Text(
-            'loading-label'.tr(),
+            '${userFirebase.firstname} ${userFirebase.name}',
             style: const TextStyle(
               color: Colors.white,
               fontSize: 14.0,
@@ -225,14 +215,23 @@ class _ConversationPageState extends State<ConversationPage> {
           );
         }
 
-        final userData = data!.data()! as Map<String, dynamic>;
-        return Text(
-          '${userData['firstname']} ${userData['name']}',
-          style: const TextStyle(
+        if (snapshot.hasError) {
+          return const Text(
+            'errors.error-loading-user-data',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 14.0,
+            ),
+          ).tr();
+        }
+
+        return const Text(
+          'loading-label',
+          style: TextStyle(
             color: Colors.white,
             fontSize: 14.0,
           ),
-        );
+        ).tr();
       },
     );
   }
@@ -246,31 +245,34 @@ class _ConversationPageState extends State<ConversationPage> {
         child: CustomBackButton(),
       ),
       leadingWidth: MediaQuery.of(context).size.width * 0.20,
-      title: StreamBuilder<DocumentSnapshot<Object?>>(
+      title: StreamBuilder(
         stream:
             FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
                 .getTargetUserDataByConversationId(widget.conversationId)
                 .asStream(),
         builder: (context, snapshot) {
-          if (snapshot.hasData && snapshot.data!.exists) {
-            final userData = snapshot.data!.data()! as Map<String, dynamic>;
-            final userFirstName = userData['firstname'] as String;
-            final userLastName = userData['name'] as String;
-            final userProfilePicture = userData['profilePicture'] as String?;
+          if (snapshot.hasData) {
+            final targetUser = snapshot.data!;
 
-            final fullName = '$userFirstName $userLastName';
-            var maxCharName = 45;
-            if (ResponsiveWrapper.of(context).isSmallerThan(DESKTOP)) {
-              maxCharName = 15;
+            var title = 'administrators'.tr();
+            if (FirebaseAuth.instance.currentUser!.uid != targetUser.uid) {
+              var fullName = '${targetUser.firstname} ${targetUser.name}';
+              var maxCharName = 45;
+              if (ResponsiveWrapper.of(context).isSmallerThan(DESKTOP)) {
+                maxCharName = 15;
+              }
+              title = fullName.length > maxCharName
+                  ? "${fullName.substring(0, maxCharName)}..."
+                  : fullName;
             }
             return Row(
               children: [
-                CustomCircleAvatar(userProfilePicture: userProfilePicture),
+                if (FirebaseAuth.instance.currentUser!.uid != targetUser.uid)
+                  CustomCircleAvatar(
+                      userProfilePicture: targetUser.profilePicture),
                 const SizedBox(width: 10),
                 Text(
-                  fullName.length > maxCharName
-                      ? "${fullName.substring(0, maxCharName)}..."
-                      : fullName,
+                  title,
                   style: const TextStyle(
                     color: Colors.black,
                     fontSize: 20,
@@ -306,7 +308,7 @@ class _ConversationPageState extends State<ConversationPage> {
 
   _buildGroupInformationsAlert(
     BuildContext context,
-    List<dynamic> members,
+    List<UserFirebase> members,
   ) {
     return AlertDialog(
       title: Row(
@@ -342,10 +344,10 @@ class _ConversationPageState extends State<ConversationPage> {
                 itemBuilder: (context, index) {
                   final member = members[index];
                   return _buildConversationMember(
-                    member['profilePicture'],
-                    member['firstname'],
-                    member['name'],
-                    member['isAdmin'],
+                    member.profilePicture,
+                    member.firstname,
+                    member.name,
+                    member.isAdmin,
                   );
                 },
               )
