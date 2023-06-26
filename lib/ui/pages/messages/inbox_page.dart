@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -27,6 +29,7 @@ class InboxPage extends StatefulWidget {
 
 class _InboxPageState extends State<InboxPage> {
   List<String> conversationIds = [];
+  StreamSubscription<List<String>>? subscription;
 
   @override
   void initState() {
@@ -35,14 +38,19 @@ class _InboxPageState extends State<InboxPage> {
   }
 
   void _initConversationIds() {
-    FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
-        .getConversationIds()
-        .listen((snapshot) {
+    final databaseService = FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid);
+    subscription = databaseService.getConversationIds().listen((snapshot) {
       conversationIds = snapshot;
       if (conversationIds.isNotEmpty && !widget.user.isAdmin()) {
         context.go('${Routes.inbox.path}/${conversationIds.first}');
       }
     });
+  }
+
+  @override
+  void dispose() {
+    subscription?.cancel();
+    super.dispose();
   }
 
   @override

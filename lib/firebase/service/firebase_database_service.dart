@@ -349,9 +349,10 @@ class FirebaseDatabaseService {
         .where(FieldPath.documentId, whereIn: conversation.members)
         .get();
 
-    for (final userSnapshot in memberSnapshots.docs) {
-      UserFirebase member = userFirebaseListFromQuerySnapshot(
-          userSnapshot as QuerySnapshot<Map<String, dynamic>>)[0]!;
+    List<UserFirebase?> members =
+        userFirebaseListFromQuerySnapshot(memberSnapshots);
+    for (final member in members) {
+      if (member == null) continue;
       if (member.uid != senderId) {
         for (var userConversation in member.conversations) {
           if (userConversation.conversationId == conversationId) {
@@ -361,7 +362,7 @@ class FirebaseDatabaseService {
         }
       }
 
-      await userCollection.doc(userSnapshot.id).update({
+      await userCollection.doc(member.uid).update({
         'conversations': member.conversations
             .map((userConversation) => userConversation.toMap())
             .toList(),
@@ -371,16 +372,14 @@ class FirebaseDatabaseService {
 
   // TODO ne marche pas sur le mobile
   Stream<bool> hasUnseenConversationsStream() {
-    final userSnapshotStream = userCollection.doc(uid).snapshots();
+    Stream<UserFirebase> userStream = getUserData(uid!);
 
-    return userSnapshotStream.map((userSnapshot) {
-      final userMap = userSnapshot.data()! as Map<String, dynamic>;
-      final conversations = userMap['conversations'] as List<dynamic>;
+    return userStream.map((user) {
+      final conversations = user.conversations;
       bool hasUnreadConversations = false;
 
       for (final conversation in conversations) {
-        final isSeen = conversation['isSeen'] as bool? ?? true;
-        if (!isSeen) {
+        if (!conversation.isSeen) {
           hasUnreadConversations = true;
           break;
         }
