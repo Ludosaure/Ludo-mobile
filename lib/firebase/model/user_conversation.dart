@@ -1,6 +1,6 @@
 class UserConversation {
   final String conversationId;
-  final bool isSeen;
+  bool isSeen;
 
   UserConversation({
     required this.conversationId,

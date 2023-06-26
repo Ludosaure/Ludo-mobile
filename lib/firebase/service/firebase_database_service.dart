@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ludo_mobile/firebase/model/conversation.dart';
+import 'package:ludo_mobile/firebase/model/user_conversation.dart';
 import 'package:ludo_mobile/firebase/model/user_firebase.dart';
 import 'package:ludo_mobile/utils/local_storage_helper.dart';
 import 'package:rxdart/rxdart.dart';
@@ -206,7 +207,8 @@ class FirebaseDatabaseService {
     return getConversationData(id);
   }
 
-  Future<List<UserFirebase>> getConversationMembers(String conversationId) async {
+  Future<List<UserFirebase>> getConversationMembers(
+      String conversationId) async {
     final conversationSnapshot =
         await conversationsCollection.doc(conversationId).get();
     final conversation = conversationFromSnapshot(
@@ -253,12 +255,15 @@ class FirebaseDatabaseService {
     saveConversationData(targetUserId, admins, message: message);
   }
 
-  Future<void> saveConversationData(String targetUserId, List<UserFirebase> admins,
+  Future<void> saveConversationData(
+      String targetUserId, List<UserFirebase> admins,
       {String message = ""}) async {
-    List<Conversation> existingConversation = await getConversationsByMemberId(targetUserId);
+    List<Conversation> existingConversation =
+        await getConversationsByMemberId(targetUserId);
 
     List<String> memberIds = initConversationMemberIds(targetUserId, admins);
-    String? senderId = await LocalStorageHelper.getFirebaseUserIdFromLocalStorage();
+    String? senderId =
+        await LocalStorageHelper.getFirebaseUserIdFromLocalStorage();
     if (senderId == null) {
       throw Exception("Sender id not found");
     }
@@ -299,18 +304,22 @@ class FirebaseDatabaseService {
   void setConversationToSeen(String conversationId) async {
     DocumentReference userDocumentReference = userCollection.doc(uid);
     DocumentSnapshot userSnapshot = await userDocumentReference.get();
-    final conversationsMap = userSnapshot.data()! as Map<String, dynamic>;
-    List<dynamic> conversations = conversationsMap['conversations'];
+    UserFirebase user = userFirebaseFromDocumentSnapshot(
+        userSnapshot as DocumentSnapshot<Map<String, dynamic>>)!;
+    print(user);
+    List<UserConversation> userConversations = user.conversations;
 
-    for (var conversation in conversations) {
-      if (conversation['conversationId'] == conversationId) {
-        conversation['isSeen'] = true;
+    for (var userConversation in userConversations) {
+      if (userConversation.conversationId == conversationId) {
+        userConversation.isSeen = true;
         break;
       }
     }
 
     await userDocumentReference.update({
-      'conversations': conversations,
+      'conversations': userConversations
+          .map((userConversation) => userConversation.toMap())
+          .toList(),
     });
   }
 
@@ -398,7 +407,8 @@ class FirebaseDatabaseService {
     setConversationUnseenForOtherMembers(conversationId, senderId);
   }
 
-  List<String> initConversationMemberIds(String targetUserId, List<UserFirebase> admins) {
+  List<String> initConversationMemberIds(
+      String targetUserId, List<UserFirebase> admins) {
     List<String> members = admins.map((admin) => admin.uid).toList();
     members.add(targetUserId);
     return members;
