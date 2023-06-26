@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/domain/models/user.dart' as db_user;
 import 'package:ludo_mobile/firebase/model/conversation.dart';
 import 'package:ludo_mobile/firebase/service/firebase_database_service.dart';
+import 'package:ludo_mobile/firebase/service/firebase_database_utils.dart';
 import 'package:ludo_mobile/ui/components/circle-avatar.dart';
 import 'package:ludo_mobile/ui/components/new_conversation_alert.dart';
 import 'package:ludo_mobile/ui/components/scaffold/admin_scaffold.dart';
@@ -132,11 +133,14 @@ class _InboxPageState extends State<InboxPage> {
               .getConversationsDataOfCurrentUser(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          final conversations = snapshot.data;
-          if(conversations == null || conversations.isEmpty) {
+          final conversations =
+              FirebaseDatabaseUtils.sortConversationsByRecentMessageTime(
+            snapshot.data!,
+          );
+          if (conversations.isEmpty) {
             return _buildNoConversations();
           }
-          return _buildConversationList(conversations!);
+          return _buildConversationList(conversations);
         } else if (snapshot.hasError) {
           return ListTile(
             title: const Text('errors.error-loading-user-data').tr(),
@@ -158,9 +162,8 @@ class _InboxPageState extends State<InboxPage> {
         final conversation = conversations[index];
         return FutureBuilder<bool>(
           future: FirebaseDatabaseService(
-              uid: FirebaseAuth.instance.currentUser!.uid)
-              .isConversationSeen(
-              conversation.conversationId),
+                  uid: FirebaseAuth.instance.currentUser!.uid)
+              .isConversationSeen(conversation.conversationId),
           builder: (context, snapshot) {
             final isSeen = snapshot.data ?? false;
             return _buildConversation(

@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ludo_mobile/firebase/model/conversation.dart';
 import 'package:ludo_mobile/firebase/model/user_conversation.dart';
 import 'package:ludo_mobile/firebase/model/user_firebase.dart';
+import 'package:ludo_mobile/firebase/service/firebase_database_utils.dart';
 import 'package:ludo_mobile/utils/local_storage_helper.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -127,8 +128,9 @@ class FirebaseDatabaseService {
       final conversationIds = userFirebase.conversations.map((conversation) {
         return conversation.conversationId;
       }).toList();
-      return Rx.combineLatestList(
-          conversationIds.map((id) => getConversationData(id)).toList());
+      final conversations =
+          conversationIds.map((id) => getConversationData(id)).toList();
+      return Rx.combineLatestList(conversations);
     });
   }
 
@@ -150,25 +152,6 @@ class FirebaseDatabaseService {
       }).toList();
       return conversationIds;
     });
-  }
-
-  Future<List<Conversation>> sortConversationsByRecentMessage(
-    List<UserConversation> userConversationsNotSorted,
-  ) async {
-    List<Conversation> conversations = [];
-    for (final userConversation in userConversationsNotSorted) {
-      final conversationSnapshot = await conversationsCollection
-          .doc(userConversation.conversationId)
-          .get();
-      conversations.add(conversationFromSnapshot(
-          conversationSnapshot as DocumentSnapshot<Map<String, dynamic>>));
-    }
-    conversations.sort((conversationA, conversationB) {
-      final aRecentMessage = conversationA.recentMessageTime;
-      final bRecentMessage = conversationB.recentMessageTime;
-      return bRecentMessage.compareTo(aRecentMessage);
-    });
-    return conversations;
   }
 
   Future<Stream<Conversation>> getConversationById(String id) async {
@@ -219,22 +202,13 @@ class FirebaseDatabaseService {
     String targetUserEmail, {
     String message = "",
   }) async {
-    List<UserFirebase> admins = await getAdmins();
-    UserFirebase targetUser = (await getUserDataByEmail(targetUserEmail))!;
-    var targetUserId = targetUser.uid;
+    String targetUserId = (await getUserDataByEmail(targetUserEmail))!.uid;
 
-    saveConversationData(targetUserId, admins, message: message);
-  }
-
-  Future<void> saveConversationData(
-    String targetUserId,
-    List<UserFirebase> admins, {
-    String message = "",
-  }) async {
     List<Conversation> existingConversation =
         await getConversationsByMemberId(targetUserId);
 
-    List<String> memberIds = initConversationMemberIds(targetUserId, admins);
+    List<String> memberIds =
+        FirebaseDatabaseUtils.initConversationMemberIds(targetUserId, await getAdmins());
     String? senderId =
         await LocalStorageHelper.getFirebaseUserIdFromLocalStorage();
     if (senderId == null) {
@@ -376,12 +350,5 @@ class FirebaseDatabaseService {
       'recentMessageTime': DateTime.now(),
     });
     setConversationUnseenForOtherMembers(conversationId, senderId);
-  }
-
-  List<String> initConversationMemberIds(
-      String targetUserId, List<UserFirebase> admins) {
-    List<String> members = admins.map((admin) => admin.uid).toList();
-    members.add(targetUserId);
-    return members;
   }
 }
