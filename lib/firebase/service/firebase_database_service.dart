@@ -221,40 +221,44 @@ class FirebaseDatabaseService {
     return memberList;
   }
 
-  Future<List<Object?>> getAdmins() async {
-    QuerySnapshot<Object?> adminSnapshots =
+  Future<List<UserFirebase>> getAdmins() async {
+    final adminSnapshots =
         await userCollection.where('isAdmin', isEqualTo: true).get();
-    return adminSnapshots.docs
-        .map((adminSnapshot) => adminSnapshot.data())
-        .toList();
+    final List<UserFirebase> admins = [];
+    for (final admin in adminSnapshots.docs) {
+      admins.add(userFirebaseFromDocumentSnapshot(
+          admin as DocumentSnapshot<Map<String, dynamic>>)!);
+    }
+    return admins;
   }
 
-  Future<List<Object?>> getConversationsByMemberId(String memberId) async {
-    QuerySnapshot<Object?> conversationSnapshot = await conversationsCollection
+  Future<List<Conversation>> getConversationsByMemberId(String memberId) async {
+    final conversationSnapshot = await conversationsCollection
         .where('members', arrayContains: memberId)
         .get();
-    return conversationSnapshot.docs
-        .map((conversation) => conversation.data())
-        .toList();
+    final List<Conversation> conversations = [];
+    for (final conversation in conversationSnapshot.docs) {
+      conversations.add(conversationFromSnapshot(
+          conversation as DocumentSnapshot<Map<String, dynamic>>));
+    }
+    return conversations;
   }
 
   Future<void> createConversation(String targetUserEmail,
       {String message = ""}) async {
-    List<Object?> admins = await getAdmins();
+    List<UserFirebase> admins = await getAdmins();
     UserFirebase targetUser = (await getUserDataByEmail(targetUserEmail))!;
     var targetUserId = targetUser.uid;
 
     saveConversationData(targetUserId, admins, message: message);
   }
 
-  Future<void> saveConversationData(String targetUserId, List<Object?> admins,
+  Future<void> saveConversationData(String targetUserId, List<UserFirebase> admins,
       {String message = ""}) async {
-    List<Object?> existingConversation =
-        await getConversationsByMemberId(targetUserId);
+    List<Conversation> existingConversation = await getConversationsByMemberId(targetUserId);
 
-    List<String> members = initConversationMembers(targetUserId, admins);
-    String? senderId =
-        await LocalStorageHelper.getFirebaseUserIdFromLocalStorage();
+    List<String> memberIds = initConversationMemberIds(targetUserId, admins);
+    String? senderId = await LocalStorageHelper.getFirebaseUserIdFromLocalStorage();
     if (senderId == null) {
       throw Exception("Sender id not found");
     }
@@ -262,7 +266,7 @@ class FirebaseDatabaseService {
     if (existingConversation.isEmpty) {
       DocumentReference conversationDocumentReference =
           await conversationsCollection.add({
-        'members': members,
+        'members': memberIds,
         'targetUserId': targetUserId,
         'messages': [],
       });
@@ -274,7 +278,7 @@ class FirebaseDatabaseService {
         sendMessage(conversationDocumentReference.id, senderId, message);
       }
       // ajout de la conversation dans la liste des conversations de chaque membre
-      for (var memberId in members) {
+      for (var memberId in memberIds) {
         DocumentReference userDocumentReference = userCollection.doc(memberId);
         await userDocumentReference.update({
           'conversations': FieldValue.arrayUnion([
@@ -286,8 +290,9 @@ class FirebaseDatabaseService {
         });
       }
     } else {
-      var conversationMap = existingConversation[0] as Map<String, dynamic>;
-      sendMessage(conversationMap["conversationId"], senderId, message);
+      // peut arriver quand c'est un admin qui envoie un message à un client via
+      // sa réservation (un client n'a qu'une seule conversation)
+      sendMessage(existingConversation[0].conversationId, senderId, message);
     }
   }
 
@@ -393,16 +398,9 @@ class FirebaseDatabaseService {
     setConversationUnseenForOtherMembers(conversationId, senderId);
   }
 
-  List<String> initConversationMembers(
-      String targetUserId, List<Object?> admins) {
-    List<String> members = [targetUserId];
-    admins.forEach((admin) {
-      var adminMap = admin as Map<String, dynamic>;
-      var uid = adminMap['uid'];
-      if (!members.contains(uid)) {
-        members.add(uid);
-      }
-    });
+  List<String> initConversationMemberIds(String targetUserId, List<UserFirebase> admins) {
+    List<String> members = admins.map((admin) => admin.uid).toList();
+    members.add(targetUserId);
     return members;
   }
 }
