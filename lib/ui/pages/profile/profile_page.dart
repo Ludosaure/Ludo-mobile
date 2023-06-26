@@ -212,7 +212,6 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  // TODO ajouter un bouton pour modifier le mot de passe
   Widget _buildUserInfosBody(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Column(

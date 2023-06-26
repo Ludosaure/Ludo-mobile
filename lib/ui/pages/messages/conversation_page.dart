@@ -248,23 +248,28 @@ class _ConversationPageState extends State<ConversationPage> {
                 .asStream(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            final userFirebase = snapshot.data!;
+            final targetUser = snapshot.data!;
 
-            final fullName = '${userFirebase.firstname} ${userFirebase.name}';
-            var maxCharName = 45;
-            if (ResponsiveWrapper.of(context).isSmallerThan(DESKTOP)) {
-              maxCharName = 15;
+            var title = 'administrators'.tr();
+            if (FirebaseAuth.instance.currentUser!.uid != targetUser.uid) {
+              var fullName = '${targetUser.firstname} ${targetUser.name}';
+              var maxCharName = 45;
+              if (ResponsiveWrapper.of(context).isSmallerThan(DESKTOP)) {
+                maxCharName = 15;
+              }
+              title = fullName.length > maxCharName
+                  ? "${fullName.substring(0, maxCharName)}..."
+                  : fullName;
             }
             return Row(
               children: [
-                CustomCircleAvatar(
-                    userProfilePicture: userFirebase.profilePicture),
+                if (FirebaseAuth.instance.currentUser!.uid != targetUser.uid)
+                  CustomCircleAvatar(
+                      userProfilePicture: targetUser.profilePicture),
                 const SizedBox(width: 10),
                 Text(
-                  fullName.length > maxCharName
-                      ? "${fullName.substring(0, maxCharName)}..."
-                      : fullName,
-                  style: const TextStyle(
+                  title,
+                  style: TextStyle(
                     color: Colors.black,
                     fontSize: 20,
                     overflow: TextOverflow.ellipsis,

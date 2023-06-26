@@ -100,6 +100,7 @@
   "message-sent": "Message envoyé",
   "infos": "Informations",
   "conversation-members": "Membres de la conversation",
+  "administrators": "Administrateurs",
   "start-conv-with-admins": "Commencer une conversation avec les administrateurs",
   "type-message": "Tapez votre message ici...",
   "cant-send-message-to-yourself": "Vous ne pouvez pas envoyer de message à vous-même.",
