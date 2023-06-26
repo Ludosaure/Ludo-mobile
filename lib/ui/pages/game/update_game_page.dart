@@ -282,7 +282,11 @@ class _UpdateGamePageState extends State<UpdateGamePage> {
             SnackBar(
               content: const Text(
                 'game-updated-successfully',
-              ).tr(),
+              ).tr(
+                namedArgs: {
+                  "game": game.name,
+                },
+              ),
             ),
           );
           context.go(Routes.adminGames.path);

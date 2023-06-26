@@ -1,4 +1,4 @@
-import 'dart:html';
+import 'package:universal_html/html.dart';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
