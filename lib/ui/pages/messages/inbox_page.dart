@@ -1,11 +1,11 @@
 import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/domain/models/user.dart' as db_user;
+import 'package:ludo_mobile/firebase/model/conversation.dart';
 import 'package:ludo_mobile/firebase/service/firebase_database_service.dart';
 import 'package:ludo_mobile/ui/components/circle-avatar.dart';
 import 'package:ludo_mobile/ui/components/new_conversation_alert.dart';
@@ -38,7 +38,8 @@ class _InboxPageState extends State<InboxPage> {
   }
 
   void _initConversationIds() {
-    final databaseService = FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid);
+    final databaseService =
+        FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid);
     subscription = databaseService.getConversationIds().listen((snapshot) {
       conversationIds = snapshot;
       if (conversationIds.isNotEmpty && !widget.user.isAdmin()) {
@@ -125,47 +126,54 @@ class _InboxPageState extends State<InboxPage> {
   }
 
   Widget _buildConversations() {
-    return StreamBuilder<List<Map<String, dynamic>>>(
-      stream: FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid).getUserConversations(),
+    return StreamBuilder(
+      stream:
+          FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+              .getConversationsDataOfCurrentUser(),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
+        if (snapshot.hasData) {
+          final conversations = snapshot.data;
+          if(conversations == null || conversations.isEmpty) {
+            return _buildNoConversations();
+          }
+          return _buildConversationList(conversations!);
+        } else if (snapshot.hasError) {
+          return ListTile(
+            title: const Text('errors.error-loading-user-data').tr(),
+            subtitle: Text(snapshot.error.toString()),
+          );
+        } else {
           return CircularProgressIndicator(
             color: Theme.of(context).colorScheme.primary,
           );
         }
+      },
+    );
+  }
 
-        final data = snapshot.data;
-        if (!snapshot.hasData || data == null || data.isEmpty) {
-          return _buildNoConversations();
-        }
-
-        return ListView.builder(
-          itemCount: data.length,
-          itemBuilder: (context, index) {
-            final conversationData = data[index]['conversation'] as Map<String, dynamic>;
-            final recentMessage = data[index]['recentMessage'] as String;
-
-            final targetUserId = conversationData['targetUserId'] as String;
-            final conversationId = conversationData['conversationId'] as String;
-
-            return FutureBuilder<bool>(
-              future: FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid).isConversationSeen(conversationId),
-              builder: (context, snapshot) {
-                final isSeen = snapshot.data ?? false;
-                return _buildConversation(
-                  targetUserId,
-                  recentMessage,
-                  isSeen,
-                  conversationId,
-                );
-              },
+  Widget _buildConversationList(List<Conversation> conversations) {
+    return ListView.builder(
+      itemCount: conversations.length,
+      itemBuilder: (context, index) {
+        final conversation = conversations[index];
+        return FutureBuilder<bool>(
+          future: FirebaseDatabaseService(
+              uid: FirebaseAuth.instance.currentUser!.uid)
+              .isConversationSeen(
+              conversation.conversationId),
+          builder: (context, snapshot) {
+            final isSeen = snapshot.data ?? false;
+            return _buildConversation(
+              conversation.targetUserId,
+              conversation.recentMessage,
+              isSeen,
+              conversation.conversationId,
             );
           },
         );
       },
     );
   }
-
 
   Widget _buildConversation(
     String targetUserId,

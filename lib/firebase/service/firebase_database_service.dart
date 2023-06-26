@@ -106,6 +106,11 @@ class FirebaseDatabaseService {
     });
   }
 
+  Stream<List<UserFirebase>> getUsersData(List<String> ids) {
+    return Rx.combineLatestList(
+        ids.map((id) => getUserData(id)).toList(growable: false));
+  }
+
   Stream<Conversation> getConversationData(String id) {
     return conversationsCollection
         .doc(id)
@@ -113,6 +118,17 @@ class FirebaseDatabaseService {
         .map((conversationSnapshot) {
       return conversationFromSnapshot(
           conversationSnapshot as DocumentSnapshot<Map<String, dynamic>>);
+    });
+  }
+
+  Stream<List<Conversation>> getConversationsDataOfCurrentUser() {
+    final user = getUserData(uid!);
+    return user.switchMap((userFirebase) {
+      final conversationIds = userFirebase.conversations.map((conversation) {
+        return conversation.conversationId;
+      }).toList();
+      return Rx.combineLatestList(
+          conversationIds.map((id) => getConversationData(id)).toList());
     });
   }
 
@@ -136,80 +152,23 @@ class FirebaseDatabaseService {
     });
   }
 
-  // TODO corriger l'ajout de la conversation dans la liste des conversations de l'utilisateur (admin ?)
-  // TODO faire cette méthode à la fin
-  Stream<List<Map<String, dynamic>>> getUserConversations() {
-    final userSnapshotStream = userCollection.doc(uid).snapshots();
-
-    return userSnapshotStream.asyncMap((userSnapshot) async {
-      final conversations = userSnapshot['conversations'] as List<dynamic>;
-      final conversationIds = await sortConversationsByRecentMessage(
-          initConversationIdsList(conversations));
-
-      final conversationStreams = conversationIds.map((conversationId) {
-        final conversationStream = conversationsCollection
-            .doc(conversationId)
-            .snapshots() as Stream<DocumentSnapshot<Map<String, dynamic>>>;
-        final membersStream = userCollection
-            .where('conversations.conversationId', isEqualTo: conversationId)
-            .snapshots() as Stream<QuerySnapshot<Map<String, dynamic>>>;
-
-        // rx permet de combiner 2 streams
-        return Rx.combineLatest2<DocumentSnapshot<Map<String, dynamic>>,
-            QuerySnapshot<Map<String, dynamic>>, Map<String, dynamic>>(
-          conversationStream,
-          membersStream,
-          (conversationSnapshot, membersSnapshot) {
-            final conversationData = conversationSnapshot.data()!;
-            final membersData =
-                membersSnapshot.docs.map((doc) => doc.data()).toList();
-            final recentMessage =
-                conversationData['recentMessage'] as String? ?? '';
-
-            return {
-              'conversation': conversationData,
-              'members': membersData,
-              'recentMessage': recentMessage,
-            };
-          },
-        );
-      });
-
-      final combinedStream = Rx.combineLatestList(conversationStreams);
-
-      return await combinedStream.first;
-    });
-  }
-
-  Future<List<dynamic>> sortConversationsByRecentMessage(
-    List<dynamic> conversationsIdsNotSorted,
+  Future<List<Conversation>> sortConversationsByRecentMessage(
+    List<UserConversation> userConversationsNotSorted,
   ) async {
-    final conversations = [];
-    for (final conversationId in conversationsIdsNotSorted) {
-      final conversationSnapshot =
-          await conversationsCollection.doc(conversationId).get();
-      final conversationData =
-          conversationSnapshot.data()! as Map<String, dynamic>;
-
-      conversations.add({
-        'conversationId': conversationData['conversationId'],
-        'time': conversationData['recentMessageTime'] as Timestamp,
-      });
+    List<Conversation> conversations = [];
+    for (final userConversation in userConversationsNotSorted) {
+      final conversationSnapshot = await conversationsCollection
+          .doc(userConversation.conversationId)
+          .get();
+      conversations.add(conversationFromSnapshot(
+          conversationSnapshot as DocumentSnapshot<Map<String, dynamic>>));
     }
-    conversations.sort((a, b) => b['time'].compareTo(a['time']));
-    final sortedConversations = [];
-    for (final conversation in conversations) {
-      sortedConversations.add(conversation['conversationId']);
-    }
-    return sortedConversations;
-  }
-
-  List<String> initConversationIdsList(List<dynamic> conversations) {
-    final List<String> conversationIds = [];
-    for (final conversation in conversations) {
-      conversationIds.add(conversation['conversationId'] as String);
-    }
-    return conversationIds;
+    conversations.sort((conversationA, conversationB) {
+      final aRecentMessage = conversationA.recentMessageTime;
+      final bRecentMessage = conversationB.recentMessageTime;
+      return bRecentMessage.compareTo(aRecentMessage);
+    });
+    return conversations;
   }
 
   Future<Stream<Conversation>> getConversationById(String id) async {
@@ -370,7 +329,6 @@ class FirebaseDatabaseService {
     }
   }
 
-  // TODO ne marche pas sur le mobile
   Stream<bool> hasUnseenConversationsStream() {
     Stream<UserFirebase> userStream = getUserData(uid!);
 
@@ -391,12 +349,12 @@ class FirebaseDatabaseService {
 
   Future<bool> isConversationSeen(String conversationId) async {
     DocumentSnapshot userSnapshot = await userCollection.doc(uid).get();
-    final conversationsMap = userSnapshot.data()! as Map<String, dynamic>;
-    List<dynamic> conversations = conversationsMap['conversations'];
+    UserFirebase user = userFirebaseFromDocumentSnapshot(
+        userSnapshot as DocumentSnapshot<Map<String, dynamic>>)!;
 
-    for (var conversation in conversations) {
-      if (conversation['conversationId'] == conversationId) {
-        return conversation['isSeen'] ?? false;
+    for (var userConversation in user.conversations) {
+      if (userConversation.conversationId == conversationId) {
+        return userConversation.isSeen;
       }
     }
 
