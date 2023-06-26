@@ -17,8 +17,13 @@ class FirebaseDatabaseService {
   final CollectionReference conversationsCollection =
       FirebaseFirestore.instance.collection("conversations");
 
-  Future<void> saveUserData(String name, String firstname, String email,
-      {String profilePicture = "", bool isAdmin = false}) async {
+  Future<void> saveUserData(
+    String name,
+    String firstname,
+    String email, {
+    String profilePicture = "",
+    bool isAdmin = false,
+  }) async {
     final userDoc = userCollection.doc(uid);
 
     final existingUser = await getUserDataByEmail(email);
@@ -52,7 +57,8 @@ class FirebaseDatabaseService {
   }
 
   UserFirebase? userFirebaseFromDocumentSnapshot(
-      DocumentSnapshot<Map<String, dynamic>> snapshot) {
+    DocumentSnapshot<Map<String, dynamic>> snapshot,
+  ) {
     var data = snapshot.data();
     if (data == null) {
       return null;
@@ -61,7 +67,8 @@ class FirebaseDatabaseService {
   }
 
   List<UserFirebase?> userFirebaseListFromQuerySnapshot(
-      QuerySnapshot<Object?> snapshot) {
+    QuerySnapshot<Object?> snapshot,
+  ) {
     return snapshot.docs
         .map((doc) => userFirebaseFromDocumentSnapshot(
             doc as DocumentSnapshot<Map<String, dynamic>>))
@@ -69,7 +76,8 @@ class FirebaseDatabaseService {
   }
 
   Conversation conversationFromSnapshot(
-      DocumentSnapshot<Map<String, dynamic>> snapshot) {
+    DocumentSnapshot<Map<String, dynamic>> snapshot,
+  ) {
     var data = snapshot.data();
     if (data == null) {
       throw Exception("Conversation not found");
@@ -174,7 +182,8 @@ class FirebaseDatabaseService {
   }
 
   Future<List<dynamic>> sortConversationsByRecentMessage(
-      List<dynamic> conversationsIdsNotSorted) async {
+    List<dynamic> conversationsIdsNotSorted,
+  ) async {
     final conversations = [];
     for (final conversationId in conversationsIdsNotSorted) {
       final conversationSnapshot =
@@ -208,7 +217,8 @@ class FirebaseDatabaseService {
   }
 
   Future<List<UserFirebase>> getConversationMembers(
-      String conversationId) async {
+    String conversationId,
+  ) async {
     final conversationSnapshot =
         await conversationsCollection.doc(conversationId).get();
     final conversation = conversationFromSnapshot(
@@ -246,8 +256,10 @@ class FirebaseDatabaseService {
     return conversations;
   }
 
-  Future<void> createConversation(String targetUserEmail,
-      {String message = ""}) async {
+  Future<void> createConversation(
+    String targetUserEmail, {
+    String message = "",
+  }) async {
     List<UserFirebase> admins = await getAdmins();
     UserFirebase targetUser = (await getUserDataByEmail(targetUserEmail))!;
     var targetUserId = targetUser.uid;
@@ -256,8 +268,10 @@ class FirebaseDatabaseService {
   }
 
   Future<void> saveConversationData(
-      String targetUserId, List<UserFirebase> admins,
-      {String message = ""}) async {
+    String targetUserId,
+    List<UserFirebase> admins, {
+    String message = "",
+  }) async {
     List<Conversation> existingConversation =
         await getConversationsByMemberId(targetUserId);
 
@@ -306,7 +320,6 @@ class FirebaseDatabaseService {
     DocumentSnapshot userSnapshot = await userDocumentReference.get();
     UserFirebase user = userFirebaseFromDocumentSnapshot(
         userSnapshot as DocumentSnapshot<Map<String, dynamic>>)!;
-    print(user);
     List<UserConversation> userConversations = user.conversations;
 
     for (var userConversation in userConversations) {
@@ -324,38 +337,39 @@ class FirebaseDatabaseService {
   }
 
   void setConversationUnseenForOtherMembers(
-      String conversationId, String senderId) async {
+    String conversationId,
+    String senderId,
+  ) async {
     final conversationSnapshot =
         await conversationsCollection.doc(conversationId).get();
+    Conversation conversation = conversationFromSnapshot(
+        conversationSnapshot as DocumentSnapshot<Map<String, dynamic>>);
 
-    if (conversationSnapshot.exists) {
-      final conversationData =
-          conversationSnapshot.data() as Map<String, dynamic>;
-      final members = conversationData['members'] as List<dynamic>;
+    final memberSnapshots = await userCollection
+        .where(FieldPath.documentId, whereIn: conversation.members)
+        .get();
 
-      final userSnapshots = await userCollection
-          .where(FieldPath.documentId, whereIn: members)
-          .get();
-      for (final userSnapshot in userSnapshots.docs) {
-        final userSnapshotMap = userSnapshot.data()! as Map<String, dynamic>;
-        final conversations = userSnapshotMap['conversations'] as List<dynamic>;
-
-        if (userSnapshot.id != senderId) {
-          for (var conversation in conversations) {
-            if (conversation['conversationId'] == conversationId) {
-              conversation['isSeen'] = false;
-              break;
-            }
+    for (final userSnapshot in memberSnapshots.docs) {
+      UserFirebase member = userFirebaseListFromQuerySnapshot(
+          userSnapshot as QuerySnapshot<Map<String, dynamic>>)[0]!;
+      if (member.uid != senderId) {
+        for (var userConversation in member.conversations) {
+          if (userConversation.conversationId == conversationId) {
+            userConversation.isSeen = false;
+            break;
           }
-
-          await userCollection.doc(userSnapshot.id).update({
-            'conversations': conversations,
-          });
         }
       }
+
+      await userCollection.doc(userSnapshot.id).update({
+        'conversations': member.conversations
+            .map((userConversation) => userConversation.toMap())
+            .toList(),
+      });
     }
   }
 
+  // TODO ne marche pas sur le mobile
   Stream<bool> hasUnseenConversationsStream() {
     final userSnapshotStream = userCollection.doc(uid).snapshots();
 
