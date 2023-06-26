@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/core/exception.dart';
 import 'package:ludo_mobile/data/providers/media_provider.dart';
@@ -11,7 +9,7 @@ class MediaRepository {
 
   MediaRepository(this._mediaProvider);
 
-  Future<String> uploadPicture(File picture) async {
+  Future<String> uploadPicture(dynamic picture) async {
     String? token = await LocalStorageHelper.getTokenFromLocalStorage();
 
     if(token == null) {

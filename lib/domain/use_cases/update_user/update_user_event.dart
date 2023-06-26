@@ -46,7 +46,7 @@ class UserHasEnabledPhoneNotificationsChangedEvent extends UpdateUserEvent {
 }
 
 class UserPictureChangedEvent extends UpdateUserEvent {
-  final File picture;
+  final dynamic picture;
 
   const UserPictureChangedEvent(this.picture);
 }

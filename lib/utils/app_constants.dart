@@ -15,4 +15,5 @@ class AppConstants {
   static const String STRIPE_PAYMENT_ID = "pm_card_fr";
   static const String DATE_TIME_FORMAT_LONG = 'dd MMMM yyyy';
   static const String DATE_TIME_FORMAT_DAY_MONTH = 'dd MMMM';
+  static const int MAX_TOTAL_AMOUNT = 999999;
 }

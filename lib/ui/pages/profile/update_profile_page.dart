@@ -1,6 +1,5 @@
-import 'dart:io';
-
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -8,7 +7,8 @@ import 'package:ludo_mobile/core/form_status.dart';
 import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:ludo_mobile/domain/use_cases/get_user/get_user_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/update_user/update_user_bloc.dart';
-import 'package:ludo_mobile/ui/components/custom_file_picker.dart';
+import 'package:ludo_mobile/ui/components/custom_mobile_file_picker.dart';
+import 'package:ludo_mobile/ui/components/custom_web_file_picker.dart';
 import 'package:ludo_mobile/ui/components/form_field_decoration.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
 import 'package:ludo_mobile/utils/validator_utils.dart';
@@ -45,6 +45,8 @@ class _UpdateProfilePageState extends State<UpdateProfilePage> {
         ),
         title: const Text(
           "update-user-title",
+          softWrap: true,
+          overflow: TextOverflow.visible,
         ).tr(
           namedArgs: {
             "firstname": user.firstname,
@@ -55,16 +57,22 @@ class _UpdateProfilePageState extends State<UpdateProfilePage> {
       body: _updateUserForm(context),
     );
   }
-  
+
   Widget _updateUserForm(BuildContext context) {
     return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       child: Column(
         children: [
           const SizedBox(height: 20),
-          CustomFilePicker(
-            initialImage: user.profilePicturePath,
-            onFileSelected: _onFileSelected,
-          ),
+          kIsWeb
+              ? CustomWebFilePicker(
+                  onFileSelected: _onFileSelected,
+                  initialImage: user.profilePicturePath,
+                )
+              : CustomMobileFilePicker(
+                  initialImage: user.profilePicturePath,
+                  onFileSelected: _onFileSelected,
+                ),
           _buildForm(context),
           _buildSubmitButton(context),
         ],
@@ -85,7 +93,9 @@ class _UpdateProfilePageState extends State<UpdateProfilePage> {
             validator: ValidatorUtils.validatePhoneNumber,
             initialValue: user.phone,
             onChanged: (value) {
-              context.read<UpdateUserBloc>().add(UserPhoneNumberChangedEvent(value));
+              context
+                  .read<UpdateUserBloc>()
+                  .add(UserPhoneNumberChangedEvent(value));
             },
             decoration: FormFieldDecoration.textField("phone-label".tr()),
           ),
@@ -111,14 +121,15 @@ class _UpdateProfilePageState extends State<UpdateProfilePage> {
               ),
             ),
             trailing: Switch(
+              activeColor: Theme.of(context).colorScheme.primary,
               value: user.hasEnabledMailNotifications,
               onChanged: (value) {
                 setState(() {
                   user.hasEnabledMailNotifications = value;
                 });
                 context.read<UpdateUserBloc>().add(
-                  UserHasEnabledMailNotificationsChangedEvent(value),
-                );
+                      UserHasEnabledMailNotificationsChangedEvent(value),
+                    );
               },
             ),
           ),
@@ -132,14 +143,15 @@ class _UpdateProfilePageState extends State<UpdateProfilePage> {
               ),
             ),
             trailing: Switch(
+              activeColor: Theme.of(context).colorScheme.primary,
               value: user.hasEnabledPhoneNotifications,
               onChanged: (value) {
                 setState(() {
                   user.hasEnabledPhoneNotifications = value;
                 });
                 context.read<UpdateUserBloc>().add(
-                  UserHasEnabledPhoneNotificationsChangedEvent(value),
-                );
+                      UserHasEnabledPhoneNotificationsChangedEvent(value),
+                    );
               },
             ),
           ),
@@ -209,7 +221,7 @@ class _UpdateProfilePageState extends State<UpdateProfilePage> {
     );
   }
 
-  void _onFileSelected(File? file) {
+  void _onFileSelected(dynamic file) {
     context.read<UpdateUserBloc>().add(UserPictureChangedEvent(file!));
   }
 }

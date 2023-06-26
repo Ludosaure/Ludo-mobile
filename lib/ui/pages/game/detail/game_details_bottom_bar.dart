@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_date_pickers/flutter_date_pickers.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
-import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:ludo_mobile/domain/use_cases/cart/cart_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/list_reduction_plan/list_reduction_plan_cubit.dart';
 import 'package:ludo_mobile/utils/app_constants.dart';
@@ -333,7 +332,7 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
                     .read<ListReductionPlanCubit>()
                     .getReductionForNbWeeks(nbWeeks);
 
-                parentContext.read<CartCubit>().onChangeDate(_bookingPeriod);
+                parentContext.read<CartCubit>().onChangeDate(_bookingPeriod, _reduction);
               },
               onSelectionError: (UnselectablePeriodException error) {
                 DatePeriod wantedPeriod = error.period;

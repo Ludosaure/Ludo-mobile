@@ -89,7 +89,7 @@
   "validate-games-returned-confirm": "Etes-vous sûr de vouloir valider le retour des jeux ?",
   "irreversible-action": "Cette action est irréversible.",
   "contact-user": "Contacter l'utilisateur",
-  "details": "Détails",
+  "details": "Détails *",
   "date-period": "Du {startDate} au {endDate}",
   "send-label": "Envoyer",
   "edited-at-label": "Modifié le {date}",
@@ -124,6 +124,8 @@
   "reservation-details-title": "Réservations #{number} - Par {firstname} {lastname}",
   "errors": {
     "error-detail": "Erreur : {error}",
+    "reservation-creation-not-found": "Impossible de créer la réservation: Jeux ou réduction introuvable",
+    "reservation-creation-failed": "Impossible de créer la réservation",
     "error-loading-user-data": "Erreur lors du chargement des données de l'utilisateur",
     "error-loading-conversation-data": "Erreur lors du chargement des données de la conversation",
     "unknown": "Erreur inconnue",
@@ -145,13 +147,16 @@
     "cancel-reservation": "Erreur lors de l'annulation de la réservation",
     "game-creation-failed": "Erreur lors de la création du jeu",
     "game-edition-failed": "Erreur lors de la modification du jeu",
+    "game-deletion-failed": "Erreur lors de la suppression du jeu",
     "user-edition-failed": "Erreur lors de la modification de l'utilisateur",
-    "firebase-update-password-error": "Cette opération est sensible et requiert une authentification récente. Connectez-vous à nouveau puis modifiez votre mot de passe."
+    "firebase-update-password-error": "Cette opération est sensible et requiert une authentification récente. Connectez-vous à nouveau puis modifiez votre mot de passe.",
+    "payment-threshold-exceeded": "Notre application ne gère pas les paiments de cette importance. Merci de contacter le magasin pour effectuer votre réservation.",
+    "upload-picture-error": "Erreur lors de l'envoi de l'image"
   },
   "select-date-range-label": "Durée de la réservation (une semaine minimum)",
   "booking-period-label-1": "Réservation du ",
   "booking-period-label-2": " au ",
-  "booking-duration-label": "Durée de la réservation",
+  "booking-duration-label": "Durée de la réservation ",
   "booking-nb-weeks-label": {
     "one": "1 semaine *",
     "other": "{nbWeeks} semaines *"
@@ -170,8 +175,12 @@
   "not-available-on-web-label": "Fonctionnalité non disponible sur le web",
   "email-copied": "L'email de l'utilisateur {email} a été copié dans le presse-papier.",
   "game-administration-title": "Administration des jeux",
+  "delete-label": "Supprimer",
   "delete-game-label": "Supprimer le jeu",
-  "delete-game-confirmation": "Êtes-vous sûr de vouloir supprimer ce jeu {game} ?",
+  "delete-game-confirmation": "Êtes-vous sûr de vouloir supprimer le jeu {game} ?",
+  "game-deleted-successfully": "Le jeu {game} a bien été supprimé.",
+  "game-created-successfully": "Le jeu {game} a été créé avec succes.",
+  "game-updated-successfully": "Le jeu {game} a été modifié avec succes.",
   "game-name-field": "Nom du jeu *",
   "game-description-field": "Description du jeu",
   "weekly-amount-field": "Prix à la semaine *",
@@ -186,5 +195,8 @@
   "average-duration-field": "Durée moyenne d'une partie en min *",
   "min-players-field": "Nombre de joueurs minimum *",
   "max-players-field": "Nombre de joueurs maximum *",
-  "currency-symbol": "€"
+  "currency-symbol": "€",
+  "reservation-details-info": "* Il se peut que certains jeux n'apparaissent plus dans le détails suite à leur suppression. Seule la facture consèrve l'intégralité de la commande dans le temps.",
+  "list-plans-title": "Liste des réductions",
+  "list-categories-title": "Liste des catégories"
 }

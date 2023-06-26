@@ -59,114 +59,126 @@ class _CartPageState extends State<CartPage> {
     return paymentSheetDisplayed
         ? null
         : BlocConsumer<CartCubit, CartState>(
-          listener: (context, state) {
-            if (state is CartContentLoaded) {
-              setState(() {
-                cartContent = state.cartContent;
-              });
-            }
+            listener: (context, state) {
+              if (state is CartContentLoaded ||
+                  state is PaymentCompleted) {
+                setState(() {
+                  cartContent = state.cartContent;
+                });
+              }
 
-            if (state is PaymentCompleted) {
-              setState(() {
-                cartContent = state.cartContent;
-              });
-            }
-
-            if (state is LoadCartContentError) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.error),
-                  backgroundColor: Colors.red,
-                ),
-              );
-            }
-
-            if (state is PaymentPresentFailed) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.error),
-                  backgroundColor: Colors.red,
-                ),
-              );
-            }
-
-            if (state is PaymentFailed) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.error),
-                  backgroundColor: Colors.red,
-                ),
-              );
-            }
-          },
-          builder: (context, state) {
-            if (state is CartContentLoaded ||
-                state is PaymentCanceled) {
-              if (cartContent.isEmpty) {
-                return Center(
-                  child: const Text("cart-empty-label").tr(),
+              if (state is LoadCartContentError) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(state.error),
+                    backgroundColor: Colors.red,
+                  ),
                 );
               }
-              final totalAmount =
-                  context.read<CartCubit>().getCartTotalAmount();
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                verticalDirection: VerticalDirection.down,
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.75,
-                    child: CartContent(
-                      cartContent: cartContent,
-                      totalAmount: totalAmount,
-                      bookingPeriod: state.bookingPeriod,
-                      reduction: state.reduction,
-                    ),
-                  ),
-                  _buildBookingPeriodInformation(context),
-                  _buildValidateReservationButton(context),
-                ]);
-            }
 
-            if (state is PaymentCompleted) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(
-                    Icons.check_circle,
-                    color: Colors.green,
-                    size: 75,
+              if (state is PaymentTooHigh) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(state.error),
+                    backgroundColor: Colors.red,
                   ),
-                  const SizedBox(height: 40),
-                  const Text(
-                    "payment-success-label",
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                );
+              }
+
+              if (state is PaymentPresentFailed) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(state.error),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+
+              if (state is PaymentFailed) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(state.error),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+            builder: (context, state) {
+              if (state is CartContentLoaded ||
+                  state is PaymentCanceled ||
+                  state is PaymentTooHigh) {
+
+                cartContent = state.cartContent;
+
+                if (state.cartContent.isEmpty) {
+                  return Center(
+                    child: const Text("cart-empty-label").tr(),
+                  );
+                }
+
+                final paymentTooHigh = state is PaymentTooHigh;
+
+                final totalAmount =
+                    context.read<CartCubit>().getCartTotalAmount();
+
+                return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    verticalDirection: VerticalDirection.down,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.75,
+                        child: CartContent(
+                          cartContent: cartContent,
+                          totalAmount: totalAmount,
+                          bookingPeriod: state.bookingPeriod,
+                          reduction: state.reduction,
+                        ),
+                      ),
+                      _buildBookingPeriodInformation(context),
+                      _buildValidateReservationButton(context, paymentTooHigh),
+                    ]);
+              }
+
+              if (state is PaymentCompleted) {
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.check_circle,
+                      color: Colors.green,
+                      size: 75,
                     ),
-                    textAlign: TextAlign.center,
-                  ).tr(),
-                  const SizedBox(height: 40),
-                  const Text(
-                    "payment-success-subtitle",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.normal,
-                    ),
-                    textAlign: TextAlign.center,
-                  ).tr(),
-                ],
+                    const SizedBox(height: 40),
+                    const Text(
+                      "payment-success-label",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ).tr(),
+                    const SizedBox(height: 40),
+                    const Text(
+                      "payment-success-subtitle",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.normal,
+                      ),
+                      textAlign: TextAlign.center,
+                    ).tr(),
+                  ],
+                );
+              }
+
+              return const Center(
+                child: CircularProgressIndicator(),
               );
-            }
-
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          },
-        );
+            },
+          );
   }
 
   Widget _buildBookingPeriodInformation(context) {
@@ -190,7 +202,10 @@ class _CartPageState extends State<CartPage> {
     return const SizedBox();
   }
 
-  Widget _buildValidateReservationButton(BuildContext context) {
+  Widget _buildValidateReservationButton(
+    BuildContext context,
+    bool paymentTooHigh,
+  ) {
     if (cartContent.isNotEmpty) {
       return SizedBox(
         width: MediaQuery.of(context).size.width,
@@ -198,26 +213,28 @@ class _CartPageState extends State<CartPage> {
           style: ElevatedButton.styleFrom(
             alignment: Alignment.center,
           ),
-          onPressed: () async {
-            setState(() {
-              paymentSheetDisplayed = true;
-            });
-            try {
-              await context.read<CartCubit>().displayPaymentSheet();
-            } catch (e) {
-              //TODO
-              print(e);
-            }
-
-            setState(() {
-              paymentSheetDisplayed = false;
-            });
-          },
+          onPressed: paymentTooHigh ? null : _onValidatePressed,
           child: const Text('payment-validate-button').tr(),
         ),
       );
     }
 
     return const SizedBox();
+  }
+
+  void _onValidatePressed() async {
+    setState(() {
+      paymentSheetDisplayed = true;
+    });
+    try {
+      await context.read<CartCubit>().displayPaymentSheet();
+    } catch (e) {
+      //TODO
+      print(e);
+    }
+
+    setState(() {
+      paymentSheetDisplayed = false;
+    });
   }
 }

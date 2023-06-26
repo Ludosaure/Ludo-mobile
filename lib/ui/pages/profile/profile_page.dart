@@ -5,12 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/domain/models/user.dart';
-import 'package:ludo_mobile/domain/use_cases/get_user/get_user_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/session/session_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/update_user/update_user_bloc.dart';
 import 'package:ludo_mobile/injection.dart';
 import 'package:ludo_mobile/ui/components/circle-avatar.dart';
-import 'package:ludo_mobile/ui/components/custom_back_button.dart';
 import 'package:ludo_mobile/ui/components/scaffold/admin_scaffold.dart';
 import 'package:ludo_mobile/ui/components/scaffold/home_scaffold.dart';
 import 'package:ludo_mobile/ui/pages/profile/update_password_alert.dart';
@@ -19,7 +17,9 @@ import 'package:ludo_mobile/utils/menu_items.dart';
 import 'package:responsive_framework/responsive_wrapper.dart';
 
 class ProfilePage extends StatefulWidget {
+  final User connectedUser;
   const ProfilePage({
+    required this.connectedUser,
     Key? key,
   }) : super(key: key);
 
@@ -29,60 +29,24 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   late final SessionCubit _sessionCubit = locator<SessionCubit>();
-  late User connectedUser;
+  User get connectedUser => widget.connectedUser;
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<GetUserCubit, GetUserState>(builder: (context, state) {
-      if (state is GetUserInitial) {
-        BlocProvider.of<GetUserCubit>(context).getUser();
-        return _chargingScaffold();
-      }
-      if (state is GetUserLoading) {
-        return const Scaffold(
-          body: Center(
-            child: CircularProgressIndicator(),
-          ),
-        );
-      }
-      if (state is GetUserSuccess) {
-        connectedUser = state.user;
-        if (connectedUser.isAdmin()) {
-          return AdminScaffold(
-            body: _buildPage(context),
-            user: connectedUser,
-            onSearch: null,
-            onSortPressed: null,
-            navBarIndex: MenuItems.Profile.index,
-          );
-        }
-        return HomeScaffold(
-          body: _buildPage(context),
-          navBarIndex: MenuItems.Profile.index,
-          user: connectedUser,
-        );
-      }
-      return Container();
-    }, listener: (context, state) {
-      if (state is GetUserError) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(state.message),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
-      }
-    });
-  }
+    if (connectedUser.isAdmin()) {
+      return AdminScaffold(
+        body: _buildPage(context),
+        user: connectedUser,
+        onSearch: null,
+        onSortPressed: null,
+        navBarIndex: MenuItems.Profile.index,
+      );
+    }
 
-  Widget _chargingScaffold() {
-    return Scaffold(
-      appBar: AppBar(
-        leading: const CustomBackButton(),
-      ),
-      body: const Center(
-        child: CircularProgressIndicator(),
-      ),
+    return HomeScaffold(
+      body: _buildPage(context),
+      navBarIndex: MenuItems.Profile.index,
+      user: connectedUser,
     );
   }
 
@@ -107,7 +71,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 onPressed: () {
                   context.push(Routes.userReservations.path);
                 },
-                child: Text('my-reservations-title'.tr()),
+                child: const Text('my-reservations-title').tr(),
               ),
             _buildUpdatePasswordButton(context),
           ],
@@ -124,7 +88,7 @@ class _ProfilePageState extends State<ProfilePage> {
       style: ElevatedButton.styleFrom(
         backgroundColor: Theme.of(context).colorScheme.secondary,
       ),
-      child: Text('update-password-title'.tr()),
+      child: const Text('update-password-title').tr(),
     );
   }
 
@@ -172,7 +136,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     color: Colors.black,
                     fontSize:
                         ResponsiveWrapper.of(context).isSmallerThan(DESKTOP)
-                            ? 18
+                            ? 17
                             : 26,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -239,7 +203,7 @@ class _ProfilePageState extends State<ProfilePage> {
               connectedUser.email,
               style: const TextStyle(
                 color: Colors.black,
-                fontSize: 18,
+                fontSize: 17,
               ),
             ),
           ],
@@ -255,7 +219,7 @@ class _ProfilePageState extends State<ProfilePage> {
               connectedUser.phone,
               style: const TextStyle(
                 color: Colors.black,
-                fontSize: 18,
+                fontSize: 17,
               ),
             ),
           ],
@@ -273,7 +237,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   : 'pseudo-to-set-field'.tr(),
               style: const TextStyle(
                 color: Colors.black,
-                fontSize: 18,
+                fontSize: 17,
               ),
             ),
           ],
@@ -306,7 +270,7 @@ class _ProfilePageState extends State<ProfilePage> {
               'activate-mail-notifications-label'.tr(),
               style: const TextStyle(
                 color: Colors.black,
-                fontSize: 18,
+                fontSize: 17,
               ),
             ),
           ),
@@ -322,7 +286,7 @@ class _ProfilePageState extends State<ProfilePage> {
               'activate-app-notifications-label'.tr(),
               style: const TextStyle(
                 color: Colors.black,
-                fontSize: 18,
+                fontSize: 17,
               ),
             ),
           ),

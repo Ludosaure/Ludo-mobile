@@ -1,15 +1,16 @@
-import 'dart:io';
-
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:form_field_validator/form_field_validator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/core/form_status.dart';
 import 'package:ludo_mobile/domain/models/game_category.dart';
 import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:ludo_mobile/domain/use_cases/create_game/create_game_bloc.dart';
 import 'package:ludo_mobile/domain/use_cases/get_categories/get_categories_cubit.dart';
-import 'package:ludo_mobile/ui/components/custom_file_picker.dart';
+import 'package:ludo_mobile/ui/components/custom_mobile_file_picker.dart';
+import 'package:ludo_mobile/ui/components/custom_web_file_picker.dart';
 import 'package:ludo_mobile/ui/components/form_field_decoration.dart';
 import 'package:ludo_mobile/ui/components/scaffold/admin_scaffold.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
@@ -98,7 +99,9 @@ class _AddGamePageState extends State<AddGamePage> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          CustomFilePicker(onFileSelected: _onFileSelected),
+          kIsWeb
+              ? CustomWebFilePicker(onFileSelected: _onFileSelected)
+              : CustomMobileFilePicker(onFileSelected: _onFileSelected),
           _buildForm(context),
           _buildSubmitButton(context),
         ],
@@ -117,12 +120,9 @@ class _AddGamePageState extends State<AddGamePage> {
         children: [
           TextFormField(
             decoration: FormFieldDecoration.textField('game-name-field'.tr()),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Veuillez saisir le nom du jeu';
-              }
-              return null;
-            },
+            validator: RequiredValidator(
+              errorText: "form.field-required-msg".tr(),
+            ),
             onChanged: (value) {
               context.read<CreateGameBloc>().add(GameNameChangedEvent(value));
             },
@@ -148,12 +148,9 @@ class _AddGamePageState extends State<AddGamePage> {
                 'weekly-amount-field'.tr(),
                 suffixText: 'currency-symbol'.tr()),
             keyboardType: TextInputType.number,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Veuillez saisir le prix du jeu';
-              }
-              return null;
-            },
+            validator: RequiredValidator(
+              errorText: "form.field-required-msg".tr(),
+            ),
             onChanged: (value) {
               context.read<CreateGameBloc>().add(
                     GameWeeklyAmountChangedEvent(
@@ -170,7 +167,7 @@ class _AddGamePageState extends State<AddGamePage> {
                 FormFieldDecoration.textField('game-category-field'.tr()),
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Veuillez choisir une catégorie pour le jeu';
+                return "form.field-required-msg".tr();
               }
               return null;
             },
@@ -192,12 +189,9 @@ class _AddGamePageState extends State<AddGamePage> {
           TextFormField(
             keyboardType: TextInputType.number,
             decoration: FormFieldDecoration.textField('min-age-field'.tr()),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Veuillez saisir un âge minimum';
-              }
-              return null;
-            },
+            validator: RequiredValidator(
+              errorText: "form.field-required-msg".tr(),
+            ),
             onChanged: (value) {
               context
                   .read<CreateGameBloc>()
@@ -210,14 +204,12 @@ class _AddGamePageState extends State<AddGamePage> {
           TextFormField(
             keyboardType: TextInputType.number,
             decoration: FormFieldDecoration.textField(
-                'average-duration-field'.tr(),
-                suffixText: 'min'),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return "Veuillez saisir la durée moyenne d'une partie";
-              }
-              return null;
-            },
+              'average-duration-field'.tr(),
+              suffixText: 'min',
+            ),
+            validator: RequiredValidator(
+              errorText: "form.field-required-msg".tr(),
+            ),
             onChanged: (value) {
               context.read<CreateGameBloc>().add(
                     GameAverageDurationChangedEvent(
@@ -232,12 +224,9 @@ class _AddGamePageState extends State<AddGamePage> {
           TextFormField(
             keyboardType: TextInputType.number,
             decoration: FormFieldDecoration.textField('min-players-field'.tr()),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Veuillez saisir le nombre de joueurs minimum';
-              }
-              return null;
-            },
+            validator: RequiredValidator(
+              errorText: "form.field-required-msg".tr(),
+            ),
             onChanged: (value) {
               context.read<CreateGameBloc>().add(
                     GameMinPlayersChangedEvent(int.parse(value)),
@@ -250,12 +239,9 @@ class _AddGamePageState extends State<AddGamePage> {
           TextFormField(
             keyboardType: TextInputType.number,
             decoration: FormFieldDecoration.textField('max-players-field'.tr()),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Veuillez saisir le nombre de joueurs maximum';
-              }
-              return null;
-            },
+            validator: RequiredValidator(
+              errorText: "form.field-required-msg".tr(),
+            ),
             onChanged: (value) {
               context.read<CreateGameBloc>().add(
                     GameMaxPlayersChangedEvent(
@@ -277,7 +263,11 @@ class _AddGamePageState extends State<AddGamePage> {
             SnackBar(
               content: const Text(
                 'game-created-successfully',
-              ).tr(),
+              ).tr(
+                namedArgs: {
+                  "game": state.name,
+                },
+              ),
             ),
           );
           context.go(Routes.adminGames.path);
@@ -329,7 +319,7 @@ class _AddGamePageState extends State<AddGamePage> {
     );
   }
 
-  void _onFileSelected(File? file) {
+  void _onFileSelected(dynamic file) {
     context.read<CreateGameBloc>().add(GamePictureChangedEvent(file));
   }
 }

@@ -142,6 +142,21 @@ class PaymentPresentFailed extends CartState {
         );
 }
 
+class PaymentTooHigh extends CartState {
+  final String error;
+
+  const PaymentTooHigh({
+    required this.error,
+    required List<Game> content,
+    required DateTimeRange bookingPeriod,
+    required int reduction,
+  }) : super(
+          cartContent: content,
+          bookingPeriod: bookingPeriod,
+          reduction: reduction,
+        );
+}
+
 class PaymentFailed extends CartState {
   final String error;
 

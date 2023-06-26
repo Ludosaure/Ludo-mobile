@@ -1,15 +1,17 @@
-import 'dart:io';
-
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/core/form_status.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
 import 'package:ludo_mobile/domain/models/game_category.dart';
+import 'package:ludo_mobile/domain/use_cases/delete_game/delete_game_cubit.dart'
+    as delete_game;
 import 'package:ludo_mobile/domain/use_cases/get_categories/get_categories_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/update_game/update_game_bloc.dart';
-import 'package:ludo_mobile/ui/components/custom_file_picker.dart';
+import 'package:ludo_mobile/ui/components/custom_mobile_file_picker.dart';
+import 'package:ludo_mobile/ui/components/custom_web_file_picker.dart';
 import 'package:ludo_mobile/ui/components/form_field_decoration.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
 
@@ -46,6 +48,8 @@ class _UpdateGamePageState extends State<UpdateGamePage> {
         ),
         title: const Text(
           "update-game-title",
+          softWrap: true,
+          overflow: TextOverflow.visible,
         ).tr(
           namedArgs: {
             "name": game.name,
@@ -112,12 +116,26 @@ class _UpdateGamePageState extends State<UpdateGamePage> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          CustomFilePicker(
-            initialImage: game.imageUrl,
-            onFileSelected: _onFileSelected,
-          ),
+          kIsWeb
+              ? CustomWebFilePicker(
+                  initialImage: game.imageUrl,
+                  onFileSelected: _onFileSelected,
+                )
+              : CustomMobileFilePicker(
+                  initialImage: game.imageUrl,
+                  onFileSelected: _onFileSelected,
+                ),
           _buildForm(context),
-          _buildSubmitButton(context),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisSize: MainAxisSize.max,
+            verticalDirection: VerticalDirection.down,
+            children: [
+              _buildSubmitButton(context),
+              _buildDeleteGameButton(context),
+            ],
+          ),
         ],
       ),
     );
@@ -316,7 +334,123 @@ class _UpdateGamePageState extends State<UpdateGamePage> {
     );
   }
 
-  void _onFileSelected(File? file) {
+  Widget _buildDeleteGameButton(BuildContext context) {
+    return BlocConsumer<delete_game.DeleteGameCubit,
+        delete_game.DeleteGameState>(
+      listener: (context, state) {
+        if (state is delete_game.DeleteGameSuccess) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text(
+                'game-deleted-successfully',
+              ).tr(
+                namedArgs: {"game": game.name},
+              ),
+            ),
+          );
+          context.go(Routes.adminGames.path);
+        } else if (state is delete_game.DeleteGameError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                state.message,
+              ),
+              backgroundColor: Theme.of(context).errorColor,
+            ),
+          );
+        } else if (state is delete_game.UserMustLog) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'user-must-log'.tr(),
+              ),
+              backgroundColor: Theme.of(context).errorColor,
+            ),
+          );
+        }
+      },
+      builder: (context, state) {
+        if (state is delete_game.DeleteGameLoading) {
+          return ElevatedButton(
+            onPressed: null,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.grey,
+            ),
+            child: const Text('delete-label').tr(),
+          );
+        }
+
+        if (state is delete_game.UserMustLog) {
+          context.go(Routes.login.path);
+        }
+
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16.0),
+          child: ElevatedButton(
+            onPressed: () {
+              _buildDeleteDialog(context);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).errorColor,
+            ),
+            child: const Text('delete-label').tr(),
+          ),
+        );
+      },
+    );
+  }
+
+  void _buildDeleteDialog(BuildContext parentContext) {
+    showDialog(
+      context: parentContext,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text(
+            'delete-game-label',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ).tr(),
+          content: const Text(
+            'delete-game-confirmation',
+            style: TextStyle(
+              fontSize: 15,
+              height: 1.5,
+              fontWeight: FontWeight.w400,
+            ),
+          ).tr(namedArgs: {'game': game.name}),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text(
+                'cancel-label',
+                style: Theme.of(context).textTheme.button,
+              ).tr(),
+            ),
+            TextButton(
+              onPressed: () {
+                parentContext
+                    .read<delete_game.DeleteGameCubit>()
+                    .deleteGame(game.id);
+                Navigator.of(context).pop();
+              },
+              child: Text(
+                'delete-label',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.error,
+                ),
+              ).tr(),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _onFileSelected(dynamic file) {
     context.read<UpdateGameBloc>().add(GamePictureChangedEvent(file!));
   }
 }

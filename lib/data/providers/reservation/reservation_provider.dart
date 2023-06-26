@@ -28,11 +28,7 @@ class ReservationProvider {
 
     response = await http.get(
       Uri.parse(endpoint),
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
+      headers: _getHeaders(token),
     ).catchError((error) {
       if (error is SocketException) {
         throw ServiceUnavailableException('errors.service-unavailable'.tr());
@@ -66,11 +62,7 @@ class ReservationProvider {
     http.Response response = await http
         .post(
       Uri.parse(endpoint),
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
+      headers: _getHeaders(token),
       body: jsonEncode(reservation.toJson()),
     )
         .catchError((error) {
@@ -82,7 +74,14 @@ class ReservationProvider {
 
     if (response.statusCode == HttpCode.UNAUTHORIZED) {
       throw ForbiddenException('errors.forbidden-access'.tr());
-    } else if (response.statusCode != HttpCode.OK) {
+    } else if (response.statusCode == HttpCode.NOT_FOUND) {
+      throw NotFoundException('errors.reservation-creation-not-found'.tr());
+    }
+    if (response.statusCode == HttpCode.BAD_REQUEST) {
+      throw BadRequestException('errors.reservation-creation-failed'.tr());
+    }
+
+    if (response.statusCode != HttpCode.OK) {
       throw InternalServerException('errors.unknown'.tr());
     }
 
@@ -99,11 +98,7 @@ class ReservationProvider {
     http.Response response = await http
         .put(
       Uri.parse("$endpoint/pay"),
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
+      headers: _getHeaders(token),
       body: jsonEncode({
         'reservationId': reservation.id,
       }),
@@ -139,11 +134,7 @@ class ReservationProvider {
 
     final http.Response response = await http.get(
       Uri.parse("$endpoint/userId/$userId"),
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
+      headers: _getHeaders(token),
     ).catchError((error) {
       if (error is SocketException) {
         throw ServiceUnavailableException('errors.service-unavailable'.tr());
@@ -179,11 +170,7 @@ class ReservationProvider {
     response = await http
         .put(
       Uri.parse("$endpoint/cancel"),
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
+      headers: _getHeaders(token),
       body: jsonEncode({
         'reservationId': reservationId,
       }),
@@ -213,11 +200,7 @@ class ReservationProvider {
     response = await http
         .put(
       Uri.parse("$endpoint/return"),
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
+      headers: _getHeaders(token),
       body: jsonEncode({
         'id': reservationId,
       }),
@@ -247,11 +230,7 @@ class ReservationProvider {
     response = await http
         .delete(
       Uri.parse("$endpoint/$reservationId"),
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
+      headers: _getHeaders(token),
     )
         .catchError((error) {
       if (error is SocketException) {
@@ -270,7 +249,7 @@ class ReservationProvider {
   Future<Reservation> getReservation(String reservationId) async {
     String? token = await LocalStorageHelper.getTokenFromLocalStorage();
 
-    if(token == null) {
+    if (token == null) {
       throw UserNotLoggedInException("errors.user-must-log-for-access".tr());
     }
 
@@ -278,24 +257,29 @@ class ReservationProvider {
 
     response = await http.get(
       Uri.parse("$endpoint/id/$reservationId"),
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
+      headers: _getHeaders(token),
     ).catchError((error) {
-      if(error is SocketException) {
+      if (error is SocketException) {
         throw ServiceUnavailableException('errors.service-unavailable'.tr());
       }
       throw InternalServerException('errors.unknown'.tr());
     });
 
-    if(response.statusCode == HttpCode.UNAUTHORIZED) {
+    if (response.statusCode == HttpCode.UNAUTHORIZED) {
       throw ForbiddenException('errors.forbidden-access'.tr());
-    } else if(response.statusCode != HttpCode.OK) {
+    } else if (response.statusCode != HttpCode.OK) {
       throw InternalServerException('errors.unknown'.tr());
     }
 
     return Reservation.fromJson(jsonDecode(response.body)["reservation"]);
+  }
+
+
+  Map<String, String> _getHeaders(String token) {
+    return {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
   }
 }

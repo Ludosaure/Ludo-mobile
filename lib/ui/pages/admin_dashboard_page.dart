@@ -41,17 +41,23 @@ class AdminDashboardPage extends StatelessWidget {
       _buildCard(
         title: 'Suivi des réservervations',
         icon: Icons.calendar_month_outlined,
-        onTap: () {},
+        onTap: () {
+          context.go(Routes.homeAdmin.path);
+        },
       ),
       _buildCard(
         title: 'Gestion des réductions',
         icon: Icons.money_off_csred_sharp,
-        onTap: () {},
+        onTap: () {
+          context.push(Routes.planList.path);
+        },
       ),
       _buildCard(
         title: 'Gestion des catégories',
         icon: Icons.list_alt,
-        onTap: () {},
+        onTap: () {
+          context.push(Routes.categoryList.path);
+        },
       ),
     ];
   }

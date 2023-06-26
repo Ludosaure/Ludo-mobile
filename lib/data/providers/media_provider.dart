@@ -1,6 +1,8 @@
 import 'dart:convert';
-import 'dart:io';
+import 'dart:io' as io;
+import 'dart:html' as html;
 
+import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/core/exception.dart';
 import 'package:ludo_mobile/core/http_code.dart';
@@ -13,7 +15,7 @@ import 'package:mime/mime.dart';
 class MediaProvider {
   final String _endpoint = '${AppConstants.API_URL}/media';
 
-  Future<String> uploadPicture(String token, File picture) async {
+  Future<String> uploadPicture(String token, dynamic picture) async {
     final request = http.MultipartRequest(
       'POST',
       Uri.parse(_endpoint),
@@ -23,18 +25,39 @@ class MediaProvider {
       'Authorization': 'Bearer $token',
     });
 
-    final mimeType = lookupMimeType(picture.path)?.split('/').last;
+    String? mimeType = "";
 
-    // TODO incompatible web
-    request.files.add(
-      http.MultipartFile(
-        'file',
-        picture.readAsBytes().asStream(),
-        picture.lengthSync(),
-        filename: 'picture',
-        contentType: MediaType('image', mimeType!),
-      ),
-    );
+    if (kIsWeb) {
+      html.File webPicture = picture as html.File;
+
+      mimeType = lookupMimeType(webPicture.name)?.split('/').last;
+
+      final reader = html.FileReader();
+      reader.readAsArrayBuffer(webPicture);
+      await reader.onLoad.first;
+      final Uint8List bytes = reader.result as Uint8List;
+      request.files.add(
+        http.MultipartFile.fromBytes(
+          'file',
+          bytes,
+          filename: 'picture',
+          contentType: MediaType('image', mimeType!),
+        ),
+      );
+
+    } else {
+      io.File mobilePicture = picture as io.File;
+      mimeType = lookupMimeType(picture.path)?.split('/').last;
+      request.files.add(
+        http.MultipartFile(
+          'file',
+          mobilePicture.readAsBytes().asStream(),
+          mobilePicture.lengthSync(),
+          filename: 'picture',
+          contentType: MediaType('image', mimeType!),
+        ),
+      );
+    }
 
     final streamResponse = await request.send();
 

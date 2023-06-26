@@ -43,7 +43,9 @@ class ReservationList extends StatelessWidget {
       scrollDirection: Axis.vertical,
       itemBuilder: (context, index) {
         Reservation reservation = reservations[index];
-        Color color = reservation.status == ReservationStatus.LATE ? Colors.red[200]! : Colors.white;
+        Color color = reservation.status == ReservationStatus.LATE
+            ? Colors.red[200]!
+            : Colors.white;
 
         return Card(
           color: color,
@@ -51,7 +53,9 @@ class ReservationList extends StatelessWidget {
             borderRadius: BorderRadius.circular(10.0),
           ),
           child: ListTile(
-            leading: CustomCircleAvatar(userProfilePicture: reservation.user!.profilePicturePath),
+            leading: CustomCircleAvatar(
+              userProfilePicture: reservation.user!.profilePicturePath,
+            ),
             onTap: () {
               context.go('${Routes.reservations.path}/${reservation.id}');
             },
@@ -67,10 +71,15 @@ class ReservationList extends StatelessWidget {
 
   String _getPeriod(Reservation reservation) {
     String period = "";
-    period = "date-period".tr(namedArgs: {
-      "startDate": DateFormat(AppConstants.DATE_TIME_FORMAT_DAY_MONTH, 'FR').format(reservation.startDate),
-      "endDate": DateFormat(AppConstants.DATE_TIME_FORMAT_LONG, 'FR').format(reservation.endDate)
-    });
+
+    period = "date-period".tr(
+      namedArgs: {
+        "startDate": DateFormat(AppConstants.DATE_TIME_FORMAT_DAY_MONTH, 'FR')
+            .format(reservation.startDate),
+        "endDate": DateFormat(AppConstants.DATE_TIME_FORMAT_LONG, 'FR')
+            .format(reservation.endDate)
+      },
+    );
 
     return period;
   }

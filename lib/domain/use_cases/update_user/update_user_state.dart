@@ -11,7 +11,7 @@ class UpdateUserInitial extends UpdateUserState {
   final String? pseudo;
   final bool? hasEnabledMailNotifications;
   final bool? hasEnabledPhoneNotifications;
-  final File? image;
+  final dynamic image;
   final FormStatus status;
 
   UpdateUserInitial({
@@ -34,7 +34,7 @@ class UpdateUserInitial extends UpdateUserState {
     String? pseudo,
     bool? hasEnabledMailNotifications,
     bool? hasEnabledPhoneNotifications,
-    File? image,
+    dynamic image,
     FormStatus? status = const FormNotSent(),
   }) {
     return UpdateUserInitial(

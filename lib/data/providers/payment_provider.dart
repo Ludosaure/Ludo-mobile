@@ -36,6 +36,7 @@ class PaymentProvider {
       if (error is SocketException) {
         throw ServiceUnavailableException('errors.service-unavailable'.tr());
       }
+
       throw InternalServerException('errors.unknown'.tr());
     });
 

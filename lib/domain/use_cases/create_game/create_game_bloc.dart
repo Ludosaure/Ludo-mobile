@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:bloc/bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/core/exception.dart';
@@ -101,43 +99,43 @@ class CreateGameBloc extends Bloc<CreateGameEvent, CreateGameInitial> {
     );
   }
 
-  void onNameChanged(event, Emitter emit) async {
+  void onNameChanged(GameNameChangedEvent event, Emitter emit) async {
     emit(state.copyWith(name: event.name));
   }
 
-  void onDescriptionChanged(event, Emitter emit) async {
+  void onDescriptionChanged(GameDescriptionChangedEvent event, Emitter emit) async {
     emit(state.copyWith(description: event.description));
   }
 
-  void onWeeklyAmountChanged(event, Emitter emit) async {
+  void onWeeklyAmountChanged(GameWeeklyAmountChangedEvent event, Emitter emit) async {
     emit(state.copyWith(weeklyAmount: event.weeklyAmount));
   }
 
-  void onCategoryChanged(event, Emitter emit) async {
+  void onCategoryChanged(GameCategoryChangedEvent event, Emitter emit) async {
     emit(state.copyWith(categoryId: event.categoryId));
   }
 
-  void onMinAgeChanged(event, Emitter emit) async {
+  void onMinAgeChanged(GameMinAgeChangedEvent event, Emitter emit) async {
     emit(state.copyWith(minAge: event.minAge));
   }
 
-  void onAverageDurationChanged(event, Emitter emit) async {
+  void onAverageDurationChanged(GameAverageDurationChangedEvent event, Emitter emit) async {
     emit(state.copyWith(averageDuration: event.averageDuration));
   }
 
-  void onMinPlayersChanged(event, Emitter emit) async {
+  void onMinPlayersChanged(GameMinPlayersChangedEvent event, Emitter emit) async {
     emit(state.copyWith(minPlayers: event.minPlayers));
   }
 
-  void onMaxPlayersChanged(event, Emitter emit) async {
+  void onMaxPlayersChanged(GameMaxPlayersChangedEvent event, Emitter emit) async {
     emit(state.copyWith(maxPlayers: event.maxPlayers));
   }
 
-  void onPictureChanged(event, Emitter emit) async {
-    emit(state.copyWith(image: event.profilePictureId));
+  void onPictureChanged(GamePictureChangedEvent event, Emitter emit) async {
+    emit(state.copyWith(image: event.image));
   }
 
-  Future<String> _uploadImage(File image) async {
+  Future<String> _uploadImage(dynamic image) async {
     return await _mediaRepository.uploadPicture(image);
   }
 
