@@ -15,7 +15,7 @@ class FirebaseDatabaseUtils {
     List<Conversation> conversations,
   ) {
     List<Conversation> sortedList =
-        List.from(conversations); // Create a mutable copy of the list
+        List.from(conversations);
     sortedList
         .sort((a, b) => b.recentMessageTime.compareTo(a.recentMessageTime));
     return sortedList;

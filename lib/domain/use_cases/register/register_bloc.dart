@@ -71,7 +71,11 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterInitial> {
     try {
       await _registerRepository.register(registerRequest);
       await _firebaseAuthService.register(
-          state.lastname, state.firstname, state.email, state.password);
+        state.lastname,
+        state.firstname,
+        state.email,
+        state.password,
+      );
     } catch (exception) {
       emit(state.copyWith(
         status: FormSubmissionFailed(message: exception.toString()),
