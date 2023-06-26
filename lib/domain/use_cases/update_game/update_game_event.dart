@@ -58,7 +58,7 @@ class GameMaxPlayersChangedEvent extends UpdateGameEvent {
 }
 
 class GamePictureChangedEvent extends UpdateGameEvent {
-  final File picture;
+  final dynamic picture;
 
   const GamePictureChangedEvent(this.picture);
 }

@@ -13,7 +13,7 @@ class CreateGameInitial extends CreateGameState {
   final int averageDuration;
   final int minPlayers;
   final int maxPlayers;
-  final File? image;
+  final dynamic image;
   final FormStatus status;
 
 
@@ -41,7 +41,7 @@ class CreateGameInitial extends CreateGameState {
     int? averageDuration,
     int? minPlayers,
     int? maxPlayers,
-    File? image,
+    dynamic image,
     FormStatus? status = const FormNotSent(),
   }) {
     return CreateGameInitial(

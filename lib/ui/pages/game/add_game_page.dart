@@ -1,6 +1,5 @@
-import 'dart:io';
-
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:form_field_validator/form_field_validator.dart';
@@ -10,7 +9,8 @@ import 'package:ludo_mobile/domain/models/game_category.dart';
 import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:ludo_mobile/domain/use_cases/create_game/create_game_bloc.dart';
 import 'package:ludo_mobile/domain/use_cases/get_categories/get_categories_cubit.dart';
-import 'package:ludo_mobile/ui/components/custom_file_picker.dart';
+import 'package:ludo_mobile/ui/components/custom_mobile_file_picker.dart';
+import 'package:ludo_mobile/ui/components/custom_web_file_picker.dart';
 import 'package:ludo_mobile/ui/components/form_field_decoration.dart';
 import 'package:ludo_mobile/ui/components/scaffold/admin_scaffold.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
@@ -99,7 +99,9 @@ class _AddGamePageState extends State<AddGamePage> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          CustomFilePicker(onFileSelected: _onFileSelected),
+          kIsWeb
+              ? CustomWebFilePicker(onFileSelected: _onFileSelected)
+              : CustomMobileFilePicker(onFileSelected: _onFileSelected),
           _buildForm(context),
           _buildSubmitButton(context),
         ],
@@ -261,7 +263,11 @@ class _AddGamePageState extends State<AddGamePage> {
             SnackBar(
               content: const Text(
                 'game-created-successfully',
-              ).tr(),
+              ).tr(
+                namedArgs: {
+                  "game": state.name,
+                },
+              ),
             ),
           );
           context.go(Routes.adminGames.path);
@@ -313,7 +319,7 @@ class _AddGamePageState extends State<AddGamePage> {
     );
   }
 
-  void _onFileSelected(File? file) {
+  void _onFileSelected(dynamic file) {
     context.read<CreateGameBloc>().add(GamePictureChangedEvent(file));
   }
 }

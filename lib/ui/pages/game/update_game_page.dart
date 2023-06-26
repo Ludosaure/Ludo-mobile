@@ -1,6 +1,5 @@
-import 'dart:io';
-
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -11,7 +10,8 @@ import 'package:ludo_mobile/domain/use_cases/delete_game/delete_game_cubit.dart'
     as delete_game;
 import 'package:ludo_mobile/domain/use_cases/get_categories/get_categories_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/update_game/update_game_bloc.dart';
-import 'package:ludo_mobile/ui/components/custom_file_picker.dart';
+import 'package:ludo_mobile/ui/components/custom_mobile_file_picker.dart';
+import 'package:ludo_mobile/ui/components/custom_web_file_picker.dart';
 import 'package:ludo_mobile/ui/components/form_field_decoration.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
 
@@ -116,10 +116,15 @@ class _UpdateGamePageState extends State<UpdateGamePage> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          CustomFilePicker(
-            initialImage: game.imageUrl,
-            onFileSelected: _onFileSelected,
-          ),
+          kIsWeb
+              ? CustomWebFilePicker(
+                  initialImage: game.imageUrl,
+                  onFileSelected: _onFileSelected,
+                )
+              : CustomMobileFilePicker(
+                  initialImage: game.imageUrl,
+                  onFileSelected: _onFileSelected,
+                ),
           _buildForm(context),
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -445,7 +450,7 @@ class _UpdateGamePageState extends State<UpdateGamePage> {
     );
   }
 
-  void _onFileSelected(File? file) {
+  void _onFileSelected(dynamic file) {
     context.read<UpdateGameBloc>().add(GamePictureChangedEvent(file!));
   }
 }

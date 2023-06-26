@@ -148,7 +148,8 @@
     "game-deletion-failed": "Erreur lors de la suppression du jeu",
     "user-edition-failed": "Erreur lors de la modification de l'utilisateur",
     "firebase-update-password-error": "Cette opération est sensible et requiert une authentification récente. Connectez-vous à nouveau puis modifiez votre mot de passe.",
-    "payment-threshold-exceeded": "Notre application ne gère pas les paiments de cette importance. Merci de contacter le magasin pour effectuer votre réservation."
+    "payment-threshold-exceeded": "Notre application ne gère pas les paiments de cette importance. Merci de contacter le magasin pour effectuer votre réservation.",
+    "upload-picture-error": "Erreur lors de l'envoi de l'image"
   },
   "select-date-range-label": "Durée de la réservation (une semaine minimum)",
   "booking-period-label-1": "Réservation du ",
@@ -176,6 +177,8 @@
   "delete-game-label": "Supprimer le jeu",
   "delete-game-confirmation": "Êtes-vous sûr de vouloir supprimer le jeu {game} ?",
   "game-deleted-successfully": "Le jeu {game} a bien été supprimé.",
+  "game-created-successfully": "Le jeu {game} a été créé avec succes.",
+  "game-updated-successfully": "Le jeu {game} a été modifié avec succes.",
   "game-name-field": "Nom du jeu *",
   "game-description-field": "Description du jeu",
   "weekly-amount-field": "Prix à la semaine *",

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:bloc/bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -181,7 +179,7 @@ class UpdateUserBloc extends Bloc<UpdateUserEvent, UpdateUserInitial> {
     emit(state.copyWith(userId: event.userId));
   }
 
-  Future<String> _uploadImage(File image) async {
+  Future<String> _uploadImage(dynamic image) async {
     return await _mediaRepository.uploadPicture(image);
   }
 

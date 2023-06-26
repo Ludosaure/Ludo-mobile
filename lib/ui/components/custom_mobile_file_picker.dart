@@ -4,21 +4,21 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-class CustomFilePicker extends StatefulWidget {
+class CustomMobileFilePicker extends StatefulWidget {
   final Function onFileSelected;
   final String? initialImage;
 
-  const CustomFilePicker({
+  const CustomMobileFilePicker({
     Key? key,
     required this.onFileSelected,
     this.initialImage,
   }) : super(key: key);
 
   @override
-  State<CustomFilePicker> createState() => _CustomFilePickerState();
+  State<CustomMobileFilePicker> createState() => _CustomMobileFilePickerState();
 }
 
-class _CustomFilePickerState extends State<CustomFilePicker> {
+class _CustomMobileFilePickerState extends State<CustomMobileFilePicker> {
   File? _selectedPicture;
 
   @override
@@ -33,9 +33,7 @@ class _CustomFilePickerState extends State<CustomFilePicker> {
               widget.initialImage != "" &&
               _selectedPicture == null)
             Image.network(widget.initialImage!, height: 200, width: 200),
-          if (_selectedPicture != null && kIsWeb)
-            Image.network(_selectedPicture!.path, height: 200, width: 200),
-          if (_selectedPicture != null && !kIsWeb)
+          if (_selectedPicture != null)
             Image.file(_selectedPicture!, height: 200, width: 200),
           Row(
             mainAxisSize: MainAxisSize.min,
@@ -73,6 +71,7 @@ class _CustomFilePickerState extends State<CustomFilePicker> {
       setState(() {
         _selectedPicture = File(pickedFile.path);
       });
+
       widget.onFileSelected(_selectedPicture);
     }
   }

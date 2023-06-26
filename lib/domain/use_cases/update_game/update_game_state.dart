@@ -14,7 +14,7 @@ class UpdateGameInitial extends UpdateGameState {
   final int? averageDuration;
   final int? minPlayers;
   final int? maxPlayers;
-  final File? image;
+  final dynamic image;
   final FormStatus status;
 
   UpdateGameInitial({
@@ -41,7 +41,7 @@ class UpdateGameInitial extends UpdateGameState {
     int? averageDuration,
     int? minPlayers,
     int? maxPlayers,
-    File? image,
+    dynamic image,
     FormStatus? status = const FormNotSent(),
   }) {
     return UpdateGameInitial(

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:bloc/bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/core/exception.dart';
@@ -158,7 +156,7 @@ class UpdateGameBloc extends Bloc<UpdateGameEvent, UpdateGameInitial> {
     emit(state.copyWith(image: event.picture));
   }
 
-  Future<String> _uploadImage(File image) async {
+  Future<String> _uploadImage(dynamic image) async {
     return await _mediaRepository.uploadPicture(image);
   }
 
