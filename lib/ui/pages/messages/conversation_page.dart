@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:ludo_mobile/firebase/model/conversation.dart';
 import 'package:ludo_mobile/firebase/model/message.dart';
+import 'package:ludo_mobile/firebase/model/user_firebase.dart';
 import 'package:ludo_mobile/firebase/service/firebase_database_service.dart';
 import 'package:ludo_mobile/ui/components/circle-avatar.dart';
 import 'package:ludo_mobile/ui/components/custom_back_button.dart';
@@ -298,7 +299,7 @@ class _ConversationPageState extends State<ConversationPage> {
 
   _buildGroupInformationsAlert(
     BuildContext context,
-    List<dynamic> members,
+    List<UserFirebase> members,
   ) {
     return AlertDialog(
       title: Row(
@@ -334,10 +335,10 @@ class _ConversationPageState extends State<ConversationPage> {
                 itemBuilder: (context, index) {
                   final member = members[index];
                   return _buildConversationMember(
-                    member['profilePicture'],
-                    member['firstname'],
-                    member['name'],
-                    member['isAdmin'],
+                    member.profilePicture,
+                    member.firstname,
+                    member.name,
+                    member.isAdmin,
                   );
                 },
               )

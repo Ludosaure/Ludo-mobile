@@ -98,7 +98,10 @@ class FirebaseDatabaseService {
   }
 
   Stream<Conversation> getConversationData(String id) {
-    return conversationsCollection.doc(id).snapshots().map((conversationSnapshot) {
+    return conversationsCollection
+        .doc(id)
+        .snapshots()
+        .map((conversationSnapshot) {
       return conversationFromSnapshot(
           conversationSnapshot as DocumentSnapshot<Map<String, dynamic>>);
     });
@@ -112,7 +115,6 @@ class FirebaseDatabaseService {
         userSnapshot as DocumentSnapshot<Map<String, dynamic>>);
   }
 
-  // TODO corriger l'ajout de la conversation dans la liste des conversations de l'utilisateur (admin ?)
   Stream<List<String>> getConversationIds() {
     return userCollection.doc(uid).snapshots().map((userSnapshot) {
       final userFirebase = userFirebaseFromDocumentSnapshot(
@@ -125,6 +127,7 @@ class FirebaseDatabaseService {
     });
   }
 
+  // TODO corriger l'ajout de la conversation dans la liste des conversations de l'utilisateur (admin ?)
   // TODO faire cette méthode à la fin
   Stream<List<Map<String, dynamic>>> getUserConversations() {
     final userSnapshotStream = userCollection.doc(uid).snapshots();
@@ -174,9 +177,9 @@ class FirebaseDatabaseService {
     final conversations = [];
     for (final conversationId in conversationsIdsNotSorted) {
       final conversationSnapshot =
-      await conversationsCollection.doc(conversationId).get();
+          await conversationsCollection.doc(conversationId).get();
       final conversationData =
-      conversationSnapshot.data()! as Map<String, dynamic>;
+          conversationSnapshot.data()! as Map<String, dynamic>;
 
       conversations.add({
         'conversationId': conversationData['conversationId'],
@@ -199,21 +202,21 @@ class FirebaseDatabaseService {
     return conversationIds;
   }
 
-  Future<Stream<Conversation>> getConversationById(
-      String id) async {
+  Future<Stream<Conversation>> getConversationById(String id) async {
     return getConversationData(id);
   }
 
-  Future<List<dynamic>> getConversationMembers(String conversationId) async {
-    DocumentSnapshot<Object?> conversationSnapshot =
+  Future<List<UserFirebase>> getConversationMembers(String conversationId) async {
+    final conversationSnapshot =
         await conversationsCollection.doc(conversationId).get();
-    final data = conversationSnapshot.data()! as Map<String, dynamic>;
-    final memberIds = data['members'] as List<dynamic>;
-    final memberList = [];
-    for (final member in memberIds) {
+    final conversation = conversationFromSnapshot(
+        conversationSnapshot as DocumentSnapshot<Map<String, dynamic>>);
+    final List<UserFirebase> memberList = [];
+    for (final member in conversation.members) {
       final memberSnapshot = await userCollection.doc(member).get();
-      final memberData = memberSnapshot.data()! as Map<String, dynamic>;
-      memberList.add(memberData);
+      final memberData = userFirebaseFromDocumentSnapshot(
+          memberSnapshot as DocumentSnapshot<Map<String, dynamic>>);
+      if (memberData != null) memberList.add(memberData);
     }
     return memberList;
   }
@@ -226,7 +229,7 @@ class FirebaseDatabaseService {
         .toList();
   }
 
-  Future<List<Object?>> getConversationByMemberId(String memberId) async {
+  Future<List<Object?>> getConversationsByMemberId(String memberId) async {
     QuerySnapshot<Object?> conversationSnapshot = await conversationsCollection
         .where('members', arrayContains: memberId)
         .get();
@@ -247,7 +250,7 @@ class FirebaseDatabaseService {
   Future<void> saveConversationData(String targetUserId, List<Object?> admins,
       {String message = ""}) async {
     List<Object?> existingConversation =
-        await getConversationByMemberId(targetUserId);
+        await getConversationsByMemberId(targetUserId);
 
     List<String> members = initConversationMembers(targetUserId, admins);
     String? senderId =
