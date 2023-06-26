@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:badges/badges.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +26,7 @@ class CustomBottomNavigationBar extends StatefulWidget {
 
 class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
   bool _hasUnseenConversations = false;
+  StreamSubscription<bool>? subscription;
 
   @override
   void initState() {
@@ -35,9 +38,15 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
     final unreadConversationsStream =
     FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
         .hasUnseenConversationsStream();
-    unreadConversationsStream.listen((hasUnreadConversations) {
-      _hasUnseenConversations = hasUnreadConversations;
+    subscription = unreadConversationsStream.listen((hasUnreadConversations) {
+      setState(() => _hasUnseenConversations = hasUnreadConversations);
     });
+  }
+
+  @override
+  void dispose() {
+    subscription?.cancel();
+    super.dispose();
   }
 
   @override

@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/firebase/service/firebase_database_service.dart';
 import 'package:ludo_mobile/utils/local_storage_helper.dart';
 
+@injectable
 class FirebaseAuthService {
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 

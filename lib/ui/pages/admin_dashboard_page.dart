@@ -146,11 +146,14 @@ class AdminDashboardPage extends StatelessWidget {
   int _getItemNb(BuildContext context) {
     if (ResponsiveWrapper.of(context).isSmallerThan(MOBILE)) {
       return 2;
-    } else if (ResponsiveWrapper.of(context).isSmallerThan(TABLET)) {
+    }
+    if (ResponsiveWrapper.of(context).isSmallerThan(TABLET)) {
       return 3;
-    } else if (ResponsiveWrapper.of(context).isSmallerThan(DESKTOP)) {
+    }
+    if (ResponsiveWrapper.of(context).isSmallerThan(DESKTOP)) {
       return 4;
-    } else if (ResponsiveWrapper.of(context).isSmallerThan("4K")) {
+    }
+    if (ResponsiveWrapper.of(context).isSmallerThan("4K")) {
       return 5;
     }
     return 6;

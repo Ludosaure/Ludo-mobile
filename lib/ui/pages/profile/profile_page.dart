@@ -95,18 +95,22 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget _buildUserInfosHeader(BuildContext context) {
     final logoutButtonSeparated =
         ResponsiveWrapper.of(context).isSmallerThan(MOBILE);
+
     final fullName = '${connectedUser.firstname} ${connectedUser.lastname}';
     var maxCharName = 45;
     if (ResponsiveWrapper.of(context).isSmallerThan(DESKTOP)) {
       maxCharName = 20;
     }
+
     final size = MediaQuery.of(context).size;
+
     var avatarHeight = size.height * 0.1;
     if (ResponsiveWrapper.of(context).isSmallerThan(MOBILE)) {
       avatarHeight = size.height * 0.05;
     } else if (ResponsiveWrapper.of(context).isSmallerThan(DESKTOP)) {
       avatarHeight = size.height * 0.07;
     }
+
     return Column(
       children: [
         Row(
@@ -172,7 +176,6 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  // TODO ajouter un bouton pour modifier le mot de passe
   Widget _buildUserInfosBody(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Column(
@@ -231,7 +234,7 @@ class _ProfilePageState extends State<ProfilePage> {
             Text(
               (connectedUser.pseudo != null && connectedUser.pseudo != "")
                   ? connectedUser.pseudo!
-                  : 'Pseudo à renseigner',
+                  : 'pseudo-to-set-field'.tr(),
               style: const TextStyle(
                 color: Colors.black,
                 fontSize: 17,

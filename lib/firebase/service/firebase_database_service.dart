@@ -1,6 +1,10 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ludo_mobile/firebase/model/conversation.dart';
+import 'package:ludo_mobile/firebase/model/user_conversation.dart';
+import 'package:ludo_mobile/firebase/model/user_firebase.dart';
+import 'package:ludo_mobile/firebase/service/firebase_database_utils.dart';
 import 'package:ludo_mobile/utils/local_storage_helper.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -14,13 +18,18 @@ class FirebaseDatabaseService {
   final CollectionReference conversationsCollection =
       FirebaseFirestore.instance.collection("conversations");
 
-  Future<void> saveUserData(String name, String firstname, String email,
-      {String profilePicture = "", bool isAdmin = false}) async {
+  Future<void> saveUserData(
+    String name,
+    String firstname,
+    String email, {
+    String profilePicture = "",
+    bool isAdmin = false,
+  }) async {
     final userDoc = userCollection.doc(uid);
 
-    final existingUserDoc = await getUserDataByEmail(email);
+    final existingUser = await getUserDataByEmail(email);
 
-    if (existingUserDoc.docs.isNotEmpty) {
+    if (existingUser != null) {
       return userDoc.set({
         'name': name,
         'firstname': firstname,
@@ -48,170 +57,168 @@ class FirebaseDatabaseService {
     }, SetOptions(merge: true));
   }
 
-  Future<QuerySnapshot<Object?>> getUserDataByEmail(String email) async {
-    return await userCollection.where('email', isEqualTo: email).limit(1).get();
+  UserFirebase? userFirebaseFromDocumentSnapshot(
+    DocumentSnapshot<Map<String, dynamic>> snapshot,
+  ) {
+    var data = snapshot.data();
+    if (data == null) {
+      return null;
+    }
+    return UserFirebase.fromMap(data);
   }
 
-  Future<DocumentSnapshot<Object?>> getUserDataById(String id) async {
-    return await userCollection.doc(id).get();
+  List<UserFirebase?> userFirebaseListFromQuerySnapshot(
+    QuerySnapshot<Object?> snapshot,
+  ) {
+    return snapshot.docs
+        .map((doc) => userFirebaseFromDocumentSnapshot(
+            doc as DocumentSnapshot<Map<String, dynamic>>))
+        .toList();
   }
 
-  Future<DocumentSnapshot<Object?>> getTargetUserDataByConversationId(
-      String id) async {
+  Conversation conversationFromSnapshot(
+    DocumentSnapshot<Map<String, dynamic>> snapshot,
+  ) {
+    var data = snapshot.data();
+    if (data == null) {
+      throw Exception("Conversation not found");
+    }
+    return Conversation.fromMap(data);
+  }
+
+  Future<UserFirebase?> getUserDataByEmail(String email) async {
+    QuerySnapshot<Object?> usersQuerySnapshot =
+        await userCollection.where('email', isEqualTo: email).limit(1).get();
+    List<UserFirebase?> users =
+        userFirebaseListFromQuerySnapshot(usersQuerySnapshot);
+    return users.isNotEmpty ? users.first : null;
+  }
+
+  Future<UserFirebase?> getUserFirebaseById(String id) async {
+    DocumentSnapshot<Object?> userDoc = await userCollection.doc(id).get();
+    return userFirebaseFromDocumentSnapshot(
+        userDoc as DocumentSnapshot<Map<String, dynamic>>);
+  }
+
+  Stream<UserFirebase> getUserData(String id) {
+    return userCollection.doc(id).snapshots().map((userSnapshot) {
+      return userFirebaseFromDocumentSnapshot(
+          userSnapshot as DocumentSnapshot<Map<String, dynamic>>)!;
+    });
+  }
+
+  Stream<List<UserFirebase>> getUsersData(List<String> ids) {
+    return Rx.combineLatestList(
+        ids.map((id) => getUserData(id)).toList(growable: false));
+  }
+
+  Stream<Conversation> getConversationData(String id) {
+    return conversationsCollection
+        .doc(id)
+        .snapshots()
+        .map((conversationSnapshot) {
+      return conversationFromSnapshot(
+          conversationSnapshot as DocumentSnapshot<Map<String, dynamic>>);
+    });
+  }
+
+  Stream<List<Conversation>> getConversationsDataOfCurrentUser() {
+    final user = getUserData(uid!);
+    return user.switchMap((userFirebase) {
+      final conversationIds = userFirebase.conversations.map((conversation) {
+        return conversation.conversationId;
+      }).toList();
+      final conversations =
+          conversationIds.map((id) => getConversationData(id)).toList();
+      return Rx.combineLatestList(conversations);
+    });
+  }
+
+  Future<UserFirebase?> getTargetUserDataByConversationId(String id) async {
     final conversationDoc = await conversationsCollection.doc(id).get();
     final targetUserId = conversationDoc['targetUserId'] as String;
-    return await userCollection.doc(targetUserId).get();
+    final userSnapshot = await userCollection.doc(targetUserId).get();
+    return userFirebaseFromDocumentSnapshot(
+        userSnapshot as DocumentSnapshot<Map<String, dynamic>>);
   }
 
   Stream<List<String>> getConversationIds() {
-    final userSnapshotStream = userCollection.doc(uid).snapshots();
+    return userCollection.doc(uid).snapshots().map((userSnapshot) {
+      final userFirebase = userFirebaseFromDocumentSnapshot(
+          userSnapshot as DocumentSnapshot<Map<String, dynamic>>)!;
 
-    return userSnapshotStream.map((userSnapshot) {
-      final userMap = userSnapshot.data()! as Map<String, dynamic>;
-      final conversations = userMap['conversations'] as List<dynamic>;
-      return initConversationIdsList(conversations);
+      final conversationIds = userFirebase.conversations.map((conversation) {
+        return conversation.conversationId;
+      }).toList();
+      return conversationIds;
     });
   }
 
-  List<String> initConversationIdsList(List<dynamic> conversations) {
-    final List<String> conversationIds = [];
-    for (final conversation in conversations) {
-      conversationIds.add(conversation['conversationId'] as String);
-    }
-    return conversationIds;
+  Future<Stream<Conversation>> getConversationById(String id) async {
+    return getConversationData(id);
   }
 
-  Future<List<dynamic>> sortConversationsByRecentMessage(
-      List<dynamic> conversationsIdsNotSorted) async {
-    final conversations = [];
-    for (final conversationId in conversationsIdsNotSorted) {
-      final conversationSnapshot =
-          await conversationsCollection.doc(conversationId).get();
-      final conversationData =
-          conversationSnapshot.data()! as Map<String, dynamic>;
-
-      conversations.add({
-        'conversationId': conversationData['conversationId'],
-        'time': conversationData['recentMessageTime'] as Timestamp,
-      });
-    }
-    conversations.sort((a, b) => b['time'].compareTo(a['time']));
-    final sortedConversations = [];
-    for (final conversation in conversations) {
-      sortedConversations.add(conversation['conversationId']);
-    }
-    return sortedConversations;
-  }
-
-  Stream<List<Map<String, dynamic>>> getUserConversations() {
-    final userSnapshotStream = userCollection.doc(uid).snapshots();
-
-    return userSnapshotStream.asyncMap((userSnapshot) async {
-      final conversations = userSnapshot['conversations'] as List<dynamic>;
-      final conversationIds = await sortConversationsByRecentMessage(
-          initConversationIdsList(conversations));
-
-      final conversationStreams = conversationIds.map((conversationId) {
-        final conversationStream = conversationsCollection
-            .doc(conversationId)
-            .snapshots() as Stream<DocumentSnapshot<Map<String, dynamic>>>;
-        final membersStream = userCollection
-            .where('conversations.conversationId', isEqualTo: conversationId)
-            .snapshots() as Stream<QuerySnapshot<Map<String, dynamic>>>;
-
-        // rx permet de combiner 2 streams
-        return Rx.combineLatest2<DocumentSnapshot<Map<String, dynamic>>,
-            QuerySnapshot<Map<String, dynamic>>, Map<String, dynamic>>(
-          conversationStream,
-          membersStream,
-          (conversationSnapshot, membersSnapshot) {
-            final conversationData = conversationSnapshot.data()!;
-            final membersData =
-                membersSnapshot.docs.map((doc) => doc.data()).toList();
-            final recentMessage =
-                conversationData['recentMessage'] as String? ?? '';
-
-            return {
-              'conversation': conversationData,
-              'members': membersData,
-              'recentMessage': recentMessage,
-            };
-          },
-        );
-      });
-
-      final combinedStream = Rx.combineLatestList(conversationStreams);
-
-      return await combinedStream.first;
-    });
-  }
-
-  Future<Stream<DocumentSnapshot<Object?>>> getConversationById(
-      String id) async {
-    return conversationsCollection.doc(id).snapshots();
-  }
-
-  Future<List<dynamic>> getConversationMembers(String conversationId) async {
-    DocumentSnapshot<Object?> conversationSnapshot =
+  Future<List<UserFirebase>> getConversationMembers(
+    String conversationId,
+  ) async {
+    final conversationSnapshot =
         await conversationsCollection.doc(conversationId).get();
-    final data = conversationSnapshot.data()! as Map<String, dynamic>;
-    final memberIds = data['members'] as List<dynamic>;
-    final memberList = [];
-    for (final member in memberIds) {
+    final conversation = conversationFromSnapshot(
+        conversationSnapshot as DocumentSnapshot<Map<String, dynamic>>);
+    final List<UserFirebase> memberList = [];
+    for (final member in conversation.members) {
       final memberSnapshot = await userCollection.doc(member).get();
-      final memberData = memberSnapshot.data()! as Map<String, dynamic>;
-      memberList.add(memberData);
+      final memberData = userFirebaseFromDocumentSnapshot(
+          memberSnapshot as DocumentSnapshot<Map<String, dynamic>>);
+      if (memberData != null) memberList.add(memberData);
     }
     return memberList;
   }
 
-  Future<List<Object?>> getAdmins() async {
-    QuerySnapshot<Object?> adminSnapshots =
+  Future<List<UserFirebase>> getAdmins() async {
+    final adminSnapshots =
         await userCollection.where('isAdmin', isEqualTo: true).get();
-    return adminSnapshots.docs
-        .map((adminSnapshot) => adminSnapshot.data())
-        .toList();
+    final List<UserFirebase> admins = [];
+    for (final admin in adminSnapshots.docs) {
+      admins.add(userFirebaseFromDocumentSnapshot(
+          admin as DocumentSnapshot<Map<String, dynamic>>)!);
+    }
+    return admins;
   }
 
-  Future<List<Object?>> getConversationByMemberId(String memberId) async {
-    QuerySnapshot<Object?> conversationSnapshot = await conversationsCollection
+  Future<List<Conversation>> getConversationsByMemberId(String memberId) async {
+    final conversationSnapshot = await conversationsCollection
         .where('members', arrayContains: memberId)
         .get();
-    return conversationSnapshot.docs
-        .map((conversation) => conversation.data())
-        .toList();
-  }
-
-  Future<void> createConversation(String targetUserEmail,
-      {String message = ""}) async {
-    List<Object?> admins = await getAdmins();
-    QuerySnapshot<Object?> targetUser =
-        await getUserDataByEmail(targetUserEmail);
-    if (targetUser.docs.isEmpty) {
-      throw Exception("Target user not found");
+    final List<Conversation> conversations = [];
+    for (final conversation in conversationSnapshot.docs) {
+      conversations.add(conversationFromSnapshot(
+          conversation as DocumentSnapshot<Map<String, dynamic>>));
     }
-    var targetUserId = targetUser.docs[0]["uid"];
-
-    saveConversationData(targetUserId, admins, message: message);
+    return conversations;
   }
 
-  Future<void> saveConversationData(String targetUserId, List<Object?> admins,
-      {String message = ""}) async {
-    List<Object?> existingConversation =
-        await getConversationByMemberId(targetUserId);
+  Future<void> createConversation(
+    String targetUserEmail, {
+    String message = "",
+  }) async {
+    String targetUserId = (await getUserDataByEmail(targetUserEmail))!.uid;
 
-    List<String> members = initConversationMembers(targetUserId, admins);
+    List<Conversation> existingConversation =
+        await getConversationsByMemberId(targetUserId);
+
+    List<String> memberIds =
+        FirebaseDatabaseUtils.initConversationMemberIds(targetUserId, await getAdmins());
     String? senderId =
         await LocalStorageHelper.getFirebaseUserIdFromLocalStorage();
     if (senderId == null) {
       throw Exception("Sender id not found");
     }
 
-    // TODO notif
     if (existingConversation.isEmpty) {
       DocumentReference conversationDocumentReference =
           await conversationsCollection.add({
-        'members': members,
+        'members': memberIds,
         'targetUserId': targetUserId,
         'messages': [],
       });
@@ -223,7 +230,7 @@ class FirebaseDatabaseService {
         sendMessage(conversationDocumentReference.id, senderId, message);
       }
       // ajout de la conversation dans la liste des conversations de chaque membre
-      for (var memberId in members) {
+      for (var memberId in memberIds) {
         DocumentReference userDocumentReference = userCollection.doc(memberId);
         await userDocumentReference.update({
           'conversations': FieldValue.arrayUnion([
@@ -235,68 +242,76 @@ class FirebaseDatabaseService {
         });
       }
     } else {
-      var conversationMap = existingConversation[0] as Map<String, dynamic>;
-      sendMessage(conversationMap["conversationId"], senderId, message);
+      // peut arriver quand c'est un admin qui envoie un message à un client via
+      // sa réservation (un client n'a qu'une seule conversation)
+      sendMessage(existingConversation[0].conversationId, senderId, message);
     }
   }
 
   void setConversationToSeen(String conversationId) async {
     DocumentReference userDocumentReference = userCollection.doc(uid);
     DocumentSnapshot userSnapshot = await userDocumentReference.get();
-    final conversationsMap = userSnapshot.data()! as Map<String, dynamic>;
-    List<dynamic> conversations = conversationsMap['conversations'];
+    UserFirebase user = userFirebaseFromDocumentSnapshot(
+        userSnapshot as DocumentSnapshot<Map<String, dynamic>>)!;
+    List<UserConversation> userConversations = user.conversations;
 
-    for (var conversation in conversations) {
-      if (conversation['conversationId'] == conversationId) {
-        conversation['isSeen'] = true;
+    for (var userConversation in userConversations) {
+      if (userConversation.conversationId == conversationId) {
+        userConversation.isSeen = true;
         break;
       }
     }
 
     await userDocumentReference.update({
-      'conversations': conversations,
+      'conversations': userConversations
+          .map((userConversation) => userConversation.toMap())
+          .toList(),
     });
   }
 
-  void setConversationUnseenForOtherMembers(String conversationId, String senderId) async {
-    final conversationSnapshot = await conversationsCollection.doc(conversationId).get();
+  void setConversationUnseenForOtherMembers(
+    String conversationId,
+    String senderId,
+  ) async {
+    final conversationSnapshot =
+        await conversationsCollection.doc(conversationId).get();
+    Conversation conversation = conversationFromSnapshot(
+        conversationSnapshot as DocumentSnapshot<Map<String, dynamic>>);
 
-    if (conversationSnapshot.exists) {
-      final conversationData = conversationSnapshot.data() as Map<String, dynamic>;
-      final members = conversationData['members'] as List<dynamic>;
+    final memberSnapshots = await userCollection
+        .where(FieldPath.documentId, whereIn: conversation.members)
+        .get();
 
-      final userSnapshots = await userCollection.where(FieldPath.documentId, whereIn: members).get();
-      for (final userSnapshot in userSnapshots.docs) {
-        final userSnapshotMap = userSnapshot.data()! as Map<String, dynamic>;
-        final conversations = userSnapshotMap['conversations'] as List<dynamic>;
-
-        if (userSnapshot.id != senderId) {
-          for (var conversation in conversations) {
-            if (conversation['conversationId'] == conversationId) {
-              conversation['isSeen'] = false;
-              break;
-            }
+    List<UserFirebase?> members =
+        userFirebaseListFromQuerySnapshot(memberSnapshots);
+    for (final member in members) {
+      if (member == null) continue;
+      if (member.uid != senderId) {
+        for (var userConversation in member.conversations) {
+          if (userConversation.conversationId == conversationId) {
+            userConversation.isSeen = false;
+            break;
           }
-
-          await userCollection.doc(userSnapshot.id).update({
-            'conversations': conversations,
-          });
         }
       }
+
+      await userCollection.doc(member.uid).update({
+        'conversations': member.conversations
+            .map((userConversation) => userConversation.toMap())
+            .toList(),
+      });
     }
   }
 
   Stream<bool> hasUnseenConversationsStream() {
-    final userSnapshotStream = userCollection.doc(uid).snapshots();
+    Stream<UserFirebase> userStream = getUserData(uid!);
 
-    return userSnapshotStream.map((userSnapshot) {
-      final userMap = userSnapshot.data()! as Map<String, dynamic>;
-      final conversations = userMap['conversations'] as List<dynamic>;
+    return userStream.map((user) {
+      final conversations = user.conversations;
       bool hasUnreadConversations = false;
 
       for (final conversation in conversations) {
-        final isSeen = conversation['isSeen'] as bool? ?? true;
-        if (!isSeen) {
+        if (!conversation.isSeen) {
           hasUnreadConversations = true;
           break;
         }
@@ -308,12 +323,12 @@ class FirebaseDatabaseService {
 
   Future<bool> isConversationSeen(String conversationId) async {
     DocumentSnapshot userSnapshot = await userCollection.doc(uid).get();
-    final conversationsMap = userSnapshot.data()! as Map<String, dynamic>;
-    List<dynamic> conversations = conversationsMap['conversations'];
+    UserFirebase user = userFirebaseFromDocumentSnapshot(
+        userSnapshot as DocumentSnapshot<Map<String, dynamic>>)!;
 
-    for (var conversation in conversations) {
-      if (conversation['conversationId'] == conversationId) {
-        return conversation['isSeen'] ?? false;
+    for (var userConversation in user.conversations) {
+      if (userConversation.conversationId == conversationId) {
+        return userConversation.isSeen;
       }
     }
 
@@ -335,18 +350,5 @@ class FirebaseDatabaseService {
       'recentMessageTime': DateTime.now(),
     });
     setConversationUnseenForOtherMembers(conversationId, senderId);
-  }
-
-  List<String> initConversationMembers(
-      String targetUserId, List<Object?> admins) {
-    List<String> members = [targetUserId];
-    admins.forEach((admin) {
-      var adminMap = admin as Map<String, dynamic>;
-      var uid = adminMap['uid'];
-      if (!members.contains(uid)) {
-        members.add(uid);
-      }
-    });
-    return members;
   }
 }

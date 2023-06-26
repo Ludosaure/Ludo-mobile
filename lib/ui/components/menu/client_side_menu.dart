@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:badges/badges.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +22,7 @@ class ClientSideMenu extends StatefulWidget {
 
 class _ClientSideMenuState extends State<ClientSideMenu> {
   bool _hasUnseenConversations = false;
+  StreamSubscription<bool>? subscription;
 
   @override
   void initState() {
@@ -31,9 +34,15 @@ class _ClientSideMenuState extends State<ClientSideMenu> {
     final unreadConversationsStream =
         FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
             .hasUnseenConversationsStream();
-    unreadConversationsStream.listen((hasUnreadConversations) {
+    subscription = unreadConversationsStream.listen((hasUnreadConversations) {
       setState(() => _hasUnseenConversations = hasUnreadConversations);
     });
+  }
+
+  @override
+  void dispose() {
+    subscription?.cancel();
+    super.dispose();
   }
 
   @override

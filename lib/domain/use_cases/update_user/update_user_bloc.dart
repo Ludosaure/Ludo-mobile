@@ -23,12 +23,13 @@ class UpdateUserBloc extends Bloc<UpdateUserEvent, UpdateUserInitial> {
   final SessionCubit _sessionCubit;
   final UserRepository _userRepository;
   final MediaRepository _mediaRepository;
-  final FirebaseAuthService _firebaseAuthService = FirebaseAuthService();
+  final FirebaseAuthService _firebaseAuthService;
 
   UpdateUserBloc(
     this._sessionCubit,
     this._userRepository,
     this._mediaRepository,
+    this._firebaseAuthService,
   ) : super(UpdateUserInitial()) {
     on<UpdateUserSubmitEvent>(onSubmitForm);
     on<UserPasswordChangedEvent>(onPasswordChanged);

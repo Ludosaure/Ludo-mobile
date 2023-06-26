@@ -12,7 +12,8 @@ class NewConversationAlert extends StatelessWidget {
 
   final String userTargetMail;
 
-  NewConversationAlert({Key? key, required this.userTargetMail}) : super(key: key);
+  NewConversationAlert({Key? key, required this.userTargetMail})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -46,9 +47,11 @@ class NewConversationAlert extends StatelessWidget {
           onPressed: () {
             if (_newMessageFormKey.currentState!.validate()) {
               FirebaseDatabaseService(
-                  uid: FirebaseAuth.instance.currentUser!.uid)
-                  .createConversation(userTargetMail,
-                  message: _messageController.text)
+                      uid: FirebaseAuth.instance.currentUser!.uid)
+                  .createConversation(
+                userTargetMail,
+                message: _messageController.text,
+              )
                   .then((value) {
                 _messageController.text = "";
                 Navigator.of(context).pop();
