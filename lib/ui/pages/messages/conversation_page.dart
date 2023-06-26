@@ -269,7 +269,7 @@ class _ConversationPageState extends State<ConversationPage> {
                 const SizedBox(width: 10),
                 Text(
                   title,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.black,
                     fontSize: 20,
                     overflow: TextOverflow.ellipsis,
