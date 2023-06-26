@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -23,6 +25,7 @@ class AdminBottomNavBar extends StatefulWidget {
 
 class _AdminBottomNavBarState extends State<AdminBottomNavBar> {
   bool _hasUnseenConversations = false;
+  StreamSubscription<bool>? subscription;
 
   @override
   void initState() {
@@ -34,9 +37,15 @@ class _AdminBottomNavBarState extends State<AdminBottomNavBar> {
     final unreadConversationsStream =
         FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
             .hasUnseenConversationsStream();
-    unreadConversationsStream.listen((hasUnreadConversations) {
-      _hasUnseenConversations = hasUnreadConversations;
+    subscription = unreadConversationsStream.listen((hasUnreadConversations) {
+      setState(() => _hasUnseenConversations = hasUnreadConversations);
     });
+  }
+
+  @override
+  void dispose() {
+    subscription?.cancel();
+    super.dispose();
   }
 
   @override
