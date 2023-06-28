@@ -7,13 +7,17 @@ on:
 jobs:
   build_web:
     name: build_web
-    needs: [ release ]
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
-      - uses: subosito/flutter-action@v2
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
         with:
           flutter-version: "3.3.9"
+
       - name: Create .env file
         # Voir si c'est possible de faire un job create_dotenv et dont chaque build (ios, apk, web) dépend
         run: |
@@ -22,9 +26,16 @@ jobs:
           echo "API_ID=${{ secrets.API_ID }}" >> assets/.env
           echo "MESSAGING_SENDER_ID=${{ secrets.MESSAGING_SENDER_ID }}" >> assets/.env
           echo "PROJECT_ID=${{ secrets.PROJECT_ID }}" >> assets/.env
+
       - run: flutter pub get
-      - run: flutter pub run build_runner build
-      - run: flutter build web --dart-define=API_URL=http://api-ludosaure-load-balancer-2124171361.eu-west-1.elb.amazonaws.com
+      - run: flutter pub run build_runner build --delete-conflicting-outputs
+      - run: flutter build web --dart-define=API_URL=https://api-ludosaure.not24get.fr
+
+      - name: Upload production-ready build files
+        uses: actions/upload-artifact@v3
+        with:
+          name: production-files
+          path: ./build/web
 
   build_apk:
     name: build_apk
@@ -60,7 +71,7 @@ jobs:
       - run: flutter pub get
       - run: flutter pub run build_runner build --delete-conflicting-outputs
       - run: flutter build apk --release --split-per-abi
-      - run: flutter build appbundle --dart-define=API_URL=http://api-ludosaure-load-balancer-2124171361.eu-west-1.elb.amazonaws.com
+      - run: flutter build appbundle --dart-define=API_URL=https://api-ludosaure.not24get.fr
       - name: Upload app bundle
         uses: actions/upload-artifact@v3
         with:
@@ -87,6 +98,19 @@ jobs:
           whatsNewDirectory: android/release-notes/
           status: completed
 
+  deploy-web:
+    name: Deploy web app
+    needs: [build_web]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: production-files
+          path: ./build
+
 #  build_ios:
 #    name: build_ios
 #    needs: [ release ]
@@ -100,4 +124,4 @@ jobs:
 #      - run: flutter pub get
 #      - run: flutter pub run build_runner build
 #      - run: flutter test
-#      - run: flutter build ios --release --no-codesign --dart-define=API_URL=http://api-ludosaure-load-balancer-2124171361.eu-west-1.elb.amazonaws.com
+#      - run: flutter build ios --release --no-codesign --dart-define=API_URL=https://api-ludosaure.not24get.fr

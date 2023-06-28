@@ -27,8 +27,15 @@ class GameRepository {
     return games;
   }
 
-  Future<Game> getGame(String gameId) async {
-    final GameJson gameJson = await _gameProvider.getGame(gameId);
+  Future<Game> getGame(String gameId, User? user) async {
+    if(user == null) {
+      final GameJson gameJson = await _gameProvider.getGame(gameId);
+
+      return gameJson.toGame();
+    }
+
+    final String? token = await LocalStorageHelper.getTokenFromLocalStorage();
+    final GameJson gameJson = await _gameProvider.getGameForLoggedUser(gameId, token!);
 
     return gameJson.toGame();
   }

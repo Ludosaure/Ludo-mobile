@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
 import 'package:ludo_mobile/domain/models/reservation.dart';
+import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:ludo_mobile/domain/reservation_status.dart';
 import 'package:ludo_mobile/domain/use_cases/get_reservation/get_reservation_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/user_reservations/user_reservations_cubit.dart';
@@ -21,9 +22,13 @@ import 'package:responsive_framework/responsive_framework.dart';
 
 class ReservationDetailsPage extends StatefulWidget {
   final String reservationId;
+  final User user;
 
-  const ReservationDetailsPage({Key? key, required this.reservationId})
-      : super(key: key);
+  const ReservationDetailsPage({
+    Key? key,
+    required this.reservationId,
+    required this.user,
+  }) : super(key: key);
 
   @override
   State<ReservationDetailsPage> createState() => _ReservationDetailsPageState();
@@ -31,6 +36,8 @@ class ReservationDetailsPage extends StatefulWidget {
 
 class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
   late Reservation reservation;
+
+  User get user => widget.user;
 
   @override
   Widget build(BuildContext context) {
@@ -267,7 +274,8 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
               },
             ),
             if (reservation.status != ReservationStatus.RETURNED &&
-                reservation.status != ReservationStatus.CANCELED)
+                reservation.status != ReservationStatus.CANCELED &&
+                user.isAdmin())
               _buildReturnedGamesButton(context),
           ],
         ),

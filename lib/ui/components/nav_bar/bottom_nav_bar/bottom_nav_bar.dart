@@ -27,6 +27,7 @@ class CustomBottomNavigationBar extends StatefulWidget {
 class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
   bool _hasUnseenConversations = false;
   StreamSubscription<bool>? subscription;
+  db_user.User get user => widget.user;
 
   @override
   void initState() {
@@ -68,16 +69,16 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
           label: MenuItems.Messages.label,
         ),
         BottomNavigationBarItem(
-          icon: Icon(MenuItems.Search.icon),
-          label: MenuItems.Search.label,
+          icon: Icon(MenuItems.Favorites.icon),
+          label: MenuItems.Favorites.label,
         ),
         BottomNavigationBarItem(
           icon: Icon(MenuItems.Home.icon),
           label: MenuItems.Home.label,
         ),
         BottomNavigationBarItem(
-          icon: Icon(MenuItems.Favorites.icon),
-          label: MenuItems.Favorites.label,
+          icon: Icon(MenuItems.Cart.icon),
+          label: MenuItems.Cart.label,
         ),
         BottomNavigationBarItem(
           icon: Icon(MenuItems.Profile.icon),
@@ -87,24 +88,49 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
       onTap: (index) {
         if (index == MenuItems.Messages.index) {
           context.go(Routes.inbox.path);
-        } else if (index == MenuItems.Search.index) {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return const SearchBar(
-                showFilter: true,
-                onSearch: null, //TODO
-              );
-            },
-          );
-        } else if (index == MenuItems.Home.index) {
-          context.go(Routes.home.path);
-        } else if (index == MenuItems.Profile.index) {
-          context.go(Routes.profile.path);
         } else if (index == MenuItems.Favorites.index) {
           context.go(Routes.favorites.path);
+        } else if (index == MenuItems.Home.index) {
+          context.go(Routes.home.path);
+        } else if (index == MenuItems.Cart.index) {
+          context.go(Routes.cart.path);
+        } else if (index == MenuItems.Profile.index) {
+          context.go(Routes.profile.path);
         }
       },
+    );
+  }
+
+  void _onSearchPressed() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return const SearchBar(
+          showFilter: true,
+          onSearch: null, //TODO
+        );
+      },
+    );
+  }
+
+  Widget _buildShoppingCartButton(BuildContext context) {
+    return IconButton(
+      onPressed: () {
+        context.go(Routes.cart.path);
+      },
+      padding: const EdgeInsets.all(3.0),
+      style: ButtonStyle(
+        shape: MaterialStateProperty.all(
+          const CircleBorder(),
+        ),
+        backgroundColor: MaterialStateProperty.all(
+          Theme.of(context).colorScheme.primary,
+        ),
+      ),
+      icon: const Icon(
+        Icons.shopping_cart_outlined,
+        color: Colors.black,
+      ),
     );
   }
 }

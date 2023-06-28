@@ -57,7 +57,7 @@ class ReservationList extends StatelessWidget {
               userProfilePicture: reservation.user!.profilePicturePath,
             ),
             onTap: () {
-              context.go('${Routes.reservations.path}/${reservation.id}');
+              context.push('${Routes.reservations.path}/${reservation.id}');
             },
             title: Text(
                 "${reservation.createdBy.firstname} ${reservation.createdBy.lastname}"),

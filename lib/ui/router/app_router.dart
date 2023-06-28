@@ -314,6 +314,7 @@ class AppRouter {
             ],
             child: ReservationDetailsPage(
               reservationId: state.params['id']!,
+              user: connectedUser!,
             ),
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -439,7 +440,9 @@ class AppRouter {
         pageBuilder: (context, state) => CustomTransitionPage(
           child: BlocProvider.value(
             value: _cartBloc,
-            child: const CartPage(),
+            child: CartPage(
+              user: connectedUser!,
+            ),
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(

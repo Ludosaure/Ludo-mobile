@@ -16,6 +16,7 @@ class Game {
   final bool isArchived;
   final bool? isAvailable;
   final List<DateTime> unavailableDates;
+  final bool canBeReviewed;
 
   Game({
     required this.id,
@@ -32,9 +33,10 @@ class Game {
     required this.isArchived,
     this.isAvailable,
     required this.unavailableDates,
+    this.canBeReviewed = false,
   });
 
-  factory Game.fromJson(Map<String, dynamic> json) {
+  factory Game.fromJson(Map<String, dynamic> json, {bool canBeReviewed = false}) {
     final List<DateTime> unavailableDates = [];
 
     if(json["unavailabilities"] != null) {
@@ -59,6 +61,7 @@ class Game {
       isArchived: json['isArchived'],
       isAvailable: json['isAvailable'] ?? false,
       unavailableDates: unavailableDates,
+      canBeReviewed: canBeReviewed,
     );
   }
 

@@ -200,20 +200,25 @@ class GameDetailsPage extends StatelessWidget {
       verticalDirection: VerticalDirection.down,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          game.name,
-          style: TextStyle(
-            fontSize: ResponsiveValue(
-              context,
-              defaultValue: 16.0,
-              valueWhen: [
-                const Condition.smallerThan(name: TABLET, value: 16.0),
-                const Condition.largerThan(name: TABLET, value: 20.0),
-                const Condition.largerThan(name: DESKTOP, value: 24.0),
-              ],
-            ).value,
-            fontWeight: FontWeight.bold,
-            color: Theme.of(context).colorScheme.primary,
+        SizedBox(
+          width: MediaQuery.of(context).size.width * 0.7,
+          child: Text(
+            game.name,
+            softWrap: true,
+            overflow: TextOverflow.visible,
+            style: TextStyle(
+              fontSize: ResponsiveValue(
+                context,
+                defaultValue: 16.0,
+                valueWhen: [
+                  const Condition.smallerThan(name: TABLET, value: 16.0),
+                  const Condition.largerThan(name: TABLET, value: 20.0),
+                  const Condition.largerThan(name: DESKTOP, value: 24.0),
+                ],
+              ).value,
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.primary,
+            ),
           ),
         ),
         const SizedBox(width: 8),
@@ -250,7 +255,7 @@ class GameDetailsPage extends StatelessWidget {
   }
 
   Widget _buildGameRating(BuildContext context) {
-    if (game.rating == 0) {
+    if (game.rating == 0 && !game.canBeReviewed) {
       return const Text("");
     }
 
@@ -259,6 +264,7 @@ class GameDetailsPage extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         RatingBar.builder(
+          ignoreGestures: !game.canBeReviewed,
           initialRating: game.rating,
           minRating: 1,
           direction: Axis.horizontal,

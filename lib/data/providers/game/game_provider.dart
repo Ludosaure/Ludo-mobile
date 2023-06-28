@@ -76,7 +76,49 @@ class GameProvider {
 
     final decodedResponse = jsonDecode(response.body);
 
-    return GameJson.fromJson(decodedResponse["game"]);
+    return GameJson.fromJson(
+      decodedResponse["game"],
+      canBeReviewed: decodedResponse["canReviewGame"],
+    );
+  }
+
+  Future<GameJson> getGameForLoggedUser(
+    String gameId,
+    String token,
+  ) async {
+    final http.Response response = await http
+        .get(
+      Uri.parse("$baseUrl/id/$gameId/logged-user"),
+      headers: _getHeaders(token),
+    )
+        .catchError((error) {
+      if (error is SocketException) {
+        throw ServiceUnavailableException(
+          'errors.service-unavailable'.tr(),
+        );
+      }
+
+      throw InternalServerException('errors.unknown'.tr());
+    });
+
+    if (response.statusCode == HttpCode.NOT_FOUND) {
+      throw NotFoundException(
+        "errors.game-not-found".tr(),
+      );
+    }
+
+    if (response.statusCode != HttpCode.OK) {
+      throw InternalServerException(
+        "errors.unknown".tr(),
+      );
+    }
+
+    final decodedResponse = jsonDecode(response.body);
+
+    return GameJson.fromJson(
+      decodedResponse["game"],
+      canBeReviewed: decodedResponse["canReviewGame"],
+    );
   }
 
   Future<void> createGame(String token, NewGameRequest newGame) async {
@@ -189,10 +231,10 @@ class GameProvider {
     if (response.statusCode == HttpCode.BAD_REQUEST) {
       throw BadRequestException(
         "${"errors.game-deletion-failed".tr()} ${"errors.error-detail".tr(
-              namedArgs: {
-                "error": jsonDecode(response.body)["message"],
-              },
-            )}",
+          namedArgs: {
+            "error": jsonDecode(response.body)["message"],
+          },
+        )}",
       );
     }
 

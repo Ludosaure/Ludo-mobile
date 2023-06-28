@@ -4,13 +4,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
+import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:ludo_mobile/domain/use_cases/cart/cart_cubit.dart';
+import 'package:ludo_mobile/ui/components/scaffold/home_scaffold.dart';
 import 'package:ludo_mobile/ui/pages/cart/cart_content.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
-import 'package:responsive_framework/responsive_wrapper.dart';
+import 'package:ludo_mobile/utils/menu_items.dart';
 
 class CartPage extends StatefulWidget {
+  final User user;
   const CartPage({
+    required this.user,
     Key? key,
   }) : super(key: key);
 
@@ -21,6 +25,7 @@ class CartPage extends StatefulWidget {
 class _CartPageState extends State<CartPage> {
   late List<Game> cartContent = [];
   late bool paymentSheetDisplayed = false;
+  User get user => widget.user;
 
   @override
   void initState() {
@@ -30,28 +35,14 @@ class _CartPageState extends State<CartPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        leading: ResponsiveWrapper.of(context).isSmallerThan(TABLET) ||
-                !paymentSheetDisplayed
-            ? BackButton(
-                color: Colors.black,
-                onPressed: () {
-                  Stripe.instance.resetPaymentSheetCustomer();
-                  context.go(Routes.home.path);
-                },
-              )
-            : null,
-        title: const Text(
-          'cart-title',
-          style: TextStyle(color: Colors.black),
-        ).tr(),
-      ),
+    //TODO ajouter la gestion de onBackPressed
+    return HomeScaffold(
+      navBarIndex: MenuItems.Cart.index,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
         child: _buildMobileCartContent(context),
       ),
+      user: user,
     );
   }
 
@@ -128,7 +119,7 @@ class _CartPageState extends State<CartPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.75,
+                        height: MediaQuery.of(context).size.height * 0.68,
                         child: CartContent(
                           cartContent: cartContent,
                           totalAmount: totalAmount,
@@ -236,5 +227,10 @@ class _CartPageState extends State<CartPage> {
     setState(() {
       paymentSheetDisplayed = false;
     });
+  }
+
+  void _onBackPressed() {
+    Stripe.instance.resetPaymentSheetCustomer();
+    context.go(Routes.home.path);
   }
 }
