@@ -5,7 +5,6 @@ class UpdateUserRequest {
   final String? phoneNumber;
   final String? pseudo;
   final bool? hasEnabledMailNotifications;
-  final bool? hasEnabledPhoneNotifications;
   final String? profilePictureId;
 
   UpdateUserRequest({
@@ -15,7 +14,6 @@ class UpdateUserRequest {
     this.phoneNumber,
     this.pseudo,
     this.hasEnabledMailNotifications,
-    this.hasEnabledPhoneNotifications,
     this.profilePictureId,
   });
 
@@ -27,7 +25,6 @@ class UpdateUserRequest {
       'phoneNumber': phoneNumber,
       'pseudo': pseudo,
       'hasEnabledMailNotifications': hasEnabledMailNotifications,
-      'hasEnabledPhoneNotifications': hasEnabledPhoneNotifications,
       'profilePictureId': profilePictureId,
     };
   }

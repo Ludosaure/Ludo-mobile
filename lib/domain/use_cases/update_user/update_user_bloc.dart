@@ -38,8 +38,6 @@ class UpdateUserBloc extends Bloc<UpdateUserEvent, UpdateUserInitial> {
     on<UserPseudoChangedEvent>(onPseudoChanged);
     on<UserHasEnabledMailNotificationsChangedEvent>(
         onHasEnabledMailNotificationsChanged);
-    on<UserHasEnabledPhoneNotificationsChangedEvent>(
-        onHasEnabledPhoneNotificationsChanged);
     on<UserPictureChangedEvent>(onPictureChanged);
     on<UserIdChangedEvent>(onUserChanged);
   }
@@ -88,7 +86,6 @@ class UpdateUserBloc extends Bloc<UpdateUserEvent, UpdateUserInitial> {
       phoneNumber: formattedPhoneNumber,
       pseudo: state.pseudo,
       hasEnabledMailNotifications: state.hasEnabledMailNotifications,
-      hasEnabledPhoneNotifications: state.hasEnabledPhoneNotifications,
       profilePictureId: imageId,
     );
 
@@ -165,11 +162,6 @@ class UpdateUserBloc extends Bloc<UpdateUserEvent, UpdateUserInitial> {
   void onHasEnabledMailNotificationsChanged(event, Emitter emit) async {
     emit(state.copyWith(
         hasEnabledMailNotifications: event.hasEnabledMailNotifications));
-  }
-
-  void onHasEnabledPhoneNotificationsChanged(event, Emitter emit) async {
-    emit(state.copyWith(
-        hasEnabledPhoneNotifications: event.hasEnabledPhoneNotifications));
   }
 
   void onPictureChanged(UserPictureChangedEvent event, Emitter emit) async {

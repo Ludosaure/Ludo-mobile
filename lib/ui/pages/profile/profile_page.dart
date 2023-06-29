@@ -278,22 +278,6 @@ class _ProfilePageState extends State<ProfilePage> {
               ? const Icon(Icons.check)
               : const Icon(Icons.close),
         ),
-        SizedBox(height: size.height * 0.01),
-        ListTile(
-          leading: SizedBox(
-            width: size.width * 0.6,
-            child: Text(
-              'activate-app-notifications-label'.tr(),
-              style: const TextStyle(
-                color: Colors.black,
-                fontSize: 17,
-              ),
-            ),
-          ),
-          title: connectedUser.hasEnabledPhoneNotifications
-              ? const Icon(Icons.check)
-              : const Icon(Icons.close),
-        ),
       ],
     );
   }
