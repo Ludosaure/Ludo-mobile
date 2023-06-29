@@ -16,6 +16,21 @@ class FormFieldDecoration extends InputDecoration {
       isDense: true,
     );
   }
+  static InputDecoration textArea(String label) {
+    return InputDecoration(
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(7),
+      ),
+      fillColor: CustomTheme.formColor,
+      filled: true,
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(7),
+        borderSide: const BorderSide(color: Colors.transparent),
+      ),
+      labelText: label,
+      isDense: true,
+    );
+  }
 
   static InputDecoration passwordField(
       String label,

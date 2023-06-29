@@ -1,10 +1,10 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/core/exception.dart';
 import 'package:ludo_mobile/core/http_code.dart';
+import 'package:ludo_mobile/core/http_helper.dart';
 import 'package:ludo_mobile/data/providers/game/new_game_request.dart';
 import 'package:ludo_mobile/data/providers/game/update_game_request.dart';
 import 'package:ludo_mobile/utils/app_constants.dart';
@@ -24,11 +24,7 @@ class GameProvider {
       Uri.parse(baseUrl),
     )
         .catchError((error) {
-      if (error is SocketException) {
-        throw ServiceUnavailableException('errors.service-unavailable'.tr());
-      }
-
-      throw InternalServerException('errors.unknown'.tr());
+      HttpHelper.handleRequestException(error);
     });
 
     if (response.statusCode != HttpCode.OK) {
@@ -53,13 +49,7 @@ class GameProvider {
       Uri.parse("$baseUrl/id/$gameId"),
     )
         .catchError((error) {
-      if (error is SocketException) {
-        throw ServiceUnavailableException(
-          'errors.service-unavailable'.tr(),
-        );
-      }
-
-      throw InternalServerException('errors.unknown'.tr());
+      HttpHelper.handleRequestException(error);
     });
 
     if (response.statusCode == HttpCode.NOT_FOUND) {
@@ -89,16 +79,10 @@ class GameProvider {
     final http.Response response = await http
         .get(
       Uri.parse("$baseUrl/id/$gameId/logged-user"),
-      headers: _getHeaders(token),
+      headers: HttpHelper.getHeaders(token),
     )
         .catchError((error) {
-      if (error is SocketException) {
-        throw ServiceUnavailableException(
-          'errors.service-unavailable'.tr(),
-        );
-      }
-
-      throw InternalServerException('errors.unknown'.tr());
+      HttpHelper.handleRequestException(error);
     });
 
     if (response.statusCode == HttpCode.NOT_FOUND) {
@@ -125,17 +109,11 @@ class GameProvider {
     final http.Response response = await http
         .post(
       Uri.parse(baseUrl),
-      headers: _getHeaders(token),
+      headers: HttpHelper.getHeaders(token),
       body: jsonEncode(newGame),
     )
         .catchError((error) {
-      if (error is SocketException) {
-        throw ServiceUnavailableException(
-          'errors.service-unavailable'.tr(),
-        );
-      }
-
-      throw InternalServerException('errors.unknown'.tr());
+      HttpHelper.handleRequestException(error);
     });
 
     if (response.statusCode == HttpCode.FORBIDDEN) {
@@ -159,17 +137,11 @@ class GameProvider {
     final http.Response response = await http
         .put(
       Uri.parse(baseUrl),
-      headers: _getHeaders(token),
+      headers: HttpHelper.getHeaders(token),
       body: jsonEncode(game),
     )
         .catchError((error) {
-      if (error is SocketException) {
-        throw ServiceUnavailableException(
-          'errors.service-unavailable'.tr(),
-        );
-      }
-
-      throw InternalServerException('errors.unknown'.tr());
+      HttpHelper.handleRequestException(error);
     });
 
     if (response.statusCode == HttpCode.UNAUTHORIZED) {
@@ -210,16 +182,10 @@ class GameProvider {
     final http.Response response = await http
         .delete(
       Uri.parse("$baseUrl/$gameId"),
-      headers: _getHeaders(token),
+      headers: HttpHelper.getHeaders(token),
     )
         .catchError((error) {
-      if (error is SocketException) {
-        throw ServiceUnavailableException(
-          'errors.service-unavailable'.tr(),
-        );
-      }
-
-      throw InternalServerException('errors.unknown'.tr());
+      HttpHelper.handleRequestException(error);
     });
 
     if (response.statusCode == HttpCode.NOT_FOUND) {
@@ -249,13 +215,5 @@ class GameProvider {
         "errors.unknown".tr(),
       );
     }
-  }
-
-  Map<String, String> _getHeaders(String token) {
-    return {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'Authorization': 'Bearer $token',
-    };
   }
 }

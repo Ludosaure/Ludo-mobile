@@ -1,17 +1,20 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
+import 'package:ludo_mobile/domain/models/review.dart';
 import 'package:ludo_mobile/domain/use_cases/cart/cart_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/favorite_games/favorite_games_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/get_game/get_game_cubit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ludo_mobile/domain/use_cases/list_reduction_plan/list_reduction_plan_cubit.dart';
+import 'package:ludo_mobile/ui/components/custom_rating_bar.dart';
 import 'package:ludo_mobile/ui/components/expandable_text_widget.dart';
 import 'package:ludo_mobile/ui/components/favorite_button.dart';
 import 'package:ludo_mobile/ui/pages/game/detail/game_details_bottom_bar.dart';
+import 'package:ludo_mobile/ui/pages/reviews/comments_list.dart';
+import 'package:ludo_mobile/ui/pages/reviews/review_form.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
 import 'package:ludo_mobile/utils/app_constants.dart';
 import 'package:responsive_framework/responsive_framework.dart';
@@ -123,34 +126,56 @@ class GameDetailsPage extends StatelessWidget {
   Widget _buildMobileGameContent(BuildContext context) {
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        verticalDirection: VerticalDirection.down,
-        children: [
-          Padding(
-            padding:
-                const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
-            child: _buildGame(context),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          MultiBlocProvider(
-            providers: [
-              BlocProvider.value(
-                value: context.read<CartCubit>(),
-              ),
-              BlocProvider.value(
-                value: context.read<ListReductionPlanCubit>(),
-              ),
-            ],
-            child: GameDetailsBottomBar(
-              game: game,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          verticalDirection: VerticalDirection.down,
+          children: [
+            _buildGame(context),
+            const SizedBox(
+              height: 10,
             ),
-          ),
-        ],
+            MultiBlocProvider(
+              providers: [
+                BlocProvider.value(
+                  value: context.read<CartCubit>(),
+                ),
+                BlocProvider.value(
+                  value: context.read<ListReductionPlanCubit>(),
+                ),
+              ],
+              child: GameDetailsBottomBar(
+                game: game,
+              ),
+            ),
+            const Divider(),
+            CommentsList(
+              reviews: [
+                Review(
+                  id: '1',
+                  comment:
+                      'Avec mes amis on a vraiment passé une trop bonne soirée avec ce jeu, je le recommande à tout le monde!',
+                  rating: 5,
+                  createdAt: DateTime.now(),
+                  authorId: '1',
+                  gameId: '1',
+                ),
+                Review(
+                  id: '2',
+                  // comment: 'Pas mal',
+                  rating: 1,
+                  createdAt: DateTime(2023, 6, 10),
+                  authorId: '1',
+                  gameId: '1',
+                ),
+              ],
+            ),
+            game.canBeReviewed ? const ReviewForm() : Container(),
+          ],
+        ),
       ),
     );
   }
@@ -255,7 +280,7 @@ class GameDetailsPage extends StatelessWidget {
   }
 
   Widget _buildGameRating(BuildContext context) {
-    if (game.rating == 0 && !game.canBeReviewed) {
+    if (game.rating == 0) {
       return const Text("");
     }
 
@@ -263,24 +288,11 @@ class GameDetailsPage extends StatelessWidget {
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        RatingBar.builder(
-          ignoreGestures: !game.canBeReviewed,
+        CustomRatingBar(
           initialRating: game.rating,
-          minRating: 1,
-          direction: Axis.horizontal,
-          allowHalfRating: true,
-          itemCount: 5,
-          unratedColor: Colors.amberAccent.withOpacity(0.3),
+          ignoreGestures: true,
           itemSize: 30,
-          itemBuilder: (context, _) {
-            return const Icon(
-              Icons.star,
-              color: Colors.amber,
-            );
-          },
-          onRatingUpdate: (rating) {
-            //todo
-          },
+          onRatingUpdate: (rating) {},
         ),
         const SizedBox(width: 8),
         Text(

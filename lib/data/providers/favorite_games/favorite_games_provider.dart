@@ -1,10 +1,10 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/core/exception.dart';
 import 'package:ludo_mobile/core/http_code.dart';
+import 'package:ludo_mobile/core/http_helper.dart';
 import 'package:ludo_mobile/data/providers/favorite_games/get_favorite_games_response.dart';
 import 'package:ludo_mobile/utils/app_constants.dart';
 import 'package:http/http.dart' as http;
@@ -25,15 +25,9 @@ class FavoriteGamesProvider {
 
     final http.Response response = await http.get(
       Uri.parse(_baseUrl),
-      headers: {
-        'Authorization': 'Bearer $userToken',
-      },
+      headers: HttpHelper.getHeaders(userToken),
     ).catchError((error) {
-      if(error is SocketException) {
-        throw ServiceUnavailableException('errors.service-unavailable'.tr());
-      }
-
-      throw InternalServerException('errors.unknown'.tr());
+      HttpHelper.handleRequestException(error);
     });
 
     if(response.statusCode == HttpCode.UNAUTHORIZED) {
@@ -64,15 +58,9 @@ class FavoriteGamesProvider {
 
     final http.Response response = await http.post(
       Uri.parse("$_baseUrl/$gameId"),
-      headers: {
-        'Authorization': 'Bearer $userToken',
-      },
+      headers: HttpHelper.getHeaders(userToken),
     ).catchError((error) {
-      if(error is SocketException) {
-        throw ServiceUnavailableException('errors.service-unavailable'.tr());
-      }
-
-      throw InternalServerException('errors.unknown'.tr());
+      HttpHelper.handleRequestException(error);
     });
     if(response.statusCode == HttpCode.NOT_FOUND) {
       throw NotFoundException('errors.game-not-found'.tr());
@@ -95,15 +83,9 @@ class FavoriteGamesProvider {
 
     final http.Response response = await http.delete(
       Uri.parse("$_baseUrl/$gameId"),
-      headers: {
-        'Authorization': 'Bearer $userToken',
-      },
+      headers: HttpHelper.getHeaders(userToken),
     ).catchError((error) {
-      if(error is SocketException) {
-        throw ServiceUnavailableException('errors.service-unavailable'.tr());
-      }
-
-      throw InternalServerException('errors.unknown'.tr());
+      HttpHelper.handleRequestException(error);
     });
 
     if(response.statusCode == HttpCode.NOT_FOUND) {

@@ -1,11 +1,11 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:http/http.dart' as http;
 import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/core/exception.dart';
 import 'package:ludo_mobile/core/http_code.dart';
+import 'package:ludo_mobile/core/http_helper.dart';
 import 'package:ludo_mobile/data/providers/user/update_user_request.dart';
 import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:ludo_mobile/utils/app_constants.dart';
@@ -18,18 +18,9 @@ class UserProvider {
     final http.Response response = await http
         .get(
       Uri.parse('$baseUrl/me'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
+      headers: HttpHelper.getHeaders(token)
     ).catchError((error) {
-      if (error is SocketException) {
-        throw ServiceUnavailableException(
-          'errors.service-unavailable'.tr(),
-        );
-      }
-      throw InternalServerException('errors.unknown'.tr());
+      HttpHelper.handleRequestException(error);
     });
 
     if (response.statusCode == HttpCode.BAD_REQUEST) {
@@ -51,19 +42,10 @@ class UserProvider {
     final http.Response response = await http
         .put(
       Uri.parse(baseUrl),
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
+      headers: HttpHelper.getHeaders(token),
       body: jsonEncode(user),
     ).catchError((error) {
-      if (error is SocketException) {
-        throw ServiceUnavailableException(
-          'errors.service-unavailable'.tr(),
-        );
-      }
-      throw InternalServerException('errors.unknown'.tr());
+      HttpHelper.handleRequestException(error);
     });
 
     if (response.statusCode == HttpCode.BAD_REQUEST) {

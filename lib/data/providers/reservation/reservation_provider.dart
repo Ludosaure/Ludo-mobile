@@ -1,10 +1,10 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/core/exception.dart';
 import 'package:ludo_mobile/core/http_code.dart';
+import 'package:ludo_mobile/core/http_helper.dart';
 import 'package:ludo_mobile/data/repositories/reservation/new_reservation.dart';
 import 'package:ludo_mobile/domain/models/reservation.dart';
 import 'package:ludo_mobile/domain/models/user.dart';
@@ -28,12 +28,9 @@ class ReservationProvider {
 
     response = await http.get(
       Uri.parse(endpoint),
-      headers: _getHeaders(token),
+      headers: HttpHelper.getHeaders(token),
     ).catchError((error) {
-      if (error is SocketException) {
-        throw ServiceUnavailableException('errors.service-unavailable'.tr());
-      }
-      throw InternalServerException('errors.unknown'.tr());
+      HttpHelper.handleRequestException(error);
     });
 
     if (response.statusCode == HttpCode.UNAUTHORIZED) {
@@ -62,14 +59,10 @@ class ReservationProvider {
     http.Response response = await http
         .post(
       Uri.parse(endpoint),
-      headers: _getHeaders(token),
+      headers: HttpHelper.getHeaders(token),
       body: jsonEncode(reservation.toJson()),
-    )
-        .catchError((error) {
-      if (error is SocketException) {
-        throw ServiceUnavailableException('errors.service-unavailable'.tr());
-      }
-      throw InternalServerException('errors.unknown'.tr());
+    ).catchError((error) {
+      HttpHelper.handleRequestException(error);
     });
 
     if (response.statusCode == HttpCode.UNAUTHORIZED) {
@@ -77,6 +70,7 @@ class ReservationProvider {
     } else if (response.statusCode == HttpCode.NOT_FOUND) {
       throw NotFoundException('errors.reservation-creation-not-found'.tr());
     }
+
     if (response.statusCode == HttpCode.BAD_REQUEST) {
       throw BadRequestException('errors.reservation-creation-failed'.tr());
     }
@@ -98,16 +92,12 @@ class ReservationProvider {
     http.Response response = await http
         .put(
       Uri.parse("$endpoint/pay"),
-      headers: _getHeaders(token),
+      headers: HttpHelper.getHeaders(token),
       body: jsonEncode({
         'reservationId': reservation.id,
       }),
-    )
-        .catchError((error) {
-      if (error is SocketException) {
-        throw ServiceUnavailableException('errors.service-unavailable'.tr());
-      }
-      throw InternalServerException('errors.unknown'.tr());
+    ).catchError((error) {
+      HttpHelper.handleRequestException(error);
     });
 
     if (response.statusCode == HttpCode.UNAUTHORIZED) {
@@ -134,13 +124,9 @@ class ReservationProvider {
 
     final http.Response response = await http.get(
       Uri.parse("$endpoint/userId/$userId"),
-      headers: _getHeaders(token),
+      headers: HttpHelper.getHeaders(token),
     ).catchError((error) {
-      if (error is SocketException) {
-        throw ServiceUnavailableException('errors.service-unavailable'.tr());
-      }
-
-      throw InternalServerException('errors.unknown'.tr());
+      HttpHelper.handleRequestException(error);
     });
 
     if (response.statusCode == HttpCode.UNAUTHORIZED) {
@@ -170,16 +156,12 @@ class ReservationProvider {
     response = await http
         .put(
       Uri.parse("$endpoint/cancel"),
-      headers: _getHeaders(token),
+      headers: HttpHelper.getHeaders(token),
       body: jsonEncode({
         'reservationId': reservationId,
       }),
-    )
-        .catchError((error) {
-      if (error is SocketException) {
-        throw ServiceUnavailableException('errors.service-unavailable'.tr());
-      }
-      throw InternalServerException('errors.unknown'.tr());
+    ).catchError((error) {
+      HttpHelper.handleRequestException(error);
     });
 
     if (response.statusCode == HttpCode.UNAUTHORIZED) {
@@ -200,16 +182,12 @@ class ReservationProvider {
     response = await http
         .put(
       Uri.parse("$endpoint/return"),
-      headers: _getHeaders(token),
+      headers: HttpHelper.getHeaders(token),
       body: jsonEncode({
         'id': reservationId,
       }),
-    )
-        .catchError((error) {
-      if (error is SocketException) {
-        throw ServiceUnavailableException('errors.service-unavailable'.tr());
-      }
-      throw InternalServerException('errors.unknown'.tr());
+    ).catchError((error) {
+      HttpHelper.handleRequestException(error);
     });
 
     if (response.statusCode == HttpCode.UNAUTHORIZED) {
@@ -230,13 +208,9 @@ class ReservationProvider {
     response = await http
         .delete(
       Uri.parse("$endpoint/$reservationId"),
-      headers: _getHeaders(token),
-    )
-        .catchError((error) {
-      if (error is SocketException) {
-        throw ServiceUnavailableException('errors.service-unavailable'.tr());
-      }
-      throw InternalServerException('errors.unknown'.tr());
+      headers: HttpHelper.getHeaders(token),
+    ).catchError((error) {
+      HttpHelper.handleRequestException(error);
     });
 
     if (response.statusCode == HttpCode.UNAUTHORIZED) {
@@ -257,12 +231,9 @@ class ReservationProvider {
 
     response = await http.get(
       Uri.parse("$endpoint/id/$reservationId"),
-      headers: _getHeaders(token),
+      headers: HttpHelper.getHeaders(token),
     ).catchError((error) {
-      if (error is SocketException) {
-        throw ServiceUnavailableException('errors.service-unavailable'.tr());
-      }
-      throw InternalServerException('errors.unknown'.tr());
+      HttpHelper.handleRequestException(error);
     });
 
     if (response.statusCode == HttpCode.UNAUTHORIZED) {
@@ -272,14 +243,5 @@ class ReservationProvider {
     }
 
     return Reservation.fromJson(jsonDecode(response.body)["reservation"]);
-  }
-
-
-  Map<String, String> _getHeaders(String token) {
-    return {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'Authorization': 'Bearer $token',
-    };
   }
 }
