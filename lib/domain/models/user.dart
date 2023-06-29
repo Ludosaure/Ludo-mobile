@@ -12,7 +12,6 @@ class User {
   final bool hasVerifiedAccount;
   final bool isAccountClosed;
   bool hasEnabledMailNotifications;
-  bool hasEnabledPhoneNotifications;
 
 
   User({
@@ -27,7 +26,6 @@ class User {
     required this.hasVerifiedAccount,
     required this.isAccountClosed,
     required this.hasEnabledMailNotifications,
-    required this.hasEnabledPhoneNotifications,
   });
 
   bool isAdmin() {
@@ -46,7 +44,6 @@ class User {
         hasVerifiedAccount: json["isAccountVerified"],
         isAccountClosed: json["isAccountClosed"],
         hasEnabledMailNotifications: json["hasEnabledMailNotifications"],
-        hasEnabledPhoneNotifications: json["hasEnabledPhoneNotifications"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -63,6 +60,5 @@ class User {
         "isAccountVerified": hasVerifiedAccount,
         "isAccountClosed": isAccountClosed,
         "hasEnabledMailNotifications": hasEnabledMailNotifications,
-        "hasEnabledPhoneNotifications": hasEnabledPhoneNotifications,
       };
 }

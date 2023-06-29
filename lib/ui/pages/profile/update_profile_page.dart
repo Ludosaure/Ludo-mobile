@@ -133,28 +133,6 @@ class _UpdateProfilePageState extends State<UpdateProfilePage> {
               },
             ),
           ),
-          const SizedBox(height: 20),
-          ListTile(
-            title: Text(
-              'activate-app-notifications-label'.tr(),
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            trailing: Switch(
-              activeColor: Theme.of(context).colorScheme.primary,
-              value: user.hasEnabledPhoneNotifications,
-              onChanged: (value) {
-                setState(() {
-                  user.hasEnabledPhoneNotifications = value;
-                });
-                context.read<UpdateUserBloc>().add(
-                      UserHasEnabledPhoneNotificationsChangedEvent(value),
-                    );
-              },
-            ),
-          ),
         ],
       ),
     );

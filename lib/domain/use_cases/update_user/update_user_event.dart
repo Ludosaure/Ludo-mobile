@@ -39,12 +39,6 @@ class UserHasEnabledMailNotificationsChangedEvent extends UpdateUserEvent {
   const UserHasEnabledMailNotificationsChangedEvent(this.hasEnabledMailNotifications);
 }
 
-class UserHasEnabledPhoneNotificationsChangedEvent extends UpdateUserEvent {
-  final bool hasEnabledPhoneNotifications;
-
-  const UserHasEnabledPhoneNotificationsChangedEvent(this.hasEnabledPhoneNotifications);
-}
-
 class UserPictureChangedEvent extends UpdateUserEvent {
   final dynamic picture;
 

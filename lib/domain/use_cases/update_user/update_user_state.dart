@@ -10,7 +10,6 @@ class UpdateUserInitial extends UpdateUserState {
   final String? phoneNumber;
   final String? pseudo;
   final bool? hasEnabledMailNotifications;
-  final bool? hasEnabledPhoneNotifications;
   final dynamic image;
   final FormStatus status;
 
@@ -21,7 +20,6 @@ class UpdateUserInitial extends UpdateUserState {
     this.phoneNumber,
     this.pseudo,
     this.hasEnabledMailNotifications,
-    this.hasEnabledPhoneNotifications,
     this.image,
     this.status = const FormNotSent(),
   });
@@ -33,7 +31,6 @@ class UpdateUserInitial extends UpdateUserState {
     String? phoneNumber,
     String? pseudo,
     bool? hasEnabledMailNotifications,
-    bool? hasEnabledPhoneNotifications,
     dynamic image,
     FormStatus? status = const FormNotSent(),
   }) {
@@ -45,8 +42,6 @@ class UpdateUserInitial extends UpdateUserState {
       pseudo: pseudo ?? this.pseudo,
       hasEnabledMailNotifications:
           hasEnabledMailNotifications ?? this.hasEnabledMailNotifications,
-      hasEnabledPhoneNotifications:
-          hasEnabledPhoneNotifications ?? this.hasEnabledPhoneNotifications,
       image: image ?? this.image,
       status: status ?? this.status,
     );
@@ -61,7 +56,6 @@ class UpdateUserInitial extends UpdateUserState {
         'phoneNumber: $phoneNumber, '
         'pseudo: $pseudo, '
         'hasEnabledMailNotifications: $hasEnabledMailNotifications, '
-        'hasEnabledPhoneNotifications: $hasEnabledPhoneNotifications, '
         'image: $image, '
         'status: $status)';
   }
@@ -77,7 +71,6 @@ class UpdateUserInitial extends UpdateUserState {
         other.phoneNumber == phoneNumber &&
         other.pseudo == pseudo &&
         other.hasEnabledMailNotifications == hasEnabledMailNotifications &&
-        other.hasEnabledPhoneNotifications == hasEnabledPhoneNotifications &&
         other.image == image &&
         other.status == status;
   }
@@ -90,7 +83,6 @@ class UpdateUserInitial extends UpdateUserState {
         phoneNumber.hashCode ^
         pseudo.hashCode ^
         hasEnabledMailNotifications.hashCode ^
-        hasEnabledPhoneNotifications.hashCode ^
         image.hashCode ^
         status.hashCode;
   }
