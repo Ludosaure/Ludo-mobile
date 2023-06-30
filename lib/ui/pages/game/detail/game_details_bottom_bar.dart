@@ -4,19 +4,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_date_pickers/flutter_date_pickers.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
+import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:ludo_mobile/domain/use_cases/cart/cart_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/list_reduction_plan/list_reduction_plan_cubit.dart';
 import 'package:ludo_mobile/utils/app_constants.dart';
-import 'package:ludo_mobile/utils/local_storage_helper.dart';
 import 'package:responsive_framework/responsive_value.dart';
 import 'package:responsive_framework/responsive_wrapper.dart';
 
 class GameDetailsBottomBar extends StatefulWidget {
+  final User? user;
   final Game game;
 
   const GameDetailsBottomBar({
     Key? key,
     required this.game,
+    this.user,
   }) : super(key: key);
 
   @override
@@ -29,6 +31,8 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
   late bool _isInCart = false;
   late bool _showDatePicker = false;
   int _reduction = 0;
+
+  User? get _user => widget.user;
 
   Game get _game => widget.game;
 
@@ -52,12 +56,7 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: Container(
-          padding: const EdgeInsets.only(
-            left: 8.0,
-            right: 8.0,
-            bottom: 8.0,
-            top: 8.0,
-          ),
+          padding: const EdgeInsets.all(8.0),
           height: ResponsiveValue(
             context,
             defaultValue: 200.0,
@@ -80,13 +79,13 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
           ).value,
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.primary.withOpacity(0.88),
-            borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(30),
-              bottom: Radius.circular(30),
+            borderRadius: const BorderRadius.all(
+              Radius.circular(30.0),
             ),
           ),
           child: GridView(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              mainAxisExtent: 100,
               mainAxisSpacing: 8,
               crossAxisSpacing: 8,
               crossAxisCount: 3,
@@ -187,24 +186,7 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
                   }),
                 ],
               ),
-              Column(
-                verticalDirection: VerticalDirection.down,
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  _buildReservationIcon(context),
-                  Text(
-                    _bookingPeriodText(),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 8),
-                ],
-              ),
+              _buildDatePicker(context),
               Column(
                 verticalDirection: VerticalDirection.down,
                 mainAxisSize: MainAxisSize.min,
@@ -231,18 +213,7 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
                   }),
                 ],
               ),
-              FutureBuilder<Widget>(
-                future: _buildActionGameButton(context),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const CircularProgressIndicator();
-                  }
-                  if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  }
-                  return snapshot.data!;
-                },
-              ),
+              _buildActionGameButton(context),
             ],
           ),
         ),
@@ -250,11 +221,38 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
     );
   }
 
-  Future<Widget> _buildActionGameButton(BuildContext context) async {
-    var connectedUser = await LocalStorageHelper.getUserFromLocalStorage();
-    if (connectedUser == null || connectedUser.isAdmin()) {
+  //TODO changer le layout si l'utilisateur n'est pas connecté
+  Widget _buildDatePicker(BuildContext context) {
+    if (_user == null || _user!.isAdmin()) {
+      print(_user);
       return Container();
     }
+
+    return Column(
+      verticalDirection: VerticalDirection.down,
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        _buildReservationIcon(context),
+        Text(
+          _bookingPeriodText(),
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 12,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 8),
+      ],
+    );
+  }
+
+  Widget _buildActionGameButton(BuildContext context) {
+    if (_user == null || _user!.isAdmin()) {
+      return Container();
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(
         vertical: 20.0,
@@ -332,7 +330,9 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
                     .read<ListReductionPlanCubit>()
                     .getReductionForNbWeeks(nbWeeks);
 
-                parentContext.read<CartCubit>().onChangeDate(_bookingPeriod, _reduction);
+                parentContext
+                    .read<CartCubit>()
+                    .onChangeDate(_bookingPeriod, _reduction);
               },
               onSelectionError: (UnselectablePeriodException error) {
                 DatePeriod wantedPeriod = error.period;

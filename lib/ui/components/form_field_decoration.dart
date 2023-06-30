@@ -16,6 +16,7 @@ class FormFieldDecoration extends InputDecoration {
       isDense: true,
     );
   }
+
   static InputDecoration textArea(String label) {
     return InputDecoration(
       border: OutlineInputBorder(
@@ -24,6 +25,7 @@ class FormFieldDecoration extends InputDecoration {
       fillColor: CustomTheme.formColor,
       filled: true,
       enabledBorder: OutlineInputBorder(
+        gapPadding: 0,
         borderRadius: BorderRadius.circular(7),
         borderSide: const BorderSide(color: Colors.transparent),
       ),

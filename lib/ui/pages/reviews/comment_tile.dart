@@ -39,6 +39,7 @@ class CommentTile extends StatelessWidget {
           verticalDirection: VerticalDirection.down,
           children: [
             CustomRatingBar(
+              allowHalfRating: false,
               initialRating: review.rating.toDouble(),
               ignoreGestures: true,
               itemSize: 15,

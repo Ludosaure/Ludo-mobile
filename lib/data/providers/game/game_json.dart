@@ -1,5 +1,6 @@
 import 'package:ludo_mobile/domain/models/game.dart';
 import 'package:ludo_mobile/domain/models/game_category.dart';
+import 'package:ludo_mobile/domain/models/review.dart';
 import 'package:ludo_mobile/utils/extensions.dart';
 
 class GameJson {
@@ -17,6 +18,7 @@ class GameJson {
   final bool isArchived;
   final bool? isAvailable;
   final List<DateTime> unavailableDates;
+  final List<Review> reviews;
   final bool canBeReviewed;
 
   GameJson({
@@ -34,6 +36,7 @@ class GameJson {
     required this.isArchived,
     this.isAvailable,
     required this.unavailableDates,
+    required this.reviews,
     this.canBeReviewed = false,
   });
 
@@ -65,6 +68,11 @@ class GameJson {
         isArchived: json["isArchived"],
         isAvailable: json['isAvailable'],
         unavailableDates: unavailableDates,
+        reviews: json['reviews'] != null
+            ? json['reviews']
+                .map<Review>((review) => Review.fromJson(review))
+                .toList()
+            : [],
         canBeReviewed: canBeReviewed);
   }
 
@@ -85,6 +93,7 @@ class GameJson {
       isAvailable: isAvailable,
       unavailableDates: unavailableDates,
       canBeReviewed: canBeReviewed,
+      reviews: reviews,
     );
   }
 }

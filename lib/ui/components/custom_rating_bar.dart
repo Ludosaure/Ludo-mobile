@@ -6,12 +6,14 @@ class CustomRatingBar extends StatelessWidget {
   final double initialRating;
   final double itemSize;
   final void Function(double) onRatingUpdate;
+  final bool allowHalfRating;
 
   const CustomRatingBar({
     required this.initialRating,
     required this.ignoreGestures,
     required this.itemSize,
     required this.onRatingUpdate,
+    required this.allowHalfRating,
     super.key,
   });
 
@@ -22,7 +24,7 @@ class CustomRatingBar extends StatelessWidget {
       initialRating: initialRating,
       minRating: 1,
       direction: Axis.horizontal,
-      allowHalfRating: true,
+      allowHalfRating: allowHalfRating,
       itemCount: 5,
       unratedColor: Colors.amberAccent.withOpacity(0.3),
       itemSize: itemSize,

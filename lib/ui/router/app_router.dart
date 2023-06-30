@@ -18,6 +18,7 @@ import 'package:ludo_mobile/domain/use_cases/list_all_reservations/list_all_rese
 import 'package:ludo_mobile/domain/use_cases/list_reduction_plan/list_reduction_plan_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/login/login_bloc.dart';
 import 'package:ludo_mobile/domain/use_cases/register/register_bloc.dart';
+import 'package:ludo_mobile/domain/use_cases/review_game/review_game_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/session/session_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/update_game/update_game_bloc.dart';
 import 'package:ludo_mobile/domain/use_cases/update_user/update_user_bloc.dart';
@@ -68,6 +69,7 @@ class AppRouter {
   final UpdateGameBloc _updateGameBloc = locator<UpdateGameBloc>();
   final UpdateUserBloc _updateUserBloc = locator<UpdateUserBloc>();
   final GetCategoriesCubit _getCategoriesCubit = locator<GetCategoriesCubit>();
+  final ReviewGameCubit _reviewGameCubit = locator<ReviewGameCubit>();
 
   late User? connectedUser;
 
@@ -209,8 +211,12 @@ class AppRouter {
               BlocProvider.value(
                 value: _listReductionPlanCubit,
               ),
+              BlocProvider.value(
+                value: _reviewGameCubit,
+              ),
             ],
             child: GameDetailsPage(
+              user: connectedUser,
               gameId: state.params['id']!,
             ),
           ),
@@ -574,5 +580,6 @@ class AppRouter {
     _updateGameBloc.close();
     _updateUserBloc.close();
     _getCategoriesCubit.close();
+    _reviewGameCubit.close();
   }
 }

@@ -1,10 +1,10 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/core/exception.dart';
 import 'package:ludo_mobile/core/http_code.dart';
+import 'package:ludo_mobile/core/http_helper.dart';
 import 'package:ludo_mobile/utils/app_constants.dart';
 import 'package:http/http.dart' as http;
 import 'package:ludo_mobile/utils/local_storage_helper.dart';
@@ -24,20 +24,13 @@ class PaymentProvider {
 
     final response = await http.post(
       Uri.parse('$endpoint/charge'),
-      headers: {
-        'Authorization': 'Bearer $userToken',
-        'Content-Type': 'application/json',
-      },
+      headers: HttpHelper.getHeaders(userToken),
       body: jsonEncode({
         'amount': amountInCents,
         'paymentMethodId': AppConstants.STRIPE_PAYMENT_ID,
       }),
     ).catchError((error) {
-      if (error is SocketException) {
-        throw ServiceUnavailableException('errors.service-unavailable'.tr());
-      }
-
-      throw InternalServerException('errors.unknown'.tr());
+      HttpHelper.handleRequestException(error);
     });
 
     if (response.statusCode != HttpCode.CREATED) {
