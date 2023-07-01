@@ -8,24 +8,22 @@ import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:ludo_mobile/domain/use_cases/cart/cart_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/list_reduction_plan/list_reduction_plan_cubit.dart';
 import 'package:ludo_mobile/utils/app_constants.dart';
-import 'package:responsive_framework/responsive_value.dart';
-import 'package:responsive_framework/responsive_wrapper.dart';
 
-class GameDetailsBottomBar extends StatefulWidget {
+class GameBookingComponent extends StatefulWidget {
   final User? user;
   final Game game;
 
-  const GameDetailsBottomBar({
+  const GameBookingComponent({
     Key? key,
     required this.game,
     this.user,
   }) : super(key: key);
 
   @override
-  State<GameDetailsBottomBar> createState() => _GameDetailsBottomBarState();
+  State<GameBookingComponent> createState() => _GameBookingComponentState();
 }
 
-class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
+class _GameBookingComponentState extends State<GameBookingComponent> {
   final _formKey = GlobalKey<FormState>();
   late DateTimeRange _bookingPeriod;
   late bool _isInCart = false;
@@ -48,244 +46,174 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
 
   @override
   Widget build(BuildContext context) {
-    if (_showDatePicker) {
+    final bool displayPaymentBar = _user != null && !_user!.isAdmin();
+    final Color primary = Theme.of(context).colorScheme.primary;
+
+    if (_showDatePicker && !kIsWeb) {
       return _showReservationCalendar(context);
     }
 
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
-        child: Container(
-          padding: const EdgeInsets.all(8.0),
-          height: ResponsiveValue(
-            context,
-            defaultValue: 200.0,
-            valueWhen: [
-              const Condition.largerThan(
-                name: MOBILE,
-                value: 220.0,
-              ),
-            ],
-          ).value,
-          width: ResponsiveValue(
-            context,
-            defaultValue: MediaQuery.of(context).size.width * 0.95,
-            valueWhen: [
-              const Condition.largerThan(
-                name: MOBILE,
-                value: 450.0,
-              ),
-            ],
-          ).value,
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary.withOpacity(0.88),
-            borderRadius: const BorderRadius.all(
-              Radius.circular(30.0),
-            ),
+    if (displayPaymentBar) {
+      return Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.baseline,
+        textBaseline: TextBaseline.alphabetic,
+        verticalDirection: VerticalDirection.down,
+        children: [
+          _buildDatePicker(primary, context),
+          const SizedBox(
+            width: 8,
           ),
-          child: GridView(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              mainAxisExtent: 100,
-              mainAxisSpacing: 8,
-              crossAxisSpacing: 8,
-              crossAxisCount: 3,
-              childAspectRatio: 1.5,
-            ),
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                verticalDirection: VerticalDirection.down,
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.groups,
-                    color: Colors.white,
-                  ),
-                  const Text(
-                    "nb-players-label-long",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                    ),
-                  ).tr(),
-                  const SizedBox(height: 8),
-                  const Text(
-                    "min-max-players-label",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                    ),
-                  ).tr(namedArgs: {
-                    "minPlayers": _game.minPlayers.toString(),
-                    "maxPlayers": _game.maxPlayers.toString(),
-                  }),
-                ],
-              ),
-              Column(
-                verticalDirection: VerticalDirection.down,
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.all(2.0),
-                    child: Icon(
-                      Icons.elderly_woman,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const Text(
-                    "min-age-label",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                    ),
-                  ).tr(),
-                  const SizedBox(height: 8),
-                  const Text(
-                    "min-age",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                    ),
-                  ).tr(namedArgs: {
-                    "age": _game.minAge.toString(),
-                  }),
-                ],
-              ),
-              Column(
-                verticalDirection: VerticalDirection.down,
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.all(2.0),
-                    child: Icon(
-                      Icons.timer_outlined,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const Text(
-                    "game-duration-label",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                    ),
-                  ).tr(),
-                  const SizedBox(height: 8),
-                  const Text(
-                    "game-duration",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                    ),
-                  ).tr(namedArgs: {
-                    "duration": _game.averageDuration.toString(),
-                  }),
-                ],
-              ),
-              _buildDatePicker(context),
-              Column(
-                verticalDirection: VerticalDirection.down,
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Text(
-                    "weekly-amount-label",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                    ),
-                  ).tr(),
-                  const SizedBox(height: 8),
-                  const Text(
-                    "amount",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ).tr(namedArgs: {
-                    "amount": _price.toString(),
-                  }),
-                ],
-              ),
-              _buildActionGameButton(context),
-            ],
+          _buildWeeklyAmount(primary, displayPaymentBar, context),
+          const SizedBox(
+            width: 8,
           ),
-        ),
-      ),
+          _buildAddGameButton(context),
+        ],
+      );
+    }
+
+    return Row(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      verticalDirection: VerticalDirection.down,
+      children: [
+        _buildWeeklyAmount(primary, displayPaymentBar, context),
+      ],
     );
   }
 
-  //TODO changer le layout si l'utilisateur n'est pas connecté
-  Widget _buildDatePicker(BuildContext context) {
-    if (_user == null || _user!.isAdmin()) {
-      print(_user);
-      return Container();
-    }
-
+  Widget _buildDatePicker(Color primary, BuildContext context) {
     return Column(
       verticalDirection: VerticalDirection.down,
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        _buildReservationIcon(context),
+        _buildReservationIcon(primary, context),
+        const SizedBox(
+          height: 8.0,
+        ),
         Text(
           _bookingPeriodText(),
-          style: const TextStyle(
-            color: Colors.white,
+          softWrap: true,
+          overflow: TextOverflow.visible,
+          style: TextStyle(
+            color: primary,
             fontSize: 12,
           ),
           textAlign: TextAlign.center,
         ),
-        const SizedBox(height: 8),
       ],
     );
   }
 
-  Widget _buildActionGameButton(BuildContext context) {
-    if (_user == null || _user!.isAdmin()) {
-      return Container();
+  Widget _buildWeeklyAmount(
+      Color primary, bool isClient, BuildContext context) {
+    if (isClient) {
+      return Column(
+        verticalDirection: VerticalDirection.down,
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const SizedBox(height: 8),
+          Text(
+            "weekly-amount-label",
+            style: TextStyle(
+              color: primary,
+              fontSize: 12,
+            ),
+          ).tr(),
+          const SizedBox(height: 8),
+          Text(
+            "amount",
+            style: TextStyle(
+              color: primary,
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+            ),
+          ).tr(
+            namedArgs: {
+              "amount": _price.toString(),
+            },
+          ),
+        ],
+      );
     }
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        vertical: 20.0,
-        horizontal: 5.0,
-      ),
-      child: _game.isAvailable!
-          ? _buildAddToCartButton(context)
-          : const Text(
-              "game-unavailable-label",
-              style: TextStyle(
-                color: Colors.white,
-                fontStyle: FontStyle.italic,
-                fontWeight: FontWeight.w400,
-              ),
-              textAlign: TextAlign.center,
-            ).tr(),
+    return Row(
+      verticalDirection: VerticalDirection.down,
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Text(
+          "weekly-amount-label",
+          style: TextStyle(
+            color: primary,
+            fontSize: 14,
+          ),
+        ).tr(),
+        const SizedBox(width: 8),
+        Text(
+          "amount",
+          style: TextStyle(
+            color: primary,
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+          ),
+        ).tr(
+          namedArgs: {
+            "amount": _price.toString(),
+          },
+        ),
+        const SizedBox(width: 8),
+      ],
     );
   }
 
-  Widget _buildReservationIcon(BuildContext context) {
-    return IconButton(
-      padding: const EdgeInsets.all(2.0),
-      visualDensity: VisualDensity.compact,
-      onPressed: () {
-        setState(() {
-          _showDatePicker = true;
-        });
-      },
-      icon: const Icon(
-        Icons.calendar_month_outlined,
-        color: Colors.white,
+  Widget _buildAddGameButton(BuildContext context) {
+    return _game.isAvailable!
+        ? _buildAddToCartButton(context)
+        : const Text(
+            "game-unavailable-label",
+            style: TextStyle(
+              color: Colors.white,
+              fontStyle: FontStyle.italic,
+              fontWeight: FontWeight.w400,
+              fontSize: 12,
+            ),
+            textAlign: TextAlign.center,
+          ).tr();
+  }
+
+  Widget _buildReservationIcon(Color primary, BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: !kIsWeb ? primary.withOpacity(0.88) : primary.withOpacity(0.5),
+        borderRadius: const BorderRadius.all(
+          Radius.circular(30.0),
+        ),
+      ),
+      child: IconButton(
+        padding: const EdgeInsets.all(2.0),
+        visualDensity: VisualDensity.compact,
+        onPressed: kIsWeb ? null : _onCalendarPressed,
+        icon: const Icon(
+          Icons.calendar_month_outlined,
+          color: Colors.white,
+        ),
       ),
     );
+  }
+
+  void _onCalendarPressed() {
+    setState(() {
+      _showDatePicker = !_showDatePicker;
+    });
   }
 
   Widget _showReservationCalendar(BuildContext parentContext) {
@@ -467,7 +395,7 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
         message: "not-available-on-web-label".tr(),
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 1, vertical: 1),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
             visualDensity: VisualDensity.compact,
             backgroundColor:
                 Theme.of(context).colorScheme.primary.withOpacity(0.88),
@@ -476,20 +404,25 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
             ),
           ),
           onPressed: null,
-          child: Text(label,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: Colors.grey,
-                fontSize: 16,
-              )),
+          child: Text(
+            overflow: TextOverflow.visible,
+            softWrap: true,
+            label,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: Colors.grey,
+              fontSize: 12,
+            ),
+          ),
         ),
       );
     }
 
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(horizontal: 1, vertical: 1),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
         visualDensity: VisualDensity.compact,
+        elevation: 2,
         backgroundColor:
             Theme.of(context).colorScheme.primary.withOpacity(0.88),
         shape: RoundedRectangleBorder(
@@ -500,6 +433,12 @@ class _GameDetailsBottomBarState extends State<GameDetailsBottomBar> {
       child: Text(
         label,
         textAlign: TextAlign.center,
+        overflow: TextOverflow.visible,
+        softWrap: true,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 12,
+        ),
       ),
     );
   }

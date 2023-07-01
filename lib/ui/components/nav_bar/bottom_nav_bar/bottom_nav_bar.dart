@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/domain/models/user.dart' as db_user;
 import 'package:ludo_mobile/firebase/service/firebase_database_service.dart';
-import 'package:ludo_mobile/ui/components/search_bar.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
 import 'package:ludo_mobile/utils/menu_items.dart';
 
@@ -98,39 +97,6 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
           context.go(Routes.profile.path);
         }
       },
-    );
-  }
-
-  void _onSearchPressed() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return const SearchBar(
-          showFilter: true,
-          onSearch: null, //TODO
-        );
-      },
-    );
-  }
-
-  Widget _buildShoppingCartButton(BuildContext context) {
-    return IconButton(
-      onPressed: () {
-        context.go(Routes.cart.path);
-      },
-      padding: const EdgeInsets.all(3.0),
-      style: ButtonStyle(
-        shape: MaterialStateProperty.all(
-          const CircleBorder(),
-        ),
-        backgroundColor: MaterialStateProperty.all(
-          Theme.of(context).colorScheme.primary,
-        ),
-      ),
-      icon: const Icon(
-        Icons.shopping_cart_outlined,
-        color: Colors.black,
-      ),
     );
   }
 }

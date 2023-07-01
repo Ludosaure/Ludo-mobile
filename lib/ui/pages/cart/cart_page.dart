@@ -2,13 +2,11 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
-import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
 import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:ludo_mobile/domain/use_cases/cart/cart_cubit.dart';
 import 'package:ludo_mobile/ui/components/scaffold/home_scaffold.dart';
 import 'package:ludo_mobile/ui/pages/cart/cart_content.dart';
-import 'package:ludo_mobile/ui/router/routes.dart';
 import 'package:ludo_mobile/utils/menu_items.dart';
 
 class CartPage extends StatefulWidget {
@@ -35,7 +33,6 @@ class _CartPageState extends State<CartPage> {
 
   @override
   Widget build(BuildContext context) {
-    //TODO ajouter la gestion de onBackPressed
     return HomeScaffold(
       navBarIndex: MenuItems.Cart.index,
       body: Padding(
@@ -229,8 +226,9 @@ class _CartPageState extends State<CartPage> {
     });
   }
 
-  void _onBackPressed() {
+  @override
+  void dispose() {
     Stripe.instance.resetPaymentSheetCustomer();
-    context.go(Routes.home.path);
+    super.dispose();
   }
 }

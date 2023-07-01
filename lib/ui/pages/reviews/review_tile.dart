@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:ludo_mobile/domain/models/review.dart';
 import 'package:ludo_mobile/ui/components/custom_rating_bar.dart';
 
-class CommentTile extends StatelessWidget {
+class ReviewTile extends StatelessWidget {
   final Review review;
 
-  const CommentTile({
+  const ReviewTile({
     required this.review,
     super.key,
   });
@@ -75,14 +75,20 @@ class CommentTile extends StatelessWidget {
     DateTime now = DateTime.now();
     if (now.difference(date).inDays > 1 && now.difference(date).inDays < 30) {
       return "il y a ${now.difference(date).inDays} jours";
-    } else if (now.difference(date).inDays == 1) {
-      return "il y a 1 jour";
-    } else if (now.difference(date).inDays / 30 > 12) {
-      return "il y a ${(now.difference(date).inDays / 30 / 12).ceil()} ans";
-    } else if (now.difference(date).inDays > 30) {
-      return "il y a ${(now.difference(date).inDays / 30).ceil()} mois";
-    } else {
-      return "aujourd'hui";
     }
+
+    if (now.difference(date).inDays == 1) {
+      return "il y a 1 jour";
+    }
+
+    if (now.difference(date).inDays / 30 > 12) {
+      return "il y a ${(now.difference(date).inDays / 30 / 12).ceil()} ans";
+    }
+
+    if (now.difference(date).inDays > 30) {
+      return "il y a ${(now.difference(date).inDays / 30).ceil()} mois";
+    }
+
+    return "aujourd'hui";
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ludo_mobile/domain/models/review.dart';
-import 'package:ludo_mobile/ui/pages/reviews/comment_tile.dart';
+import 'package:ludo_mobile/ui/pages/reviews/review_tile.dart';
 
 class ReviewList extends StatelessWidget {
   final List<Review> reviews;
@@ -23,10 +23,10 @@ class ReviewList extends StatelessWidget {
       verticalDirection: VerticalDirection.down,
       children: reviews
           .map(
-            (review) => CommentTile(
-          review: review,
-        ),
-      )
+            (review) => ReviewTile(
+              review: review,
+            ),
+          )
           .toList(),
     );
   }

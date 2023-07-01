@@ -58,7 +58,6 @@ class ReviewGameCubit extends Cubit<ReviewGameState> {
             comment: comment,
             rating: rating,
             createdAt: DateTime.now(),
-            id: 'a',
           ),
         ],
       ),
