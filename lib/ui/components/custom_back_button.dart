@@ -19,7 +19,7 @@ class CustomBackButton extends StatelessWidget {
         splashRadius: 20,
         onPressed: () {
           if(Navigator.canPop(context)) {
-            Navigator.pop(context);
+            context.pop();
           } else {
             context.go(Routes.landing.path);
           }

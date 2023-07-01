@@ -1,4 +1,5 @@
 import 'package:ludo_mobile/domain/models/game_category.dart';
+import 'package:ludo_mobile/domain/models/review.dart';
 import 'package:ludo_mobile/utils/extensions.dart';
 
 class Game {
@@ -16,6 +17,8 @@ class Game {
   final bool isArchived;
   final bool? isAvailable;
   final List<DateTime> unavailableDates;
+  final List<Review> reviews;
+  final bool canBeReviewed;
 
   Game({
     required this.id,
@@ -32,12 +35,15 @@ class Game {
     required this.isArchived,
     this.isAvailable,
     required this.unavailableDates,
+    required this.reviews,
+    this.canBeReviewed = false,
   });
 
-  factory Game.fromJson(Map<String, dynamic> json) {
+  factory Game.fromJson(Map<String, dynamic> json,
+      {bool canBeReviewed = false}) {
     final List<DateTime> unavailableDates = [];
 
-    if(json["unavailabilities"] != null) {
+    if (json["unavailabilities"] != null) {
       json["unavailabilities"].forEach((unavailability) {
         final DateTime date = DateTime.parse(unavailability['date']);
         unavailableDates.add(DateTime(date.year, date.month, date.day));
@@ -55,10 +61,18 @@ class Game {
       maxPlayers: json['nbPlayersMax'],
       categories: [GameCategory.fromJson(json['category'])],
       weeklyAmount: json['weeklyAmount'].toDouble(),
-      rating: json['averageRating'] != null ? json['averageRating'].toDouble() : 0.0,
+      rating: json['averageRating'] != null
+          ? json['averageRating'].toDouble()
+          : 0.0,
       isArchived: json['isArchived'],
       isAvailable: json['isAvailable'] ?? false,
       unavailableDates: unavailableDates,
+      reviews: json['reviews'] != null
+          ? json['reviews']
+              .map<Review>((review) => Review.fromJson(review))
+              .toList()
+          : [],
+      canBeReviewed: canBeReviewed,
     );
   }
 
@@ -79,6 +93,7 @@ class Game {
       isArchived: false,
       isAvailable: false,
       unavailableDates: [],
+      reviews: [],
     );
   }
 }

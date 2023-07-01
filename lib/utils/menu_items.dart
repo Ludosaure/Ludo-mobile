@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 
 enum MenuItems {
   Messages,
-  Search,
-  Home,
   Favorites,
+  Home,
+  Cart,
   Profile,
+  Search, // pas utilisé pour l'instant
 }
 
 extension MenuItemsExtension on MenuItems {
@@ -22,6 +23,8 @@ extension MenuItemsExtension on MenuItems {
         return 'account-title'.tr();
       case MenuItems.Favorites:
         return 'favorites-title'.tr();
+      case MenuItems.Cart:
+        return 'cart-title'.tr();
     }
   }
 
@@ -37,6 +40,8 @@ extension MenuItemsExtension on MenuItems {
         return Icons.account_circle;
       case MenuItems.Favorites:
         return Icons.favorite;
+      case MenuItems.Cart:
+        return Icons.shopping_cart;
     }
   }
 }

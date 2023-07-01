@@ -1,8 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/domain/models/user.dart';
-import 'package:ludo_mobile/ui/router/routes.dart';
 import 'package:ludo_mobile/utils/app_constants.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
@@ -83,33 +81,8 @@ class CustomAppBar extends StatelessWidget {
             ),
           ),
         ),
-        _buildShoppingCartButton(context),
       ],
     );
   }
 
-  Widget _buildShoppingCartButton(BuildContext context) {
-    if (user != null) {
-      return IconButton(
-        onPressed: () {
-          context.go(Routes.cart.path);
-        },
-        padding: const EdgeInsets.all(3.0),
-        style: ButtonStyle(
-          shape: MaterialStateProperty.all(
-            const CircleBorder(),
-          ),
-          backgroundColor: MaterialStateProperty.all(
-            Theme.of(context).colorScheme.primary,
-          ),
-        ),
-        icon: const Icon(
-          Icons.shopping_cart_outlined,
-          color: Colors.black,
-        ),
-      );
-    }
-
-    return Container();
-  }
 }

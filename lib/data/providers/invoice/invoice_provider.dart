@@ -1,10 +1,9 @@
-import 'dart:io';
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:http/http.dart' as http;
 import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/core/exception.dart';
 import 'package:ludo_mobile/core/http_code.dart';
+import 'package:ludo_mobile/core/http_helper.dart';
 import 'package:ludo_mobile/utils/app_constants.dart';
 import 'package:ludo_mobile/utils/local_storage_helper.dart';
 
@@ -21,18 +20,9 @@ class InvoiceProvider {
 
     final http.Response response = await http.post(
       Uri.parse("$baseUrl/generate/$invoiceId"),
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
+      headers: HttpHelper.getHeaders(token),
     ).catchError((error) {
-      if (error is SocketException) {
-        throw ServiceUnavailableException(
-          'errors.service-unavailable'.tr(),
-        );
-      }
-      throw InternalServerException('errors.unknown'.tr());
+      HttpHelper.handleRequestException(error);
     });
 
     if (response.statusCode == HttpCode.NOT_FOUND) {

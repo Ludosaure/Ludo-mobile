@@ -1,6 +1,5 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:injectable/injectable.dart';
-import 'package:ludo_mobile/core/exception.dart';
+import 'package:ludo_mobile/core/repository_helper.dart';
 import 'package:ludo_mobile/data/providers/game/game_json.dart';
 import 'package:ludo_mobile/data/providers/game/game_listing_response.dart';
 import 'package:ludo_mobile/data/providers/game/game_provider.dart';
@@ -27,20 +26,27 @@ class GameRepository {
     return games;
   }
 
-  Future<Game> getGame(String gameId) async {
-    final GameJson gameJson = await _gameProvider.getGame(gameId);
+  Future<Game> getGame(String gameId, User? user) async {
+    if(user == null) {
+      final GameJson gameJson = await _gameProvider.getGame(gameId);
+
+      return gameJson.toGame();
+    }
+
+    final String? token = await LocalStorageHelper.getTokenFromLocalStorage();
+    final GameJson gameJson = await _gameProvider.getGameForLoggedUser(gameId, token!);
 
     return gameJson.toGame();
   }
 
   Future<void> createGame(NewGameRequest newGame) async {
-    final String? token = await _getAdminToken();
+    final String? token = await RepositoryHelper.getAdminToken();
 
     await _gameProvider.createGame(token!, newGame);
   }
 
   Future<Game> updateGame(UpdateGameRequest game) async {
-    final String? token = await _getAdminToken();
+    final String? token = await RepositoryHelper.getAdminToken();
 
     GameJson updatedGameJson = await _gameProvider.updateGame(token!, game);
 
@@ -48,23 +54,11 @@ class GameRepository {
   }
 
   Future<void> deleteGame(String gameId) async {
-    final String? token = await _getAdminToken();
+    final String? token = await RepositoryHelper.getAdminToken();
 
     await _gameProvider.deleteGame(gameId, token!);
   }
 
-  Future<String?> _getAdminToken() async {
-    final User? user = await LocalStorageHelper.getUserFromLocalStorage();
 
-    if(user == null) {
-      throw UserNotLoggedInException('errors.user-must-log-for-action'.tr());
-    }
-
-    if(!user.isAdmin()) {
-      throw NotAllowedException('errors.user-must-be-admin-for-action'.tr());
-    }
-
-    return LocalStorageHelper.getTokenFromLocalStorage();
-  }
 
 }

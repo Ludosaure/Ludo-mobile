@@ -1,5 +1,6 @@
 import 'package:ludo_mobile/domain/models/game.dart';
 import 'package:ludo_mobile/domain/models/game_category.dart';
+import 'package:ludo_mobile/domain/models/review.dart';
 import 'package:ludo_mobile/utils/extensions.dart';
 
 class GameJson {
@@ -17,6 +18,8 @@ class GameJson {
   final bool isArchived;
   final bool? isAvailable;
   final List<DateTime> unavailableDates;
+  final List<Review> reviews;
+  final bool canBeReviewed;
 
   GameJson({
     required this.id,
@@ -33,12 +36,14 @@ class GameJson {
     required this.isArchived,
     this.isAvailable,
     required this.unavailableDates,
+    required this.reviews,
+    this.canBeReviewed = false,
   });
 
-  factory GameJson.fromJson(Map<String, dynamic> json) {
+  factory GameJson.fromJson(Map<String, dynamic> json,
+      {bool canBeReviewed = false}) {
     final List<DateTime> unavailableDates = [];
-
-    if(json["unavailabilities"] != null) {
+    if (json["unavailabilities"] != null) {
       json["unavailabilities"].forEach((unavailability) {
         final DateTime date = DateTime.parse(unavailability['date']);
         unavailableDates.add(DateTime(date.year, date.month, date.day));
@@ -54,7 +59,8 @@ class GameJson {
         ageMin: json["ageMin"],
         nbPlayersMin: json["nbPlayersMin"],
         nbPlayersMax: json["nbPlayersMax"],
-        category: [GameCategory.fromJson(json['category'])], //TODO
+        category: [GameCategory.fromJson(json['category'])],
+        //TODO
         weeklyAmount: json["weeklyAmount"].toDouble(),
         rating: json["averageRating"] != null
             ? json["averageRating"].toDouble()
@@ -62,7 +68,12 @@ class GameJson {
         isArchived: json["isArchived"],
         isAvailable: json['isAvailable'],
         unavailableDates: unavailableDates,
-      );
+        reviews: json['reviews'] != null
+            ? json['reviews']
+                .map<Review>((review) => Review.fromJson(review))
+                .toList()
+            : [],
+        canBeReviewed: canBeReviewed);
   }
 
   toGame() {
@@ -81,6 +92,8 @@ class GameJson {
       isArchived: isArchived,
       isAvailable: isAvailable,
       unavailableDates: unavailableDates,
+      canBeReviewed: canBeReviewed,
+      reviews: reviews,
     );
   }
 }

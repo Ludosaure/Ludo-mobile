@@ -50,6 +50,8 @@ class _ExpandableTextState extends State<ExpandableTextWidget> {
               children: [
                 Text(
                   hiddenText ? "$firstHalf..." : firstHalf + secondHalf,
+                  softWrap: true,
+                  overflow: TextOverflow.visible,
                   style: const TextStyle(
                     fontSize: 16,
                     height: 1.5,

@@ -5,7 +5,7 @@ class AppConstants {
   static const String CLIENT_ROLE = "CLIENT";
   static const String API_URL = String.fromEnvironment(
     "API_URL",
-    defaultValue: 'http://api-ludosaure-load-balancer-2124171361.eu-west-1.elb.amazonaws.com',
+    defaultValue: 'https://api-ludosaure.not24get.fr',
   );
 
   static final RegExp UUID_V4 = RegExp(

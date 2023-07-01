@@ -1,9 +1,8 @@
-import 'dart:io';
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/core/exception.dart';
 import 'package:ludo_mobile/core/http_code.dart';
+import 'package:ludo_mobile/core/http_helper.dart';
 import 'package:ludo_mobile/data/providers/authentication/register/register_request.dart';
 
 import 'package:http/http.dart' as http;
@@ -25,16 +24,14 @@ class RegisterProvider {
         'phone': request.phone,
       },
     ).catchError((error) {
-      if (error is SocketException) {
-        throw ServiceUnavailableException('errors.service-unavailable'.tr());
-      }
-
-      throw InternalServerException('errors.unknown'.tr());
+      HttpHelper.handleRequestException(error);
     });
 
     if (response.statusCode == HttpCode.CREATED) {
       return RegisterResponse();
-    } else if (response.statusCode == HttpCode.CONFLICT) {
+    }
+
+    if (response.statusCode == HttpCode.CONFLICT) {
       throw EmailAlreadyUsedException('errors.email-already-used'.tr());
     } else {
       throw Exception('errors.unknown'.tr());
@@ -48,11 +45,7 @@ class RegisterProvider {
         'email': email,
       },
     ).catchError((error) {
-      if (error is SocketException) {
-        throw ServiceUnavailableException('errors.service-unavailable'.tr());
-      }
-
-      throw InternalServerException('errors.unknown'.tr());
+      HttpHelper.handleRequestException(error);
     });
 
     if (response.statusCode == HttpCode.OK) {

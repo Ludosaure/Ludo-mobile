@@ -1,10 +1,10 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/core/exception.dart';
 import 'package:ludo_mobile/core/http_code.dart';
+import 'package:ludo_mobile/core/http_helper.dart';
 import 'package:ludo_mobile/data/providers/game/new_game_request.dart';
 import 'package:ludo_mobile/data/providers/game/update_game_request.dart';
 import 'package:ludo_mobile/utils/app_constants.dart';
@@ -24,11 +24,7 @@ class GameProvider {
       Uri.parse(baseUrl),
     )
         .catchError((error) {
-      if (error is SocketException) {
-        throw ServiceUnavailableException('errors.service-unavailable'.tr());
-      }
-
-      throw InternalServerException('errors.unknown'.tr());
+      HttpHelper.handleRequestException(error);
     });
 
     if (response.statusCode != HttpCode.OK) {
@@ -53,13 +49,7 @@ class GameProvider {
       Uri.parse("$baseUrl/id/$gameId"),
     )
         .catchError((error) {
-      if (error is SocketException) {
-        throw ServiceUnavailableException(
-          'errors.service-unavailable'.tr(),
-        );
-      }
-
-      throw InternalServerException('errors.unknown'.tr());
+      HttpHelper.handleRequestException(error);
     });
 
     if (response.statusCode == HttpCode.NOT_FOUND) {
@@ -76,24 +66,54 @@ class GameProvider {
 
     final decodedResponse = jsonDecode(response.body);
 
-    return GameJson.fromJson(decodedResponse["game"]);
+    return GameJson.fromJson(
+      decodedResponse["game"],
+      canBeReviewed: decodedResponse["canReviewGame"],
+    );
+  }
+
+  Future<GameJson> getGameForLoggedUser(
+    String gameId,
+    String token,
+  ) async {
+    final http.Response response = await http
+        .get(
+      Uri.parse("$baseUrl/id/$gameId/logged-user"),
+      headers: HttpHelper.getHeaders(token),
+    )
+        .catchError((error) {
+      HttpHelper.handleRequestException(error);
+    });
+
+    if (response.statusCode == HttpCode.NOT_FOUND) {
+      throw NotFoundException(
+        "errors.game-not-found".tr(),
+      );
+    }
+
+    if (response.statusCode != HttpCode.OK) {
+      throw InternalServerException(
+        "errors.unknown".tr(),
+      );
+    }
+
+    final decodedResponse = jsonDecode(response.body);
+
+    return GameJson.fromJson(
+      decodedResponse["game"],
+      canBeReviewed: decodedResponse["canReviewGame"],
+    );
   }
 
   Future<void> createGame(String token, NewGameRequest newGame) async {
     final http.Response response = await http
         .post(
       Uri.parse(baseUrl),
-      headers: _getHeaders(token),
+      headers: HttpHelper.getHeaders(token),
       body: jsonEncode(newGame),
     )
         .catchError((error) {
-      if (error is SocketException) {
-        throw ServiceUnavailableException(
-          'errors.service-unavailable'.tr(),
-        );
-      }
-
-      throw InternalServerException('errors.unknown'.tr());
+      HttpHelper.handleRequestException(error);
     });
 
     if (response.statusCode == HttpCode.FORBIDDEN) {
@@ -117,17 +137,11 @@ class GameProvider {
     final http.Response response = await http
         .put(
       Uri.parse(baseUrl),
-      headers: _getHeaders(token),
+      headers: HttpHelper.getHeaders(token),
       body: jsonEncode(game),
     )
         .catchError((error) {
-      if (error is SocketException) {
-        throw ServiceUnavailableException(
-          'errors.service-unavailable'.tr(),
-        );
-      }
-
-      throw InternalServerException('errors.unknown'.tr());
+      HttpHelper.handleRequestException(error);
     });
 
     if (response.statusCode == HttpCode.UNAUTHORIZED) {
@@ -168,16 +182,10 @@ class GameProvider {
     final http.Response response = await http
         .delete(
       Uri.parse("$baseUrl/$gameId"),
-      headers: _getHeaders(token),
+      headers: HttpHelper.getHeaders(token),
     )
         .catchError((error) {
-      if (error is SocketException) {
-        throw ServiceUnavailableException(
-          'errors.service-unavailable'.tr(),
-        );
-      }
-
-      throw InternalServerException('errors.unknown'.tr());
+      HttpHelper.handleRequestException(error);
     });
 
     if (response.statusCode == HttpCode.NOT_FOUND) {
@@ -189,10 +197,10 @@ class GameProvider {
     if (response.statusCode == HttpCode.BAD_REQUEST) {
       throw BadRequestException(
         "${"errors.game-deletion-failed".tr()} ${"errors.error-detail".tr(
-              namedArgs: {
-                "error": jsonDecode(response.body)["message"],
-              },
-            )}",
+          namedArgs: {
+            "error": jsonDecode(response.body)["message"],
+          },
+        )}",
       );
     }
 
@@ -207,13 +215,5 @@ class GameProvider {
         "errors.unknown".tr(),
       );
     }
-  }
-
-  Map<String, String> _getHeaders(String token) {
-    return {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'Authorization': 'Bearer $token',
-    };
   }
 }

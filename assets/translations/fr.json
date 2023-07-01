@@ -198,5 +198,10 @@
   "currency-symbol": "€",
   "reservation-details-info": "* Il se peut que certains jeux n'apparaissent plus dans le détails suite à leur suppression. Seule la facture consèrve l'intégralité de la commande dans le temps.",
   "list-plans-title": "Liste des réductions",
-  "list-categories-title": "Liste des catégories"
+  "list-categories-title": "Liste des catégories",
+  "review-title": "Commentaires",
+  "must-have-account-to-review": "Vous devez avoir un compte pour pouvoir laisser un avis.",
+  "must-have-rented-game-to-review": "Vous devez avoir loué ce jeu pour pouvoir laisser un avis.",
+  "review-field": "Donnez votre avis",
+  "review-submit-button": "Publier"
 }
