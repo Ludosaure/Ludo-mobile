@@ -49,11 +49,11 @@ class _GameBookingComponentState extends State<GameBookingComponent> {
     final bool displayPaymentBar = _user != null && !_user!.isAdmin();
     final Color primary = Theme.of(context).colorScheme.primary;
 
-    if (_showDatePicker) {
+    if (_showDatePicker && !kIsWeb) {
       return _showReservationCalendar(context);
     }
 
-    if(displayPaymentBar) {
+    if (displayPaymentBar) {
       return Row(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -62,9 +62,13 @@ class _GameBookingComponentState extends State<GameBookingComponent> {
         verticalDirection: VerticalDirection.down,
         children: [
           _buildDatePicker(primary, context),
-          const SizedBox(width: 8,),
+          const SizedBox(
+            width: 8,
+          ),
           _buildWeeklyAmount(primary, displayPaymentBar, context),
-          const SizedBox(width: 8,),
+          const SizedBox(
+            width: 8,
+          ),
           _buildAddGameButton(context),
         ],
       );
@@ -106,8 +110,9 @@ class _GameBookingComponentState extends State<GameBookingComponent> {
     );
   }
 
-  Widget _buildWeeklyAmount(Color primary, bool isClient, BuildContext context) {
-    if(isClient) {
+  Widget _buildWeeklyAmount(
+      Color primary, bool isClient, BuildContext context) {
+    if (isClient) {
       return Column(
         verticalDirection: VerticalDirection.down,
         mainAxisSize: MainAxisSize.max,
@@ -188,7 +193,7 @@ class _GameBookingComponentState extends State<GameBookingComponent> {
   Widget _buildReservationIcon(Color primary, BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: primary.withOpacity(0.88),
+        color: !kIsWeb ? primary.withOpacity(0.88) : primary.withOpacity(0.5),
         borderRadius: const BorderRadius.all(
           Radius.circular(30.0),
         ),
@@ -196,17 +201,19 @@ class _GameBookingComponentState extends State<GameBookingComponent> {
       child: IconButton(
         padding: const EdgeInsets.all(2.0),
         visualDensity: VisualDensity.compact,
-        onPressed: () {
-          setState(() {
-            _showDatePicker = true;
-          });
-        },
+        onPressed: kIsWeb ? null : _onCalendarPressed,
         icon: const Icon(
           Icons.calendar_month_outlined,
           color: Colors.white,
         ),
       ),
     );
+  }
+
+  void _onCalendarPressed() {
+    setState(() {
+      _showDatePicker = !_showDatePicker;
+    });
   }
 
   Widget _showReservationCalendar(BuildContext parentContext) {
@@ -397,12 +404,16 @@ class _GameBookingComponentState extends State<GameBookingComponent> {
             ),
           ),
           onPressed: null,
-          child: Text(label,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: Colors.grey,
-                fontSize: 12,
-              )),
+          child: Text(
+            overflow: TextOverflow.visible,
+            softWrap: true,
+            label,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: Colors.grey,
+              fontSize: 12,
+            ),
+          ),
         ),
       );
     }
@@ -422,6 +433,8 @@ class _GameBookingComponentState extends State<GameBookingComponent> {
       child: Text(
         label,
         textAlign: TextAlign.center,
+        overflow: TextOverflow.visible,
+        softWrap: true,
         style: const TextStyle(
           color: Colors.white,
           fontSize: 12,
