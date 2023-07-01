@@ -20,6 +20,7 @@ import 'package:ludo_mobile/domain/use_cases/login/login_bloc.dart';
 import 'package:ludo_mobile/domain/use_cases/register/register_bloc.dart';
 import 'package:ludo_mobile/domain/use_cases/review_game/review_game_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/session/session_cubit.dart';
+import 'package:ludo_mobile/domain/use_cases/unavailabilities/game_unavailabilities_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/update_game/update_game_bloc.dart';
 import 'package:ludo_mobile/domain/use_cases/update_user/update_user_bloc.dart';
 import 'package:ludo_mobile/domain/use_cases/user_reservations/user_reservations_cubit.dart';
@@ -286,7 +287,7 @@ class AppRouter {
           child: MultiBlocProvider(
             providers: [
               BlocProvider.value(
-                value: _updateGameBloc,
+                value: locator<GameUnavailabilitiesCubit>(),
               ),
             ],
             child: GameUnavailabilitiesPage(
