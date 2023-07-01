@@ -13,7 +13,8 @@ import 'package:ludo_mobile/domain/use_cases/review_game/review_game_cubit.dart'
 import 'package:ludo_mobile/ui/components/custom_rating_bar.dart';
 import 'package:ludo_mobile/ui/components/expandable_text_widget.dart';
 import 'package:ludo_mobile/ui/components/favorite_button.dart';
-import 'package:ludo_mobile/ui/pages/game/detail/game_details_bottom_bar.dart';
+import 'package:ludo_mobile/ui/pages/game/detail/game_booking_component.dart';
+import 'package:ludo_mobile/ui/pages/game/detail/game_details_info_bar.dart';
 import 'package:ludo_mobile/ui/pages/reviews/review_section_component.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
 import 'package:ludo_mobile/utils/app_constants.dart';
@@ -28,8 +29,7 @@ class GameDetailsPage extends StatelessWidget {
     Key? key,
     required this.gameId,
     this.user,
-  })
-      : super(key: key);
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -66,10 +66,7 @@ class GameDetailsPage extends StatelessWidget {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
-                backgroundColor: Theme
-                    .of(context)
-                    .colorScheme
-                    .error,
+                backgroundColor: Theme.of(context).colorScheme.error,
               ),
             );
           }
@@ -79,9 +76,7 @@ class GameDetailsPage extends StatelessWidget {
   }
 
   Widget _buildDesktopGameContent(BuildContext context) {
-    final Size size = MediaQuery
-        .of(context)
-        .size;
+    final Size size = MediaQuery.of(context).size;
     return Stack(
       children: [
         Positioned(
@@ -104,10 +99,17 @@ class GameDetailsPage extends StatelessWidget {
         Positioned(
           top: size.height * 0.20,
           left: size.width * 0.30,
+          child: GameDetailsInfoBar(
+            game: game,
+          ),
+        ),
+        Positioned(
+          top: size.height * 0.32,
+          left: size.width * 0.30,
           child: _buildGameRating(context),
         ),
         Positioned(
-          top: size.height * 0.25,
+          top: size.height * 0.37,
           left: size.width * 0.30,
           child: SizedBox(
             width: size.width * 0.30,
@@ -128,7 +130,7 @@ class GameDetailsPage extends StatelessWidget {
             ],
             child: SizedBox(
               width: size.width * 0.3,
-              child: GameDetailsBottomBar(
+              child: GameBookingComponent(
                 user: user,
                 game: game,
               ),
@@ -136,7 +138,9 @@ class GameDetailsPage extends StatelessWidget {
           ),
         ),
         Positioned(
-          top: size.height * 0.41,
+          top: (user != null && !user!.isAdmin())
+              ? size.height * 0.25
+              : size.height * 0.18,
           left: size.width * 0.65,
           child: SizedBox(
             width: size.width * 0.3,
@@ -161,10 +165,19 @@ class GameDetailsPage extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           verticalDirection: VerticalDirection.down,
           children: [
-            _buildGame(context),
+            _buildGameImage(context),
+            const SizedBox(height: 8),
+            SizedBox(
+              width: double.infinity,
+              child: Center(
+                child: _buildGameRating(context),
+              ),
+            ),
             const SizedBox(
               height: 10,
             ),
+            _buildNameAndFavorite(context),
+            const SizedBox(height: 8),
             MultiBlocProvider(
               providers: [
                 BlocProvider.value(
@@ -174,10 +187,23 @@ class GameDetailsPage extends StatelessWidget {
                   value: context.read<ListReductionPlanCubit>(),
                 ),
               ],
-              child: GameDetailsBottomBar(
+              child: GameBookingComponent(
                 user: user,
                 game: game,
               ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            _buildGameDescription(context),
+            const SizedBox(
+              height: 10,
+            ),
+            GameDetailsInfoBar(
+              game: game,
+            ),
+            const SizedBox(
+              height: 10,
             ),
             ReviewSectionComponent(
               isUserLoggedIn: user != null,
@@ -195,12 +221,9 @@ class GameDetailsPage extends StatelessWidget {
   PreferredSizeWidget? _buildAppBar(BuildContext context) {
     return AppBar(
       backgroundColor:
-      ResponsiveWrapper.of(context).isSmallerThan(DESKTOP) && !kIsWeb
-          ? Colors.transparent
-          : Theme
-          .of(context)
-          .colorScheme
-          .secondary,
+          ResponsiveWrapper.of(context).isSmallerThan(DESKTOP) && !kIsWeb
+              ? Colors.transparent
+              : Theme.of(context).colorScheme.secondary,
       elevation: 0,
       title: kIsWeb ? const Text(AppConstants.APP_NAME) : null,
       leading: BackButton(
@@ -213,26 +236,7 @@ class GameDetailsPage extends StatelessWidget {
           }
         },
       ),
-      leadingWidth: MediaQuery
-          .of(context)
-          .size
-          .width * 0.20,
-    );
-  }
-
-  Widget _buildGame(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisSize: MainAxisSize.max,
-      verticalDirection: VerticalDirection.down,
-      children: [
-        _buildGameImage(context),
-        const SizedBox(height: 8),
-        _buildNameAndFavorite(context),
-        _buildGameDescription(context),
-        _buildGameRating(context),
-      ],
+      leadingWidth: MediaQuery.of(context).size.width * 0.20,
     );
   }
 
@@ -258,10 +262,7 @@ class GameDetailsPage extends StatelessWidget {
               ],
             ).value,
             fontWeight: FontWeight.bold,
-            color: Theme
-                .of(context)
-                .colorScheme
-                .primary,
+            color: Theme.of(context).colorScheme.primary,
           ),
         ),
         const SizedBox(width: 8),
@@ -278,18 +279,12 @@ class GameDetailsPage extends StatelessWidget {
   Widget _buildGameImage(BuildContext context) {
     if (game.imageUrl != null) {
       return Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(16.0),
         child: Image(
           image: NetworkImage(game.imageUrl!),
           fit: BoxFit.contain,
-          height: MediaQuery
-              .of(context)
-              .size
-              .height * 0.25,
-          width: MediaQuery
-              .of(context)
-              .size
-              .width,
+          height: MediaQuery.of(context).size.height * 0.20,
+          width: MediaQuery.of(context).size.width,
         ),
       );
     }
@@ -312,8 +307,8 @@ class GameDetailsPage extends StatelessWidget {
       builder: (context, state) {
         if (state is ReviewGameSuccess) {
           final double averageRating = state.reviews
-              .map((review) => review.rating)
-              .reduce((value, element) => value + element) /
+                  .map((review) => review.rating)
+                  .reduce((value, element) => value + element) /
               state.reviews.length;
 
           return CustomRatingBar(
@@ -350,10 +345,7 @@ class GameDetailsPage extends StatelessWidget {
       children: [
         ExpandableTextWidget(
           text: game.description!,
-          height: MediaQuery
-              .of(context)
-              .size
-              .height * 0.25,
+          height: MediaQuery.of(context).size.height * 0.25,
         ),
       ],
     );
