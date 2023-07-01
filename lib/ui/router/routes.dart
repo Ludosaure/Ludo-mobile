@@ -10,6 +10,7 @@ enum Routes {
   game,
   addGame,
   updateGame,
+  gameUnavailabilities,
   updateProfile,
   adminGames,
   inbox,
@@ -51,6 +52,8 @@ extension RoutesExtension on Routes {
         return '/game-add';
       case Routes.updateGame:
         return 'edit';
+      case Routes.gameUnavailabilities:
+        return 'unavailabilities';
       case Routes.updateProfile:
         return 'edit';
       case Routes.adminGames:

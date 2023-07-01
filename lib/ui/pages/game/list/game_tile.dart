@@ -51,14 +51,17 @@ class GameTile extends StatelessWidget {
   Widget _buildTrailing(BuildContext context) {
     if (adminView) {
       return SizedBox(
-        width: MediaQuery.of(context).size.width * 0.17,
+        width: 60,
         child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               GestureDetector(
                 onTap: () {
-                  // TODO indidspos
+                  context.push(
+                    '${Routes.game.path}/${game.id}/${Routes.gameUnavailabilities.path}',
+                    extra: game,
+                  );
                 },
                 child: const Icon(
                   Icons.edit_calendar_outlined,

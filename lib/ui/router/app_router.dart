@@ -46,6 +46,7 @@ import 'package:ludo_mobile/ui/pages/register/register_success_page.dart';
 import 'package:ludo_mobile/ui/pages/reservation/reservation_detail_page.dart';
 import 'package:ludo_mobile/ui/pages/reservation/user_reservations_page.dart';
 import 'package:ludo_mobile/ui/pages/terms_and_conditions_page.dart';
+import 'package:ludo_mobile/ui/pages/unavailability/game_unavailabilities_page.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
 import 'package:ludo_mobile/utils/app_constants.dart';
 
@@ -268,6 +269,27 @@ class AppRouter {
               ),
             ],
             child: UpdateGamePage(
+              game: state.extra! as Game,
+            ),
+          ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+        ),
+      ),
+      GoRoute(
+        path: '${Routes.game.path}/:id/${Routes.gameUnavailabilities.path}',
+        pageBuilder: (context, state) => CustomTransitionPage(
+          child: MultiBlocProvider(
+            providers: [
+              BlocProvider.value(
+                value: _updateGameBloc,
+              ),
+            ],
+            child: GameUnavailabilitiesPage(
               game: state.extra! as Game,
             ),
           ),
