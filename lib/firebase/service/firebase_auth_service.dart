@@ -20,7 +20,7 @@ class FirebaseAuthService {
       }
       User user = credential.user!;
       await FirebaseDatabaseService(uid: user.uid).saveUserData(name, firstname, email);
-      addDeviceToken(user);
+      addDeviceToken(user.uid);
     } on FirebaseAuthException {
       rethrow;
     } catch (e) {
@@ -34,7 +34,7 @@ class FirebaseAuthService {
       User? user = FirebaseAuth.instance.currentUser;
 
       LocalStorageHelper.saveFirebaseUserIdToLocalStorage(user!.uid);
-      addDeviceToken(user);
+      addDeviceToken(user.uid);
     } on FirebaseAuthException {
       rethrow;
     } catch (e) {
@@ -52,10 +52,10 @@ class FirebaseAuthService {
     }
   }
 
-  Future<void> addDeviceToken(User? user) async {
+  Future<void> addDeviceToken(String uid) async {
     String? token = await CustomFirebaseMessagingService.getToken();
     if (token != null) {
-      await FirebaseDatabaseService(uid: user?.uid).saveToken(token);
+      await FirebaseDatabaseService(uid: uid).saveToken(token);
     }
   }
 }

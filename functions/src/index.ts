@@ -11,11 +11,6 @@ export const pushNotificationForNewMessage = functions.firestore.document('conve
         const messaging = admin.messaging();
         const message = snapshot.after.data();
 
-        const receiver = await database
-            .collection('users')
-            .doc(message.targetUserId)
-            .get();
-
         const sender = await database
             .collection('users')
             .doc(message.recentMessageSender)
@@ -29,8 +24,16 @@ export const pushNotificationForNewMessage = functions.firestore.document('conve
             }
         }
 
-        const token = receiver.data()!.token;
+        message.members.forEach(async (memberId: string) => {
+            const receiver = await database
+                .collection('users')
+                .doc(memberId)
+                .get();
 
-        return messaging.sendToDevice(token, payload);
+            if(receiver.data()!.id !== message.recentMessageSender) {
+                const token = receiver.data()!.token;
+                messaging.sendToDevice(token, payload);
+            }
+        });
     });
 

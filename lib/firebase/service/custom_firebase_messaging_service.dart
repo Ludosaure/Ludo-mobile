@@ -7,15 +7,6 @@ class CustomFirebaseMessagingService {
     // For web and ios
     FirebaseMessaging.instance.requestPermission();
 
-    // // app is opened
-    // FirebaseMessaging.onMessage.listen((event) {
-    //   print("onMessage: $event");
-    // });
-    //
-    // // notification is clicked / tapped
-    // FirebaseMessaging.onMessageOpenedApp.listen((event) {
-    //   print("onMessageOpenedApp: $event");
-    // });
   }
 
   ///   Return device token
