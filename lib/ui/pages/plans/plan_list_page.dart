@@ -37,35 +37,48 @@ class _PlanListPageState extends State<PlanListPage> {
   Widget _buildPlans(BuildContext context) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
-      child: BlocConsumer<ListReductionPlanCubit, ListReductionPlanState>(
-        listener: (context, state) {
-          if (state is UserMustLogError) {
-            context.go('/login');
-          }
-        },
-        builder: (context, state) {
-          if (state is ListReductionPlanLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          ElevatedButton(
+            onPressed: () {
+              // TODO: create plan
+            },
+            child: const Text('add-plan-button').tr(),
+          ),
+          const SizedBox(height: 10),
+          BlocConsumer<ListReductionPlanCubit, ListReductionPlanState>(
+            listener: (context, state) {
+              if (state is UserMustLogError) {
+                context.go('/login');
+              }
+            },
+            builder: (context, state) {
+              if (state is ListReductionPlanLoading) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
 
-          if (state is ListReductionPlanError) {
-            return Center(
-              child: const Text("errors.error-detail").tr(
-                namedArgs: {'error': state.message},
-              ),
-            );
-          }
+              if (state is ListReductionPlanError) {
+                return Center(
+                  child: const Text("errors.error-detail").tr(
+                    namedArgs: {'error': state.message},
+                  ),
+                );
+              }
 
-          if (state is ListReductionPlanSuccess) {
-            return _buildPlansList(context, state.plans);
-          }
+              if (state is ListReductionPlanSuccess) {
+                return _buildPlansList(context, state.plans);
+              }
 
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        },
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            },
+          ),
+        ],
       ),
     );
   }
@@ -109,11 +122,12 @@ class _PlanListPageState extends State<PlanListPage> {
         const SizedBox(
           width: 10,
         ),
-        Text(plan.isActive ? 'active'.tr() : 'inactive'.tr(),
-            style: TextStyle(
-              color: plan.isActive ? Colors.green : Colors.red,
-              fontWeight: FontWeight.bold,
-            ),
+        Text(
+          plan.isActive ? 'active'.tr() : 'inactive'.tr(),
+          style: TextStyle(
+            color: plan.isActive ? Colors.green : Colors.red,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         IconButton(
           onPressed: () {
