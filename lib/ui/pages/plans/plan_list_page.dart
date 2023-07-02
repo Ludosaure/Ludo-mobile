@@ -133,7 +133,7 @@ class _PlanListPageState extends State<PlanListPage> {
         IconButton(
           onPressed: () {
             context.push(
-              Routes.updatePlan.path,
+              "${Routes.plan.path}/${plan.id}/${Routes.updatePlan.path}",
               extra: plan,
             );
           },

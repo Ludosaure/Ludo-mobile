@@ -47,9 +47,14 @@ class _UpdatePlanPageState extends State<UpdatePlanPage> {
     );
   }
 
+  // TODO faire les affichages web
+  // TODO faire le refresh auto après update
   Widget _buildBody(BuildContext context) {
-    return SingleChildScrollView(
+    return Padding(
+      padding: const EdgeInsets.all(15.0),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           _buildForm(context),
           _buildSubmitButton(context),
@@ -93,8 +98,8 @@ class _UpdatePlanPageState extends State<UpdatePlanPage> {
                   plan.isActive = value;
                 });
                 context.read<UpdatePlanBloc>().add(
-                  IsActiveChangedEvent(value),
-                );
+                      IsActiveChangedEvent(value),
+                    );
               },
             ),
           ),
@@ -156,7 +161,7 @@ class _UpdatePlanPageState extends State<UpdatePlanPage> {
                     .add(const UpdatePlanSubmitEvent());
               }
             },
-            child: const Text('add-label').tr(),
+            child: const Text('update-label').tr(),
           ),
         );
       },

@@ -68,6 +68,12 @@ class PlanProvider {
       throw NotAllowedException('errors.user-must-be-admin-for-action'.tr());
     }
 
+    if (response.statusCode == HttpCode.CONFLICT) {
+      throw BadRequestException(
+        "errors.plan-creation-conflict".tr(),
+      );
+    }
+
     if (response.statusCode == HttpCode.BAD_REQUEST) {
       throw BadRequestException(
         "errors.plan-creation-failed".tr(),
@@ -84,7 +90,7 @@ class PlanProvider {
   Future<void> updatePlan(String id, String? name, bool? isActive) async {
     final String? token = await RepositoryHelper.getAdminToken();
 
-    final http.Response response = await http.post(
+    final http.Response response = await http.put(
       Uri.parse(endpoint),
       headers: HttpHelper.getHeaders(token!),
       body: jsonEncode({
@@ -100,13 +106,19 @@ class PlanProvider {
       throw NotAllowedException('errors.user-must-be-admin-for-action'.tr());
     }
 
+    if (response.statusCode == HttpCode.CONFLICT) {
+      throw BadRequestException(
+        "errors.plan-update-conflict".tr(),
+      );
+    }
+
     if (response.statusCode == HttpCode.BAD_REQUEST) {
       throw BadRequestException(
         "errors.plan-update-failed".tr(),
       );
     }
 
-    if (response.statusCode != HttpCode.CREATED) {
+    if (response.statusCode != HttpCode.OK) {
       throw InternalServerException(
         "errors.unknown".tr(),
       );
