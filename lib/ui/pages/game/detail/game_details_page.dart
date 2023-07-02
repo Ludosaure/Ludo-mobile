@@ -104,12 +104,12 @@ class GameDetailsPage extends StatelessWidget {
           ),
         ),
         Positioned(
-          top: 230,
+          top: 235,
           left: size.width * 0.25,
           child: _buildGameRating(context),
         ),
         Positioned(
-          top: 270,
+          top: 280,
           left: size.width * 0.25,
           child: SizedBox(
             width: size.width * 0.30,
@@ -143,7 +143,7 @@ class GameDetailsPage extends StatelessWidget {
               : size.height * 0.18,
           left: size.width * 0.60,
           child: Padding(
-            padding: const EdgeInsets.only(top: 25),
+            padding: const EdgeInsets.only(top: 20),
             child: SizedBox(
               width: size.width * 0.35,
               child: ReviewSectionComponent(
