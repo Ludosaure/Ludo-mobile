@@ -27,11 +27,6 @@ class _GameUnavailabilitiesPageState extends State<GameUnavailabilitiesPage> {
   Game get game => widget.game;
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(

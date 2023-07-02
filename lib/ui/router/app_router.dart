@@ -571,9 +571,13 @@ class AppRouter {
   bool _isAdminRoute(String route) {
     return route == Routes.homeAdmin.path ||
         route == Routes.addGame.path ||
+        route == Routes.updateGame.path ||
         route == Routes.reservations.path ||
         route == Routes.adminDashboard.path ||
-        route == Routes.adminGames.path;
+        route == Routes.adminGames.path ||
+        route == Routes.planList.path ||
+        route == Routes.categoryList.path ||
+        route == Routes.gameUnavailabilities.path;
   }
 
   bool _isUnauthenticatedRoute(String route) {
