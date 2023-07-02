@@ -138,7 +138,7 @@ class CartContent extends StatelessWidget {
                 ),
               ).tr(),
               Text(
-                "booking-nb-weeks-label".plural(nbWeeks),
+                "${"booking-nb-weeks-label".plural(nbWeeks)} *",
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,

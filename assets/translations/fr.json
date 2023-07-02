@@ -167,8 +167,8 @@
   "booking-period-label-2": " au ",
   "booking-duration-label": "Durée de la réservation ",
   "booking-nb-weeks-label": {
-    "one": "1 semaine *",
-    "other": "{nbWeeks} semaines *"
+    "one": "1 semaine",
+    "other": "{nbWeeks} semaines"
   },
   "booking-nb-weeks-information": "* Toute semaine entamée est dûe.",
   "booking-total-amount-label": "Montant total de la réservation",
