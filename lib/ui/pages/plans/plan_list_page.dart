@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/domain/models/plan.dart';
 import 'package:ludo_mobile/domain/use_cases/list_reduction_plan/list_reduction_plan_cubit.dart';
+import 'package:ludo_mobile/ui/router/routes.dart';
 
 class PlanListPage extends StatefulWidget {
   const PlanListPage({super.key});
@@ -43,9 +44,9 @@ class _PlanListPageState extends State<PlanListPage> {
         children: [
           ElevatedButton(
             onPressed: () {
-              // TODO: create plan
+              context.push(Routes.createPlan.path);
             },
-            child: const Text('add-plan-button').tr(),
+            child: const Text('add-plan-label').tr(),
           ),
           const SizedBox(height: 10),
           BlocConsumer<ListReductionPlanCubit, ListReductionPlanState>(
@@ -131,7 +132,10 @@ class _PlanListPageState extends State<PlanListPage> {
         ),
         IconButton(
           onPressed: () {
-            // TODO : edit plan
+            context.push(
+              Routes.updatePlan.path,
+              extra: plan,
+            );
           },
           icon: const Icon(Icons.edit),
         ),

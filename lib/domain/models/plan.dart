@@ -3,7 +3,7 @@ class Plan {
   final String name;
   final int reduction;
   final int nbWeeks;
-  final bool isActive;
+  bool isActive;
 
   Plan({
     required this.id,

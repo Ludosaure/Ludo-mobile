@@ -312,7 +312,7 @@ class _AddGamePageState extends State<AddGamePage> {
                     .add(const CreateGameSubmitEvent());
               }
             },
-            child: const Text('add-game-btn').tr(),
+            child: const Text('add-label').tr(),
           ),
         );
       },
