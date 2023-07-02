@@ -93,11 +93,35 @@ class _PlanListPageState extends State<PlanListPage> {
               ).tr(namedArgs: {
                 'nbWeeks': plan.nbWeeks.toString(),
               }),
-              trailing: Text('${plan.reduction}%'),
+              trailing: _buildTrailing(context, plan),
             ),
           );
         },
       ),
+    );
+  }
+
+  Widget _buildTrailing(BuildContext context, Plan plan) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text('${plan.reduction}%'),
+        const SizedBox(
+          width: 10,
+        ),
+        Text(plan.isActive ? 'active'.tr() : 'inactive'.tr(),
+            style: TextStyle(
+              color: plan.isActive ? Colors.green : Colors.red,
+              fontWeight: FontWeight.bold,
+            ),
+        ),
+        IconButton(
+          onPressed: () {
+            // TODO : edit plan
+          },
+          icon: const Icon(Icons.edit),
+        ),
+      ],
     );
   }
 }

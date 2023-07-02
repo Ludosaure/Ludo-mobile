@@ -170,6 +170,8 @@
     "one": "1 semaine",
     "other": "{nbWeeks} semaines"
   },
+  "active": "ACTIVE",
+  "inactive": "INACTIVE",
   "booking-nb-weeks-information": "* Toute semaine entamée est dûe.",
   "booking-total-amount-label": "Montant total de la réservation",
   "cart-empty-label": "Votre panier est vide",
