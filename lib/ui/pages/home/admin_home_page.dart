@@ -104,7 +104,6 @@ class _AdminHomePageState extends State<AdminHomePage> {
     });
   }
 
-  //TODO probablement passer par un cubit de ses morts
   void onSearch(String value) {
     setState(() {
       reservations = reservations

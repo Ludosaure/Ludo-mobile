@@ -31,7 +31,6 @@ class ReviewTile extends StatelessWidget {
           height: double.infinity,
           child: Icon(Icons.person),
         ),
-        //todo add user images
         title: Row(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,

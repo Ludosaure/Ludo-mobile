@@ -80,37 +80,37 @@ class GameDetailsPage extends StatelessWidget {
     return Stack(
       children: [
         Positioned(
-          top: size.height * 0.15,
+          top: 90,
           left: 0,
           child: SizedBox(
-            width: size.width * 0.30,
-            height: size.height * 0.30,
+            width: size.width * 0.25,
+            height: 200,
             child: _buildGameImage(context),
           ),
         ),
         Positioned(
-          top: size.height * 0.15,
-          left: size.width * 0.30,
+          top: 80,
+          left: size.width * 0.25,
           child: SizedBox(
             width: size.width * 0.65,
             child: _buildNameAndFavorite(context),
           ),
         ),
         Positioned(
-          top: size.height * 0.20,
-          left: size.width * 0.30,
+          top: 130,
+          left: size.width * 0.25,
           child: GameDetailsInfoBar(
             game: game,
           ),
         ),
         Positioned(
-          top: size.height * 0.32,
-          left: size.width * 0.30,
+          top: 235,
+          left: size.width * 0.25,
           child: _buildGameRating(context),
         ),
         Positioned(
-          top: size.height * 0.37,
-          left: size.width * 0.30,
+          top: 280,
+          left: size.width * 0.25,
           child: SizedBox(
             width: size.width * 0.30,
             child: _buildGameDescription(context),
@@ -118,7 +118,7 @@ class GameDetailsPage extends StatelessWidget {
         ),
         Positioned(
           top: size.height * 0.15,
-          left: size.width * 0.65,
+          left: size.width * 0.60,
           child: MultiBlocProvider(
             providers: [
               BlocProvider.value(
@@ -129,7 +129,7 @@ class GameDetailsPage extends StatelessWidget {
               ),
             ],
             child: SizedBox(
-              width: size.width * 0.3,
+              width: size.width * 0.35,
               child: GameBookingComponent(
                 user: user,
                 game: game,
@@ -141,12 +141,15 @@ class GameDetailsPage extends StatelessWidget {
           top: (user != null && !user!.isAdmin())
               ? size.height * 0.25
               : size.height * 0.18,
-          left: size.width * 0.65,
-          child: SizedBox(
-            width: size.width * 0.3,
-            child: ReviewSectionComponent(
-              isUserLoggedIn: user != null,
-              game: game,
+          left: size.width * 0.60,
+          child: Padding(
+            padding: const EdgeInsets.only(top: 20),
+            child: SizedBox(
+              width: size.width * 0.35,
+              child: ReviewSectionComponent(
+                isUserLoggedIn: user != null,
+                game: game,
+              ),
             ),
           ),
         ),

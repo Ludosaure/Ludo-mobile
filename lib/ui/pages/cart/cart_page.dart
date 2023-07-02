@@ -116,7 +116,7 @@ class _CartPageState extends State<CartPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.68,
+                        height: MediaQuery.of(context).size.height * 0.67,
                         child: CartContent(
                           cartContent: cartContent,
                           totalAmount: totalAmount,
