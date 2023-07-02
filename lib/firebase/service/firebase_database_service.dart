@@ -50,6 +50,14 @@ class FirebaseDatabaseService {
     }
   }
 
+  Future<void> saveToken(String token) async {
+    final userDoc = userCollection.doc(uid);
+
+    return userDoc.update({
+      'token': token,
+    });
+  }
+
   Future<void> updateUserProfilePicture(String profilePicture) async {
     final userDoc = userCollection.doc(uid);
     return userDoc.set({
