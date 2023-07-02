@@ -1,10 +1,13 @@
 import 'dart:async';
 
 import 'package:badges/badges.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/domain/models/user.dart' as db_user;
+import 'package:ludo_mobile/domain/use_cases/cart/cart_cubit.dart';
 import 'package:ludo_mobile/firebase/service/firebase_database_service.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
 import 'package:ludo_mobile/utils/menu_items.dart';
@@ -20,12 +23,14 @@ class CustomBottomNavigationBar extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<CustomBottomNavigationBar> createState() => _CustomBottomNavigationBarState();
+  State<CustomBottomNavigationBar> createState() =>
+      _CustomBottomNavigationBarState();
 }
 
 class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
   bool _hasUnseenConversations = false;
   StreamSubscription<bool>? subscription;
+
   db_user.User get user => widget.user;
 
   @override
@@ -36,8 +41,8 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
 
   _initHasUnseenConversations() {
     final unreadConversationsStream =
-    FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
-        .hasUnseenConversationsStream();
+        FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+            .hasUnseenConversationsStream();
     subscription = unreadConversationsStream.listen((hasUnreadConversations) {
       setState(() => _hasUnseenConversations = hasUnreadConversations);
     });
@@ -76,7 +81,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
           label: MenuItems.Home.label,
         ),
         BottomNavigationBarItem(
-          icon: Icon(MenuItems.Cart.icon),
+          icon: _buildCartIcon(),
           label: MenuItems.Cart.label,
         ),
         BottomNavigationBarItem(
@@ -96,6 +101,49 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
         } else if (index == MenuItems.Profile.index) {
           context.go(Routes.profile.path);
         }
+      },
+    );
+  }
+
+  Widget _buildCartIcon() {
+    return BlocConsumer<CartCubit, CartState>(
+      listener: (context, state) {
+        if (state is LoadCartContentError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.error),
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+          );
+        }
+        if (state is UserNotLogged) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text(
+                "errors.user-must-log-for-access",
+              ).tr(),
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+          );
+        }
+      },
+      builder: (context, state) {
+        if (state is CartContentLoaded) {
+          return Badge(
+            badgeContent: Text(
+              state.cartContent.length.toString(),
+              style: const TextStyle(color: Colors.white),
+            ),
+            showBadge: state.cartContent.isNotEmpty,
+            child: Icon(MenuItems.Cart.icon),
+          );
+        }
+
+        if (state is UserNotLogged) {
+          context.go(Routes.login.path);
+        }
+
+        return Icon(MenuItems.Cart.icon);
       },
     );
   }

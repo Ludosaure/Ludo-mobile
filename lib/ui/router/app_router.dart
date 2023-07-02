@@ -57,7 +57,7 @@ class AppRouter {
   final LoginBloc _loginBloc = locator<LoginBloc>();
   final RegisterBloc _registerBLoc = locator<RegisterBloc>();
   final GetGamesCubit _getGamesCubit = locator<GetGamesCubit>();
-  final CartCubit _cartBloc = locator<CartCubit>();
+  final CartCubit _cartCubit = locator<CartCubit>();
   final ListAllReservationsCubit _listAllReservationsCubit =
       locator<ListAllReservationsCubit>();
   final FavoriteGamesCubit _getFavoriteGamesCubit =
@@ -107,6 +107,9 @@ class AppRouter {
               ),
               BlocProvider.value(
                 value: _listReductionPlanCubit,
+              ),
+              BlocProvider.value(
+                value: _cartCubit,
               ),
             ],
             child: UserHomePage(
@@ -205,7 +208,7 @@ class AppRouter {
                 value: locator<GetGameCubit>(),
               ),
               BlocProvider.value(
-                value: _cartBloc,
+                value: _cartCubit,
               ),
               BlocProvider.value(
                 value: _getFavoriteGamesCubit,
@@ -357,8 +360,15 @@ class AppRouter {
       GoRoute(
         path: Routes.favorites.path,
         pageBuilder: (context, state) => CustomTransitionPage(
-          child: BlocProvider.value(
-            value: _getFavoriteGamesCubit,
+          child: MultiBlocProvider(
+            providers: [
+              BlocProvider.value(
+                value: _getFavoriteGamesCubit,
+              ),
+              BlocProvider.value(
+                value: _cartCubit,
+              ),
+            ],
             child: FavoriteGamesPage(
               user: connectedUser!,
             ),
@@ -374,8 +384,15 @@ class AppRouter {
       GoRoute(
         path: Routes.inbox.path,
         pageBuilder: (context, state) => CustomTransitionPage(
-          child: InboxPage(
-            user: connectedUser!,
+          child: MultiBlocProvider(
+            providers: [
+              BlocProvider.value(
+                value: _cartCubit,
+              ),
+            ],
+            child: InboxPage(
+              user: connectedUser!,
+            ),
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(
@@ -421,6 +438,9 @@ class AppRouter {
               ),
               BlocProvider.value(
                 value: locator<GetUserCubit>(),
+              ),
+              BlocProvider.value(
+                value: _cartCubit,
               ),
             ],
             child: ProfilePage(
@@ -468,7 +488,7 @@ class AppRouter {
         path: Routes.cart.path,
         pageBuilder: (context, state) => CustomTransitionPage(
           child: BlocProvider.value(
-            value: _cartBloc,
+            value: _cartCubit,
             child: CartPage(
               user: connectedUser!,
             ),
@@ -599,7 +619,7 @@ class AppRouter {
     _getGamesCubit.close();
     _listAllReservationsCubit.close();
     _getFavoriteGamesCubit.close();
-    _cartBloc.close();
+    _cartCubit.close();
     _listReductionPlanCubit.close();
     _downloadInvoiceCubit.close();
     _deleteGameCubit.close();

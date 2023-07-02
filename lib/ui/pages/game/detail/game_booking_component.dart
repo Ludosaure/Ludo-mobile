@@ -366,6 +366,7 @@ class _GameBookingComponentState extends State<GameBookingComponent> {
               duration: const Duration(seconds: 2),
             ),
           );
+          BlocProvider.of<CartCubit>(context).getCartContent();
         }
 
         if (state is BookingOperationSuccess && !_isInCart) {
@@ -375,6 +376,7 @@ class _GameBookingComponentState extends State<GameBookingComponent> {
               duration: const Duration(seconds: 2),
             ),
           );
+          BlocProvider.of<CartCubit>(context).getCartContent();
         }
 
         if (state is BookingOperationFailure) {
