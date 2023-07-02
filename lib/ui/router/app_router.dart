@@ -20,6 +20,7 @@ import 'package:ludo_mobile/domain/use_cases/login/login_bloc.dart';
 import 'package:ludo_mobile/domain/use_cases/register/register_bloc.dart';
 import 'package:ludo_mobile/domain/use_cases/review_game/review_game_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/session/session_cubit.dart';
+import 'package:ludo_mobile/domain/use_cases/unavailabilities/game_unavailabilities_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/update_game/update_game_bloc.dart';
 import 'package:ludo_mobile/domain/use_cases/update_user/update_user_bloc.dart';
 import 'package:ludo_mobile/domain/use_cases/user_reservations/user_reservations_cubit.dart';
@@ -46,6 +47,7 @@ import 'package:ludo_mobile/ui/pages/register/register_success_page.dart';
 import 'package:ludo_mobile/ui/pages/reservation/reservation_detail_page.dart';
 import 'package:ludo_mobile/ui/pages/reservation/user_reservations_page.dart';
 import 'package:ludo_mobile/ui/pages/terms_and_conditions_page.dart';
+import 'package:ludo_mobile/ui/pages/unavailability/game_unavailabilities_page.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
 import 'package:ludo_mobile/utils/app_constants.dart';
 
@@ -268,6 +270,27 @@ class AppRouter {
               ),
             ],
             child: UpdateGamePage(
+              game: state.extra! as Game,
+            ),
+          ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+        ),
+      ),
+      GoRoute(
+        path: '${Routes.game.path}/:id/${Routes.gameUnavailabilities.path}',
+        pageBuilder: (context, state) => CustomTransitionPage(
+          child: MultiBlocProvider(
+            providers: [
+              BlocProvider.value(
+                value: locator<GameUnavailabilitiesCubit>(),
+              ),
+            ],
+            child: GameUnavailabilitiesPage(
               game: state.extra! as Game,
             ),
           ),
@@ -548,9 +571,13 @@ class AppRouter {
   bool _isAdminRoute(String route) {
     return route == Routes.homeAdmin.path ||
         route == Routes.addGame.path ||
+        route == Routes.updateGame.path ||
         route == Routes.reservations.path ||
         route == Routes.adminDashboard.path ||
-        route == Routes.adminGames.path;
+        route == Routes.adminGames.path ||
+        route == Routes.planList.path ||
+        route == Routes.categoryList.path ||
+        route == Routes.gameUnavailabilities.path;
   }
 
   bool _isUnauthenticatedRoute(String route) {

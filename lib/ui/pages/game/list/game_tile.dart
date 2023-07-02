@@ -50,16 +50,37 @@ class GameTile extends StatelessWidget {
 
   Widget _buildTrailing(BuildContext context) {
     if (adminView) {
-      return IconButton(
-        onPressed: () {
-          context.push(
-            '${Routes.game.path}/${game.id}/${Routes.updateGame.path}',
-            extra: game,
-          );
-        },
-        icon: const Icon(
-          Icons.edit,
-          color: Colors.grey,
+      return SizedBox(
+        width: 60,
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  context.push(
+                    '${Routes.game.path}/${game.id}/${Routes.gameUnavailabilities.path}',
+                    extra: game,
+                  );
+                },
+                child: const Icon(
+                  Icons.edit_calendar_outlined,
+                  color: Colors.grey,
+                ),
+              ),
+              GestureDetector(
+                onTap: () {
+                  context.push(
+                    '${Routes.game.path}/${game.id}/${Routes.updateGame.path}',
+                    extra: game,
+                  );
+                },
+                child: const Icon(
+                  Icons.edit,
+                  color: Colors.grey,
+                ),
+              ),
+            ],
         ),
       );
     } else {
