@@ -97,14 +97,21 @@ class _AddGamePageState extends State<AddGamePage> {
 
   Widget _buildBody(BuildContext context) {
     return SingleChildScrollView(
-      child: Column(
-        children: [
-          kIsWeb
-              ? CustomWebFilePicker(onFileSelected: _onFileSelected)
-              : CustomMobileFilePicker(onFileSelected: _onFileSelected),
-          _buildForm(context),
-          _buildSubmitButton(context),
-        ],
+      child: Center(
+        child: SizedBox(
+          width: kIsWeb
+              ? MediaQuery.of(context).size.width * 0.5
+              : MediaQuery.of(context).size.width,
+          child: Column(
+            children: [
+              kIsWeb
+                  ? CustomWebFilePicker(onFileSelected: _onFileSelected)
+                  : CustomMobileFilePicker(onFileSelected: _onFileSelected),
+              _buildForm(context),
+              _buildSubmitButton(context),
+            ],
+          ),
+        ),
       ),
     );
   }

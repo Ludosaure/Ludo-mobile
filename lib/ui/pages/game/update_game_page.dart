@@ -114,29 +114,36 @@ class _UpdateGamePageState extends State<UpdateGamePage> {
 
   Widget _buildBody(BuildContext context) {
     return SingleChildScrollView(
-      child: Column(
-        children: [
-          kIsWeb
-              ? CustomWebFilePicker(
-                  initialImage: game.imageUrl,
-                  onFileSelected: _onFileSelected,
-                )
-              : CustomMobileFilePicker(
-                  initialImage: game.imageUrl,
-                  onFileSelected: _onFileSelected,
-                ),
-          _buildForm(context),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            mainAxisSize: MainAxisSize.max,
-            verticalDirection: VerticalDirection.down,
+      child: Center(
+        child: SizedBox(
+          width: kIsWeb ?
+            MediaQuery.of(context).size.width * 0.5 :
+            MediaQuery.of(context).size.width,
+          child: Column(
             children: [
-              _buildSubmitButton(context),
-              _buildDeleteGameButton(context),
+              kIsWeb
+                  ? CustomWebFilePicker(
+                      initialImage: game.imageUrl,
+                      onFileSelected: _onFileSelected,
+                    )
+                  : CustomMobileFilePicker(
+                      initialImage: game.imageUrl,
+                      onFileSelected: _onFileSelected,
+                    ),
+              _buildForm(context),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisSize: MainAxisSize.max,
+                verticalDirection: VerticalDirection.down,
+                children: [
+                  _buildSubmitButton(context),
+                  _buildDeleteGameButton(context),
+                ],
+              ),
             ],
           ),
-        ],
+        ),
       ),
     );
   }
