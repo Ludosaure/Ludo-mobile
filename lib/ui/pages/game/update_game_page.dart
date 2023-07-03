@@ -361,6 +361,7 @@ class _UpdateGamePageState extends State<UpdateGamePage> {
               ),
             ),
           );
+          BlocProvider.of<GetGamesCubit>(context).getGames();
           context.go(Routes.adminGames.path);
         } else if (state is delete_game.DeleteGameError) {
           ScaffoldMessenger.of(context).showSnackBar(
