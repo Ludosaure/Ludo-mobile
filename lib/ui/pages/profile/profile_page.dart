@@ -17,8 +17,8 @@ import 'package:ludo_mobile/utils/menu_items.dart';
 import 'package:responsive_framework/responsive_wrapper.dart';
 
 class ProfilePage extends StatefulWidget {
-  final User connectedUser;
-  const ProfilePage({
+  User connectedUser;
+  ProfilePage({
     required this.connectedUser,
     Key? key,
   }) : super(key: key);
@@ -30,6 +30,7 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   late final SessionCubit _sessionCubit = locator<SessionCubit>();
   User get connectedUser => widget.connectedUser;
+  set connectedUser(User user) => widget.connectedUser = user;
 
   @override
   Widget build(BuildContext context) {
@@ -52,30 +53,69 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _buildPage(BuildContext context) {
     return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
-        child: Column(
-          verticalDirection: VerticalDirection.down,
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            _buildUserInfosHeader(context),
-            const SizedBox(height: 20),
-            _buildUserInfosBody(context),
-            const SizedBox(height: 20),
-            _buildNotifsInfosBody(context),
-            const SizedBox(height: 20),
-            if (!connectedUser.isAdmin())
-              ElevatedButton(
-                onPressed: () {
-                  context.push(Routes.userReservations.path);
-                },
-                child: const Text('my-reservations-title').tr(),
+      child: BlocConsumer<SessionCubit, SessionState>(
+        listener: (context, state) {
+          if (state is UserNotLogged) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: const Text(
+                  "errors.user-must-log-for-access",
+                ).tr(),
+                backgroundColor: Theme.of(context).colorScheme.error,
               ),
-            _buildUpdatePasswordButton(context),
-          ],
-        ),
+            );
+          }
+        },
+        builder: (context, state) {
+          if (state is SessionInitial) {
+            BlocProvider.of<SessionCubit>(context).checkSession();
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          if (state is UserLoggedIn) {
+            connectedUser = state.user;
+            updatePhoneFormat();
+            return _buildPageContent(context);
+          }
+
+          if (state is UserNotLogged) {
+            context.go(Routes.login.path);
+          }
+
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildPageContent(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
+      child: Column(
+        verticalDirection: VerticalDirection.down,
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          _buildUserInfosHeader(context),
+          const SizedBox(height: 20),
+          _buildUserInfosBody(context),
+          const SizedBox(height: 20),
+          _buildNotifsInfosBody(context),
+          const SizedBox(height: 20),
+          if (!connectedUser.isAdmin())
+            ElevatedButton(
+              onPressed: () {
+                context.push(Routes.userReservations.path);
+              },
+              child: const Text('my-reservations-title').tr(),
+            ),
+          _buildUpdatePasswordButton(context),
+        ],
       ),
     );
   }
@@ -303,5 +343,11 @@ class _ProfilePageState extends State<ProfilePage> {
     scheduleMicrotask(() {
       context.go(Routes.landing.path);
     });
+  }
+
+  void updatePhoneFormat() {
+    if(connectedUser.phone.startsWith('+33')) {
+      connectedUser.phone = connectedUser.phone.replaceFirst('+33', '0');
+    }
   }
 }
