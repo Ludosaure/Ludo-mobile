@@ -178,10 +178,10 @@ class _GameBookingComponentState extends State<GameBookingComponent> {
   Widget _buildAddGameButton(BuildContext context) {
     return _game.isAvailable!
         ? _buildAddToCartButton(context)
-        : const Text(
+        : Text(
             "game-unavailable-label",
             style: TextStyle(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.primary,
               fontStyle: FontStyle.italic,
               fontWeight: FontWeight.w400,
               fontSize: 12,

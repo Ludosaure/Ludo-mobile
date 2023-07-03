@@ -175,31 +175,32 @@ class _LoginPageState extends State<LoginPage> {
         }
       },
       builder: (context, state) {
-        if (state.status is FormNotSent || state.status is FormSubmissionFailed) {
-          return ElevatedButton(
-            onPressed: () {
-              if (_formKey.currentState!.validate()) {
-                context.read<LoginBloc>().add(const LoginSubmitEvent());
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              minimumSize: AppDimensions.largeButtonSize,
-              maximumSize: AppDimensions.largeButtonSize,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-            ),
-            child: const Text(
-              "login-label",
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-              ),
-            ).tr(),
+        if (state.status is FormSubmitting) {
+          return CircularProgressIndicator(
+            color: Theme.of(context).colorScheme.primary,
           );
         }
-
-        return const CircularProgressIndicator();
+        return ElevatedButton(
+          onPressed: () {
+            if (_formKey.currentState!.validate()) {
+              context.read<LoginBloc>().add(const LoginSubmitEvent());
+            }
+          },
+          style: ElevatedButton.styleFrom(
+            minimumSize: AppDimensions.largeButtonSize,
+            maximumSize: AppDimensions.largeButtonSize,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+          ),
+          child: const Text(
+            "login-label",
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+            ),
+          ).tr(),
+        );
       },
     );
   }

@@ -40,6 +40,11 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   }
 
   void onSubmitForm(event, Emitter emit) async {
+    emit(
+      state.copyWith(
+        status: const FormSubmitting(),
+      ),
+    );
     final req = LoginRequest(email: state.email, password: state.password);
     User user;
 
