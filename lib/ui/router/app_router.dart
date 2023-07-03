@@ -276,7 +276,7 @@ class AppRouter {
                 value: _listReductionPlanCubit,
               ),
             ],
-            child: const CreatePlanPage(),
+            child: CreatePlanPage(),
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(

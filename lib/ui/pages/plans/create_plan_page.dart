@@ -10,16 +10,11 @@ import 'package:ludo_mobile/domain/use_cases/list_reduction_plan/list_reduction_
 import 'package:ludo_mobile/ui/components/form_field_decoration.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
 
-class CreatePlanPage extends StatefulWidget {
-  const CreatePlanPage({
+class CreatePlanPage extends StatelessWidget {
+  CreatePlanPage({
     Key? key,
   }) : super(key: key);
 
-  @override
-  State<CreatePlanPage> createState() => _CreatePlanPageState();
-}
-
-class _CreatePlanPageState extends State<CreatePlanPage> {
   final _formKey = GlobalKey<FormState>();
 
   @override
