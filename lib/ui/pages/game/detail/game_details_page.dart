@@ -250,22 +250,27 @@ class GameDetailsPage extends StatelessWidget {
       verticalDirection: VerticalDirection.down,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Text(
-          game.name,
-          softWrap: true,
-          overflow: TextOverflow.visible,
-          style: TextStyle(
-            fontSize: ResponsiveValue(
-              context,
-              defaultValue: 16.0,
-              valueWhen: [
-                const Condition.smallerThan(name: TABLET, value: 16.0),
-                const Condition.largerThan(name: TABLET, value: 20.0),
-                const Condition.largerThan(name: DESKTOP, value: 24.0),
-              ],
-            ).value,
-            fontWeight: FontWeight.bold,
-            color: Theme.of(context).colorScheme.primary,
+        SizedBox(
+          width: kIsWeb
+              ? MediaQuery.of(context).size.width * 0.3
+              : MediaQuery.of(context).size.width * 0.7,
+          child: Text(
+            game.name,
+            softWrap: true,
+            overflow: TextOverflow.visible,
+            style: TextStyle(
+              fontSize: ResponsiveValue(
+                context,
+                defaultValue: 16.0,
+                valueWhen: [
+                  const Condition.smallerThan(name: TABLET, value: 16.0),
+                  const Condition.largerThan(name: TABLET, value: 20.0),
+                  const Condition.largerThan(name: DESKTOP, value: 24.0),
+                ],
+              ).value,
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.primary,
+            ),
           ),
         ),
         const SizedBox(width: 8),

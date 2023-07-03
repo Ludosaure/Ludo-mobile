@@ -9,6 +9,7 @@ import 'package:ludo_mobile/domain/models/game_category.dart';
 import 'package:ludo_mobile/domain/use_cases/delete_game/delete_game_cubit.dart'
     as delete_game;
 import 'package:ludo_mobile/domain/use_cases/get_categories/get_categories_cubit.dart';
+import 'package:ludo_mobile/domain/use_cases/get_games/get_games_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/update_game/update_game_bloc.dart';
 import 'package:ludo_mobile/ui/components/custom_mobile_file_picker.dart';
 import 'package:ludo_mobile/ui/components/custom_web_file_picker.dart';
@@ -296,6 +297,7 @@ class _UpdateGamePageState extends State<UpdateGamePage> {
               ),
             ),
           );
+          BlocProvider.of<GetGamesCubit>(context).getGames();
           context.go(Routes.adminGames.path);
         } else if (state.status is FormSubmissionFailed) {
           ScaffoldMessenger.of(context).showSnackBar(

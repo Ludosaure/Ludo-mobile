@@ -251,6 +251,9 @@ class AppRouter {
               BlocProvider.value(
                 value: _getCategoriesCubit,
               ),
+              BlocProvider.value(
+                value: _getGamesCubit,
+              ),
             ],
             child: AddGamePage(
               user: connectedUser!,
@@ -299,6 +302,9 @@ class AppRouter {
               ),
               BlocProvider.value(
                 value: _deleteGameCubit,
+              ),
+              BlocProvider.value(
+                value: _getGamesCubit,
               ),
             ],
             child: UpdateGamePage(

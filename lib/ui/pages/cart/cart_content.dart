@@ -39,7 +39,6 @@ class CartContent extends StatelessWidget {
       FontAwesomeIcons.diceD20,
       color: Colors.grey,
     );
-
     return ListTile(
       leading: leading,
       title: Row(
@@ -51,12 +50,16 @@ class CartContent extends StatelessWidget {
             onTap: () {
               context.push('${Routes.game.path}/${game.id}');
             },
-            child: Text(
-              game.name,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                decoration: TextDecoration.underline,
-                color: Theme.of(context).colorScheme.primary,
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.5,
+              child: Text(
+                game.name,
+                overflow: TextOverflow.visible,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  decoration: TextDecoration.underline,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
               ),
             ),
           ),
