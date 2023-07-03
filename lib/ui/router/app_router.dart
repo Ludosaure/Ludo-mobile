@@ -3,9 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
+import 'package:ludo_mobile/domain/models/plan.dart';
 import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:ludo_mobile/domain/use_cases/cart/cart_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/create_game/create_game_bloc.dart';
+import 'package:ludo_mobile/domain/use_cases/create_plan/create_plan_bloc.dart';
 import 'package:ludo_mobile/domain/use_cases/delete_game/delete_game_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/favorite_games/favorite_games_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/get_categories/get_categories_cubit.dart';
@@ -22,6 +24,7 @@ import 'package:ludo_mobile/domain/use_cases/review_game/review_game_cubit.dart'
 import 'package:ludo_mobile/domain/use_cases/session/session_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/unavailabilities/game_unavailabilities_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/update_game/update_game_bloc.dart';
+import 'package:ludo_mobile/domain/use_cases/update_plan/update_plan_bloc.dart';
 import 'package:ludo_mobile/domain/use_cases/update_user/update_user_bloc.dart';
 import 'package:ludo_mobile/domain/use_cases/user_reservations/user_reservations_cubit.dart';
 import 'package:ludo_mobile/injection.dart';
@@ -39,7 +42,9 @@ import 'package:ludo_mobile/ui/pages/messages/conversation_page.dart';
 import 'package:ludo_mobile/ui/pages/messages/inbox_page.dart';
 import 'package:ludo_mobile/ui/pages/landing_page.dart';
 import 'package:ludo_mobile/ui/pages/login_page.dart';
+import 'package:ludo_mobile/ui/pages/plans/create_plan_page.dart';
 import 'package:ludo_mobile/ui/pages/plans/plan_list_page.dart';
+import 'package:ludo_mobile/ui/pages/plans/update_plan_page.dart';
 import 'package:ludo_mobile/ui/pages/profile/profile_page.dart';
 import 'package:ludo_mobile/ui/pages/profile/update_profile_page.dart';
 import 'package:ludo_mobile/ui/pages/register/register_page.dart';
@@ -69,6 +74,8 @@ class AppRouter {
       locator<DownloadInvoiceCubit>();
   final CreateGameBloc _createGameBloc = locator<CreateGameBloc>();
   final UpdateGameBloc _updateGameBloc = locator<UpdateGameBloc>();
+  final CreatePlanBloc _createPlanBloc = locator<CreatePlanBloc>();
+  final UpdatePlanBloc _updatePlanBloc = locator<UpdatePlanBloc>();
   final UpdateUserBloc _updateUserBloc = locator<UpdateUserBloc>();
   final GetCategoriesCubit _getCategoriesCubit = locator<GetCategoriesCubit>();
   final ReviewGameCubit _reviewGameCubit = locator<ReviewGameCubit>();
@@ -258,6 +265,28 @@ class AppRouter {
         ),
       ),
       GoRoute(
+        path: Routes.createPlan.path,
+        pageBuilder: (context, state) => CustomTransitionPage(
+          child: MultiBlocProvider(
+            providers: [
+              BlocProvider.value(
+                value: _createPlanBloc,
+              ),
+              BlocProvider.value(
+                value: _listReductionPlanCubit,
+              ),
+            ],
+            child: CreatePlanPage(),
+          ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+        ),
+      ),
+      GoRoute(
         path: '${Routes.game.path}/:id/${Routes.updateGame.path}',
         pageBuilder: (context, state) => CustomTransitionPage(
           child: MultiBlocProvider(
@@ -274,6 +303,30 @@ class AppRouter {
             ],
             child: UpdateGamePage(
               game: state.extra! as Game,
+            ),
+          ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+        ),
+      ),
+      GoRoute(
+        path: '${Routes.plan.path}/:id/${Routes.updatePlan.path}',
+        pageBuilder: (context, state) => CustomTransitionPage(
+          child: MultiBlocProvider(
+            providers: [
+              BlocProvider.value(
+                value: _updatePlanBloc,
+              ),
+              BlocProvider.value(
+                value: _listReductionPlanCubit,
+              ),
+            ],
+            child: UpdatePlanPage(
+              plan: state.extra! as Plan,
             ),
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -592,6 +645,8 @@ class AppRouter {
     return route == Routes.homeAdmin.path ||
         route == Routes.addGame.path ||
         route == Routes.updateGame.path ||
+        route == Routes.createPlan.path ||
+        route == Routes.updatePlan.path ||
         route == Routes.reservations.path ||
         route == Routes.adminDashboard.path ||
         route == Routes.adminGames.path ||
@@ -625,6 +680,8 @@ class AppRouter {
     _deleteGameCubit.close();
     _createGameBloc.close();
     _updateGameBloc.close();
+    _createPlanBloc.close();
+    _updatePlanBloc.close();
     _updateUserBloc.close();
     _getCategoriesCubit.close();
     _reviewGameCubit.close();

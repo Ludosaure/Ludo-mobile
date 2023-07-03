@@ -122,7 +122,7 @@ class GameProvider {
 
     if (response.statusCode == HttpCode.BAD_REQUEST) {
       throw BadRequestException(
-        "game-creation-failed".tr(),
+        "errors.game-creation-failed".tr(),
       );
     }
 

@@ -8,8 +8,11 @@ enum Routes {
   registerSuccess,
   profile,
   game,
+  plan,
   addGame,
   updateGame,
+  createPlan,
+  updatePlan,
   gameUnavailabilities,
   updateProfile,
   adminGames,
@@ -46,11 +49,17 @@ extension RoutesExtension on Routes {
         return '/terms';
       case Routes.profile:
         return '/profile';
+      case Routes.plan:
+        return '/plan';
       case Routes.game:
         return '/game';
       case Routes.addGame:
         return '/game-add';
       case Routes.updateGame:
+        return 'edit';
+      case Routes.createPlan:
+        return '/create-plan';
+      case Routes.updatePlan:
         return 'edit';
       case Routes.gameUnavailabilities:
         return 'unavailabilities';
