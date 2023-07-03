@@ -32,6 +32,8 @@ class _InboxPageState extends State<InboxPage> {
   List<String> conversationIds = [];
   StreamSubscription<List<String>>? subscription;
 
+  db_user.User get _user => widget.user;
+
   @override
   void initState() {
     super.initState();
@@ -43,7 +45,7 @@ class _InboxPageState extends State<InboxPage> {
         FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid);
     subscription = databaseService.getConversationIds().listen((snapshot) {
       conversationIds = snapshot;
-      if (conversationIds.isNotEmpty && !widget.user.isAdmin()) {
+      if (conversationIds.isNotEmpty && !_user.isAdmin()) {
         context.go('${Routes.inbox.path}/${conversationIds.first}');
       }
     });
@@ -57,12 +59,12 @@ class _InboxPageState extends State<InboxPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.user.isAdmin()) {
+    if (_user.isAdmin()) {
       return AdminScaffold(
         body: Center(
           child: _buildConversations(),
         ),
-        user: widget.user,
+        user: _user,
         onSearch: null,
         onSortPressed: null,
         navBarIndex: MenuItems.Messages.index,
@@ -73,7 +75,7 @@ class _InboxPageState extends State<InboxPage> {
       body: Center(
         child: _buildClientNewConversationButton(),
       ),
-      user: widget.user,
+      user: _user,
       navBarIndex: MenuItems.Messages.index,
     );
   }
