@@ -53,6 +53,11 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterInitial> {
   }
 
   void onSubmitForm(event, Emitter emit) async {
+    emit(
+      state.copyWith(
+        status: const FormSubmitting(),
+      ),
+    );
     String formattedPhoneNumber = state.phone;
 
     if (state.phone.startsWith('0')) {
