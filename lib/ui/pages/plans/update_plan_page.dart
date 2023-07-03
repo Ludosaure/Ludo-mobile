@@ -48,18 +48,18 @@ class _UpdatePlanPageState extends State<UpdatePlanPage> {
     );
   }
 
-  // TODO faire les affichages web
-  // TODO faire le refresh auto après update
   Widget _buildBody(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(15.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          _buildForm(context),
-          _buildSubmitButton(context),
-        ],
+    return Center(
+      child: SizedBox(
+        width: MediaQuery.of(context).size.width * 0.8,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _buildForm(context),
+            _buildSubmitButton(context),
+          ],
+        ),
       ),
     );
   }
