@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/core/form_status.dart';
 import 'package:ludo_mobile/domain/models/plan.dart';
+import 'package:ludo_mobile/domain/use_cases/list_reduction_plan/list_reduction_plan_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/update_plan/update_plan_bloc.dart';
 import 'package:ludo_mobile/ui/components/form_field_decoration.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
@@ -108,7 +109,7 @@ class _UpdatePlanPageState extends State<UpdatePlanPage> {
     );
   }
 
-  Widget _buildSubmitButton(BuildContext context) {
+  Widget _buildSubmitButton(BuildContext parentContext) {
     return BlocConsumer<UpdatePlanBloc, UpdatePlanInitial>(
       listener: (context, state) {
         if (state.status is FormSubmissionSuccessful) {
@@ -119,6 +120,7 @@ class _UpdatePlanPageState extends State<UpdatePlanPage> {
               ).tr(),
             ),
           );
+          parentContext.read<ListReductionPlanCubit>().listReductionPlan();
           context.go(Routes.planList.path);
         } else if (state.status is FormSubmissionFailed) {
           ScaffoldMessenger.of(context).showSnackBar(

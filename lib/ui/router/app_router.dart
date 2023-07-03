@@ -318,6 +318,9 @@ class AppRouter {
               BlocProvider.value(
                 value: _updatePlanBloc,
               ),
+              BlocProvider.value(
+                value: _listReductionPlanCubit,
+              ),
             ],
             child: UpdatePlanPage(
               plan: state.extra! as Plan,
