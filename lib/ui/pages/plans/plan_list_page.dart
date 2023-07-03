@@ -6,19 +6,8 @@ import 'package:ludo_mobile/domain/models/plan.dart';
 import 'package:ludo_mobile/domain/use_cases/list_reduction_plan/list_reduction_plan_cubit.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
 
-class PlanListPage extends StatefulWidget {
+class PlanListPage extends StatelessWidget {
   const PlanListPage({super.key});
-
-  @override
-  State<PlanListPage> createState() => _PlanListPageState();
-}
-
-class _PlanListPageState extends State<PlanListPage> {
-  @override
-  void initState() {
-    super.initState();
-    context.read<ListReductionPlanCubit>().listReductionPlan();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,6 +45,9 @@ class _PlanListPageState extends State<PlanListPage> {
               }
             },
             builder: (context, state) {
+              if(state is ListReductionPlanInitial) {
+                context.read<ListReductionPlanCubit>().listReductionPlan();
+              }
               if (state is ListReductionPlanLoading) {
                 return const Center(
                   child: CircularProgressIndicator(),

@@ -272,6 +272,9 @@ class AppRouter {
               BlocProvider.value(
                 value: _createPlanBloc,
               ),
+              BlocProvider.value(
+                value: _listReductionPlanCubit,
+              ),
             ],
             child: const CreatePlanPage(),
           ),

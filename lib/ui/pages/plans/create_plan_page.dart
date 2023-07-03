@@ -6,6 +6,7 @@ import 'package:form_field_validator/form_field_validator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/core/form_status.dart';
 import 'package:ludo_mobile/domain/use_cases/create_plan/create_plan_bloc.dart';
+import 'package:ludo_mobile/domain/use_cases/list_reduction_plan/list_reduction_plan_cubit.dart';
 import 'package:ludo_mobile/ui/components/form_field_decoration.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
 
@@ -135,6 +136,7 @@ class _CreatePlanPageState extends State<CreatePlanPage> {
               ).tr(),
             ),
           );
+          context.read<ListReductionPlanCubit>().listReductionPlan();
           context.go(Routes.planList.path);
         } else if (state.status is FormSubmissionFailed) {
           ScaffoldMessenger.of(context).showSnackBar(
