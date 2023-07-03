@@ -61,18 +61,20 @@ class FavoriteGamesPage extends StatelessWidget {
           }
 
           if (state is GetFavoriteGamesError) {
-            return Center(
-              child: const Text("no-favorites-found").tr()
-            );
+            return Center(child: const Text("no-favorites-found").tr());
           }
 
           if (state is GetFavoriteGamesSuccess || state is OperationSuccess) {
             favorites = state.favorites;
 
             return RefreshIndicator(
-              child: FavoriteGamesList(
-                favorites: favorites,
-              ),
+              child: favorites.isEmpty
+                  ? Center(
+                      child: const Text("no-favorites-found").tr(),
+                    )
+                  : FavoriteGamesList(
+                      favorites: favorites,
+                    ),
               onRefresh: () async {
                 BlocProvider.of<FavoriteGamesCubit>(context).getFavorites();
               },

@@ -47,7 +47,7 @@ class Invoice {
       reservationNumber: json['reservationNumber'],
       reservationStartDate: DateTime.parse(json['reservationStartDate']),
       reservationEndDate: DateTime.parse(json['reservationEndDate']),
-      reduction: json['reduction'],
+      reduction: json['reduction'] ?? 0,
       reservationNbWeeks: json['reservationNbWeeks'],
       reservationTotalAmount: double.parse(json['reservationTotalAmount']),
     );

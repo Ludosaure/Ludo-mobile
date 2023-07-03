@@ -42,6 +42,7 @@
     "passwords-not-matching-msg": "Les mots de passe ne correspondent pas.",
     "phone-number-required-msg": "Veuillez entrer votre numéro de téléphone.",
     "phone-number-invalid-msg": "Veuillez entrer un numéro de téléphone valide.",
+    "phone-number-invalid-zero-msg": "Le numéro de téléphone ne peut pas commencer par 00.",
     "email-required-msg": "Veuillez saisir votre email.",
     "email-invalid-msg": "Veuillez saisir un email valide."
   },
