@@ -139,9 +139,6 @@ class _InboxPageState extends State<InboxPage> {
               FirebaseDatabaseUtils.sortConversationsByRecentMessageTime(
             snapshot.data!,
           );
-          if (conversations.isEmpty) {
-            return _buildNoConversations();
-          }
           return _buildConversationList(conversations);
         }
 
@@ -152,9 +149,7 @@ class _InboxPageState extends State<InboxPage> {
           );
         }
 
-        return CircularProgressIndicator(
-          color: Theme.of(context).colorScheme.primary,
-        );
+        return _buildNoConversations();
       },
     );
   }
