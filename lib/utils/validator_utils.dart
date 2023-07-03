@@ -5,12 +5,17 @@ class ValidatorUtils {
     if (value == null || value.isEmpty) {
       return 'form.phone-number-required-msg'.tr();
     }
+
     if (value.length != 10) {
       return 'form.phone-number-invalid-msg'.tr();
     }
 
     if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
       return 'form.phone-number-invalid-msg'.tr();
+    }
+
+    if (value.startsWith('00')) {
+      return 'form.phone-number-invalid-zero-msg'.tr();
     }
 
     return null;

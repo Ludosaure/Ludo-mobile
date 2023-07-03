@@ -76,7 +76,7 @@ class ReservationProvider {
     }
 
     if (response.statusCode != HttpCode.OK) {
-      throw InternalServerException('errors.unknown'.tr());
+      throw InternalServerException("${'errors.unknown'.tr()} : ${response.body}");
     }
 
     return response.body;

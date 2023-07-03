@@ -101,7 +101,7 @@ class _RegisterPageState extends State<RegisterPage> {
               EmailValidator(errorText: 'form.invalid-email-msg'.tr()),
             ]),
             onChanged: (value) {
-              context.read<RegisterBloc>().add(EmailChangedEvent(value));
+              context.read<RegisterBloc>().add(EmailChangedEvent(value.trim()));
             },
             decoration: FormFieldDecoration.textField("email-label".tr()),
           ),

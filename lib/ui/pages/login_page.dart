@@ -87,7 +87,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
           decoration: FormFieldDecoration.textField("email-label".tr()),
           onChanged: (value) {
-            context.read<LoginBloc>().add(EmailChangedEvent(value));
+            context.read<LoginBloc>().add(EmailChangedEvent(value.trim()));
           },
         ),
         const SizedBox(

@@ -217,8 +217,12 @@ class _CartPageState extends State<CartPage> {
     try {
       await context.read<CartCubit>().displayPaymentSheet();
     } catch (e) {
-      //TODO
-      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
     }
 
     setState(() {

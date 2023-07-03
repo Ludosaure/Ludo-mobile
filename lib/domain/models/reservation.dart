@@ -95,7 +95,7 @@ class Reservation {
       canceled: json['isCancelled'],
       canceledAt: json['cancelledDate'] != null ? DateTime.parse(json['cancelledDate']) : null,
       nbWeeks: json['nbWeeks'],
-      appliedPlan: Plan.fromJson(json['appliedPlan']),
+      appliedPlan: json['appliedPlan'] != null ? Plan.fromJson(json['appliedPlan']) : null,
     );
   }
 }
