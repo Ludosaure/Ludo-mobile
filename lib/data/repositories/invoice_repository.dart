@@ -5,7 +5,7 @@ import 'dart:io' as io show File;
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/data/providers/invoice/invoice_provider.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 @injectable
 class InvoiceRepository {
@@ -36,7 +36,10 @@ class InvoiceRepository {
   ) async {
     String? dir = await _findLocalPath();
 
-    dir ??= (await getApplicationDocumentsDirectory()).path;
+    var status = await Permission.storage.request();
+    if (status.isDenied) {
+      dir = '/storage/emulated/0/Android/data/';
+    }
 
     io.File file = io.File("$dir/$filename");
     Uint8List fileAsBytes = base64.decode(base64File);
@@ -47,6 +50,6 @@ class InvoiceRepository {
   }
 
   Future<String?> _findLocalPath() async {
-    return "/sdcard/download/";
+    return "/sdcard/download";
   }
 }
