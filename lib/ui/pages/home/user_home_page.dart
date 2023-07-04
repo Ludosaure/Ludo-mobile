@@ -76,16 +76,13 @@ class _UserHomePageState extends State<UserHomePage> {
 
           if (state is GetGamesSuccess) {
             games = state.games;
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 30),
-              child: RefreshIndicator(
-                  child: _gridView
-                      ? GameGridList(games: state.games)
-                      : GameTileList(games: state.games),
-                  onRefresh: () async {
-                    BlocProvider.of<GetGamesCubit>(context).getGames();
-                  }),
-            );
+            return RefreshIndicator(
+                child: _gridView
+                    ? GameGridList(games: state.games)
+                    : GameTileList(games: state.games),
+                onRefresh: () async {
+                  BlocProvider.of<GetGamesCubit>(context).getGames();
+                });
           }
 
           if (state is GetGamesError) {

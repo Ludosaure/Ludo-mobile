@@ -4,7 +4,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
-import 'package:responsive_framework/responsive_framework.dart';
 
 class GameTile extends StatelessWidget {
   final Game game;
@@ -54,59 +53,46 @@ class GameTile extends StatelessWidget {
       return SizedBox(
         width: 60,
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            GestureDetector(
-              onTap: () {
-                context.push(
-                  '${Routes.game.path}/${game.id}/${Routes.gameUnavailabilities.path}',
-                  extra: game,
-                );
-              },
-              child: const Icon(
-                Icons.edit_calendar_outlined,
-                color: Colors.grey,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  context.push(
+                    '${Routes.game.path}/${game.id}/${Routes.gameUnavailabilities.path}',
+                    extra: game,
+                  );
+                },
+                child: const Icon(
+                  Icons.edit_calendar_outlined,
+                  color: Colors.grey,
+                ),
               ),
-            ),
-            GestureDetector(
-              onTap: () {
-                context.push(
-                  '${Routes.game.path}/${game.id}/${Routes.updateGame.path}',
-                  extra: game,
-                );
-              },
-              child: const Icon(
-                Icons.edit,
-                color: Colors.grey,
+              GestureDetector(
+                onTap: () {
+                  context.push(
+                    '${Routes.game.path}/${game.id}/${Routes.updateGame.path}',
+                    extra: game,
+                  );
+                },
+                child: const Icon(
+                  Icons.edit,
+                  color: Colors.grey,
+                ),
               ),
-            ),
-          ],
+            ],
         ),
       );
     } else {
-      return SizedBox(
-        width: ResponsiveWrapper.of(context).isSmallerThan(DESKTOP) ? 60 : null,
-        child: Column(
-          children: [
-            Text(
-              'amount',
-              style: Theme.of(context).textTheme.titleMedium,
-            ).tr(
-              namedArgs: {
-                'amount': game.weeklyAmount.toString(),
-              },
-            ),
-            const Text(
-              "weekly-amount-label",
-              style: TextStyle(
-                color: Colors.grey,
-                fontSize: 12,
-              ),
-            ).tr(),
-          ],
-        ),
+      return Text(
+        'amount',
+        style: Theme.of(context).textTheme.titleMedium,
+      ).tr(
+        namedArgs: {
+          'amount': game.weeklyAmount.toString(),
+        },
       );
     }
   }
+
 }
