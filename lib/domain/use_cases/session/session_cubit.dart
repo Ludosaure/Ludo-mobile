@@ -1,13 +1,17 @@
 import 'package:bloc/bloc.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/domain/models/user.dart';
+import 'package:ludo_mobile/domain/use_cases/cart/cart_cubit.dart';
+import 'package:ludo_mobile/injection.dart';
 import 'package:ludo_mobile/utils/local_storage_helper.dart';
-import 'package:flutter/material.dart';
 
 part 'session_state.dart';
 
 @singleton
 class SessionCubit extends Cubit<SessionState> with ChangeNotifier {
+  late final CartCubit _cartCubit = locator<CartCubit>();
   SessionCubit() : super(SessionInitial()) {
     checkSession();
   }
@@ -42,6 +46,7 @@ class SessionCubit extends Cubit<SessionState> with ChangeNotifier {
     emit(
       UserNotLogged(),
     );
+    _cartCubit.clearCart();
     notifyListeners();
   }
 }
