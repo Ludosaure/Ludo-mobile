@@ -17,8 +17,8 @@ import 'package:ludo_mobile/utils/menu_items.dart';
 import 'package:responsive_framework/responsive_wrapper.dart';
 
 class ProfilePage extends StatefulWidget {
-  User connectedUser;
-  ProfilePage({
+  final User connectedUser;
+  const ProfilePage({
     required this.connectedUser,
     Key? key,
   }) : super(key: key);
@@ -30,7 +30,13 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   late final SessionCubit _sessionCubit = locator<SessionCubit>();
   User get connectedUser => widget.connectedUser;
-  set connectedUser(User user) => widget.connectedUser = user;
+  late User displayedUser;
+
+  @override
+  void initState() {
+    displayedUser = User.fromJson(connectedUser.toJson());
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +74,7 @@ class _ProfilePageState extends State<ProfilePage> {
           }
 
           if (state is UserLoggedIn) {
-            connectedUser = state.user;
+            displayedUser = state.user;
             updatePhoneFormat();
             return _buildPageContent(context);
           }
@@ -143,7 +149,7 @@ class _ProfilePageState extends State<ProfilePage> {
     final logoutButtonSeparated =
         ResponsiveWrapper.of(context).isSmallerThan(MOBILE);
 
-    final fullName = '${connectedUser.firstname} ${connectedUser.lastname}';
+    final fullName = '${displayedUser.firstname} ${displayedUser.lastname}';
     var maxCharName = 45;
     if (ResponsiveWrapper.of(context).isSmallerThan(DESKTOP)) {
       maxCharName = 20;
@@ -167,7 +173,7 @@ class _ProfilePageState extends State<ProfilePage> {
               : CrossAxisAlignment.center,
           children: [
             CustomCircleAvatar(
-              userProfilePicture: connectedUser.profilePicturePath,
+              userProfilePicture: displayedUser.profilePicturePath,
               height: avatarHeight,
             ),
             SizedBox(width: size.width * 0.02),
@@ -247,7 +253,7 @@ class _ProfilePageState extends State<ProfilePage> {
             const Icon(Icons.email),
             SizedBox(width: size.width * 0.01),
             Text(
-              connectedUser.email,
+              displayedUser.email,
               style: const TextStyle(
                 color: Colors.black,
                 fontSize: 17,
@@ -263,7 +269,7 @@ class _ProfilePageState extends State<ProfilePage> {
             const Icon(Icons.phone),
             SizedBox(width: size.width * 0.01),
             Text(
-              connectedUser.phone,
+              displayedUser.phone,
               style: const TextStyle(
                 color: Colors.black,
                 fontSize: 17,
@@ -279,8 +285,8 @@ class _ProfilePageState extends State<ProfilePage> {
             const Icon(Icons.account_box),
             SizedBox(width: size.width * 0.01),
             Text(
-              (connectedUser.pseudo != null && connectedUser.pseudo != "")
-                  ? connectedUser.pseudo!
+              (displayedUser.pseudo != null && displayedUser.pseudo != "")
+                  ? displayedUser.pseudo!
                   : 'pseudo-to-set-field'.tr(),
               style: const TextStyle(
                 color: Colors.black,
@@ -321,7 +327,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
           ),
-          title: connectedUser.hasEnabledMailNotifications
+          title: displayedUser.hasEnabledMailNotifications
               ? const Icon(Icons.check)
               : const Icon(Icons.close),
         ),
@@ -339,7 +345,7 @@ class _ProfilePageState extends State<ProfilePage> {
               value: locator<UpdateUserBloc>(),
             ),
           ],
-          child: UpdatePasswordAlert(user: connectedUser),
+          child: UpdatePasswordAlert(user: displayedUser),
         );
       },
     );
@@ -353,8 +359,8 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void updatePhoneFormat() {
-    if(connectedUser.phone.startsWith('+33')) {
-      connectedUser.phone = connectedUser.phone.replaceFirst('+33', '0');
+    if(displayedUser.phone.startsWith('+33')) {
+      displayedUser.phone = displayedUser.phone.replaceFirst('+33', '0');
     }
   }
 }

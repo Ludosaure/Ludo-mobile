@@ -20,16 +20,22 @@ import 'package:ludo_mobile/ui/router/routes.dart';
 import 'package:ludo_mobile/utils/app_constants.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
-class GameDetailsPage extends StatelessWidget {
+class GameDetailsPage extends StatefulWidget {
   final User? user;
   final String gameId;
-  late Game game;
 
-  GameDetailsPage({
+  const GameDetailsPage({
     Key? key,
     required this.gameId,
     this.user,
   }) : super(key: key);
+
+  @override
+  State<GameDetailsPage> createState() => _GameDetailsPageState();
+}
+
+class _GameDetailsPageState extends State<GameDetailsPage> {
+  late Game game;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +44,7 @@ class GameDetailsPage extends StatelessWidget {
       body: BlocConsumer<GetGameCubit, GetGameState>(
         builder: (context, state) {
           if (state is GetGameInitial) {
-            BlocProvider.of<GetGameCubit>(context).getGame(gameId);
+            BlocProvider.of<GetGameCubit>(context).getGame(widget.gameId);
             return const Center(
               child: CircularProgressIndicator(),
             );
@@ -131,14 +137,14 @@ class GameDetailsPage extends StatelessWidget {
             child: SizedBox(
               width: size.width * 0.35,
               child: GameBookingComponent(
-                user: user,
+                user: widget.user,
                 game: game,
               ),
             ),
           ),
         ),
         Positioned(
-          top: (user != null && !user!.isAdmin())
+          top: (widget.user != null && !widget.user!.isAdmin())
               ? size.height * 0.25
               : size.height * 0.18,
           left: size.width * 0.60,
@@ -147,7 +153,7 @@ class GameDetailsPage extends StatelessWidget {
             child: SizedBox(
               width: size.width * 0.35,
               child: ReviewSectionComponent(
-                isUserLoggedIn: user != null,
+                isUserLoggedIn: widget.user != null,
                 game: game,
               ),
             ),
@@ -191,7 +197,7 @@ class GameDetailsPage extends StatelessWidget {
                 ),
               ],
               child: GameBookingComponent(
-                user: user,
+                user: widget.user,
                 game: game,
               ),
             ),
@@ -209,7 +215,7 @@ class GameDetailsPage extends StatelessWidget {
               height: 10,
             ),
             ReviewSectionComponent(
-              isUserLoggedIn: user != null,
+              isUserLoggedIn: widget.user != null,
               game: game,
             ),
             const SizedBox(
@@ -364,5 +370,11 @@ class GameDetailsPage extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  @override
+  void dispose() {
+    BlocProvider.of<GetGameCubit>(context).close();
+    super.dispose();
   }
 }

@@ -10,29 +10,38 @@ import 'package:ludo_mobile/ui/pages/game/favorite/favorite_games_list.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
 import 'package:ludo_mobile/utils/menu_items.dart';
 
-class FavoriteGamesPage extends StatelessWidget {
+class FavoriteGamesPage extends StatefulWidget {
   final User? user;
-  late List<FavoriteGame> favorites;
 
-  FavoriteGamesPage({
+  const FavoriteGamesPage({
     Key? key,
     required this.user,
   }) : super(key: key);
+
+  @override
+  State<FavoriteGamesPage> createState() => _FavoriteGamesPageState();
+}
+
+class _FavoriteGamesPageState extends State<FavoriteGamesPage> {
+  late List<FavoriteGame> favorites;
 
   @override
   Widget build(BuildContext context) {
     return HomeScaffold(
       body: _buildFavoriteList(),
       navBarIndex: MenuItems.Favorites.index,
-      user: user,
+      user: widget.user,
     );
   }
 
   Widget _buildFavoriteList() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 20.0,
+        vertical: 10.0,
+      ),
       child: BlocConsumer<FavoriteGamesCubit, FavoriteGamesState>(
-        listener: (context, state) {
+        listener: (_, state) {
           if (state is GetFavoriteGamesError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -61,7 +70,9 @@ class FavoriteGamesPage extends StatelessWidget {
           }
 
           if (state is GetFavoriteGamesError) {
-            return Center(child: const Text("no-favorites-found").tr());
+            return Center(
+              child: const Text("no-favorites-found").tr(),
+            );
           }
 
           if (state is GetFavoriteGamesSuccess || state is OperationSuccess) {
