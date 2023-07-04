@@ -470,7 +470,6 @@ class AppRouter {
       connectedUser = (_sessionCubit.state as UserLoggedIn).user;
 
       final bool isAdminRoute = _isAdminRoute(state.location);
-      print("is admin route: $isAdminRoute");
 
       // guard admin ou auto-login client
       if (isAdminRoute && !connectedUser!.isAdmin() ||

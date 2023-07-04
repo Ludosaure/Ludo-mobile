@@ -39,7 +39,7 @@ class CartCubit extends Cubit<CartState> {
     return _warningDisplayed;
   }
 
-  void warningWasDisplayed(bool wasDisplayed) {
+  void changeWarningDisplayed(bool wasDisplayed) {
     _warningDisplayed = wasDisplayed;
   }
 

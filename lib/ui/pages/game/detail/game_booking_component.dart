@@ -221,7 +221,7 @@ class _GameBookingComponentState extends State<GameBookingComponent> {
           actions: [
             TextButton(
               onPressed: () {
-                context.read<CartCubit>().warningWasDisplayed(true);
+                context.read<CartCubit>().changeWarningDisplayed(true);
                 Navigator.of(childContext).pop();
               },
               child: const Text("dialog-ok").tr(),
