@@ -8,8 +8,10 @@ class AppConstants {
     defaultValue: 'https://api-ludosaure.not24get.fr',
   );
 
-  static final RegExp UUID_V4 = RegExp(
+  static final RegExp GAME_DETAILS_REGEX = RegExp(
       r'^\/game\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$');
+  static final RegExp GAME_UPDATE_REGEX = RegExp(
+      r'^\/game\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\/edit');
 
   static const String STRIPE_MERCHANT_ID = "laludosaure.fr";
   static const String STRIPE_PAYMENT_ID = "pm_card_fr";
