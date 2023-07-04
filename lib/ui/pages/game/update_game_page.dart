@@ -138,8 +138,8 @@ class _UpdateGamePageState extends State<UpdateGamePage> {
                 mainAxisSize: MainAxisSize.max,
                 verticalDirection: VerticalDirection.down,
                 children: [
-                  _buildSubmitButton(context),
                   _buildDeleteGameButton(context),
+                  _buildSubmitButton(context),
                 ],
               ),
             ],
