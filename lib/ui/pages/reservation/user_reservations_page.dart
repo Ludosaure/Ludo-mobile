@@ -21,7 +21,7 @@ class _UserReservationsPageState extends State<UserReservationsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mes Reservations'),
+        title: const Text('my-reservations-title').tr(),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -34,56 +34,61 @@ class _UserReservationsPageState extends State<UserReservationsPage> {
   }
 
   Widget _buildReservationList() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-      child: BlocConsumer<UserReservationsCubit, UserReservationsState>(
-        listener: (context, state) {
-          if (state is UserReservationsError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: Theme.of(context).colorScheme.error,
-              ),
-            );
-          }
-          if (state is UserMustLogError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: Theme.of(context).colorScheme.error,
-              ),
-            );
-          }
-        },
-        builder: (context, state) {
-          if (state is UserReservationsInitial) {
-            BlocProvider.of<UserReservationsCubit>(context)
-                .getMyReservations();
+    return RefreshIndicator(
+      onRefresh: () async {
+        BlocProvider.of<UserReservationsCubit>(context).getMyReservations();
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        child: BlocConsumer<UserReservationsCubit, UserReservationsState>(
+          listener: (context, state) {
+            if (state is UserReservationsError) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: Theme.of(context).colorScheme.error,
+                ),
+              );
+            }
+            if (state is UserMustLogError) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: Theme.of(context).colorScheme.error,
+                ),
+              );
+            }
+          },
+          builder: (context, state) {
+            if (state is UserReservationsInitial) {
+              BlocProvider.of<UserReservationsCubit>(context)
+                  .getMyReservations();
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+
+            if (state is UserReservationsError) {
+              return Center(
+                child: const Text("no-reservation-found").tr(),
+              );
+            }
+
+            if (state is UserReservationsSuccess) {
+              reservations = state.reservations;
+
+              return ReservationList(reservations: reservations);
+            }
+
+            if (state is UserMustLogError) {
+              context.go(Routes.login.path);
+            }
+
             return const Center(
               child: CircularProgressIndicator(),
             );
-          }
-
-          if (state is UserReservationsError) {
-            return Center(
-              child: const Text("no-reservation-found").tr(),
-            );
-          }
-
-          if (state is UserReservationsSuccess) {
-            reservations = state.reservations;
-
-            return ReservationList(reservations: reservations);
-          }
-
-          if (state is UserMustLogError) {
-            context.go(Routes.login.path);
-          }
-
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        },
+          },
+        ),
       ),
     );
   }

@@ -62,7 +62,7 @@ class ReservationList extends StatelessWidget {
             title: Text(
                 "${reservation.createdBy.firstname} ${reservation.createdBy.lastname}"),
             subtitle: Text(_getPeriod(reservation)),
-            trailing: Text("${reservation.amount} €"),
+            trailing: Text("${reservation.amount.toStringAsFixed(2)} €"),
           ),
         );
       },

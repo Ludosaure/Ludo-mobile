@@ -171,7 +171,7 @@ class InvoicesList extends StatelessWidget {
           ),
         ),
         Text(
-          "${invoice.amount} €",
+          "${invoice.amount.toStringAsFixed(2)} €",
           style: const TextStyle(
             fontSize: 16,
           ),

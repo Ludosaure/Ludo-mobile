@@ -195,7 +195,7 @@ class CartContent extends StatelessWidget {
                 ),
               ).tr(
                 namedArgs: {
-                  'amount': totalAmount.toString(),
+                  'amount': totalAmount.toStringAsFixed(2),
                 },
               ),
             ],
