@@ -211,6 +211,26 @@ class _GameBookingComponentState extends State<GameBookingComponent> {
   }
 
   void _onCalendarPressed() {
+    if (!context.read<CartCubit>().isCartEmpty() && !context.read<CartCubit>().warningDisplayed()) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text("Vous avez des jeux dans votre panier"),
+          content: const Text(
+              "Attention si vous changez la date de réservation cela affectera tous les jeux du panier"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                context.read<CartCubit>().warningWasDisplayed();
+              },
+              child: const Text("J'ai compris"),
+            ),
+          ],
+        ),
+      );
+    }
+
     setState(() {
       _showDatePicker = !_showDatePicker;
     });
