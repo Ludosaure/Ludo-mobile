@@ -41,7 +41,7 @@ class FirebaseDatabaseService {
       return userDoc.set({
         'name': name,
         'firstname': firstname,
-        'email': email,
+        'email': email.toLowerCase(),
         'profilePicture': profilePicture,
         'conversations': [],
         'isAdmin': isAdmin,
@@ -96,7 +96,7 @@ class FirebaseDatabaseService {
 
   Future<UserFirebase?> getUserDataByEmail(String email) async {
     QuerySnapshot<Object?> usersQuerySnapshot =
-        await userCollection.where('email', isEqualTo: email).limit(1).get();
+        await userCollection.where('email', isEqualTo: email.toLowerCase()).limit(1).get();
     List<UserFirebase?> users =
         userFirebaseListFromQuerySnapshot(usersQuerySnapshot);
     return users.isNotEmpty ? users.first : null;
@@ -151,13 +151,11 @@ class FirebaseDatabaseService {
   }
 
   Stream<List<String>> getConversationIds() {
-    return userCollection.doc(uid).snapshots().map((userSnapshot) {
-      final userFirebase = userFirebaseFromDocumentSnapshot(
-          userSnapshot as DocumentSnapshot<Map<String, dynamic>>)!;
-
-      final conversationIds = userFirebase.conversations.map((conversation) {
-        return conversation.conversationId;
-      }).toList();
+    return conversationsCollection
+        .where('members', arrayContains: uid)
+        .snapshots()
+        .map((snapshot) {
+      final conversationIds = snapshot.docs.map((doc) => doc.id).toList();
       return conversationIds;
     });
   }
