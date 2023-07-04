@@ -104,8 +104,26 @@ class _ProfilePageState extends State<ProfilePage> {
               child: const Text('my-reservations-title').tr(),
             ),
           _buildUpdatePasswordButton(context),
+          const SizedBox(height: 10),
+          _buildTermsAndConditions(context),
         ],
       ),
+    );
+  }
+
+  Widget _buildTermsAndConditions(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        context.push(Routes.terms.path);
+      },
+      child: Text(
+        'terms-of-use',
+        style: TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.bold,
+          color: Theme.of(context).colorScheme.primary,
+        ),
+      ).tr(),
     );
   }
 
