@@ -374,7 +374,7 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Text(
-              "${reservation.amount} €",
+              "${reservation.amount.toStringAsFixed(2)} €",
               style: TextStyle(
                 fontSize: 18,
                 color: Theme.of(context).colorScheme.onPrimary,

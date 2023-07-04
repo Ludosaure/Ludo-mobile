@@ -183,7 +183,7 @@ class _UpdateGamePageState extends State<UpdateGamePage> {
             height: 20,
           ),
           TextFormField(
-            initialValue: game.weeklyAmount.toString(),
+            initialValue: game.weeklyAmount.toStringAsFixed(2),
             decoration: FormFieldDecoration.textField(
               'weekly-amount-field'.tr(),
               suffixText: 'currency-symbol'.tr(),

@@ -85,7 +85,7 @@ class GameCard extends StatelessWidget {
           style: Theme.of(context).textTheme.titleMedium,
         ).tr(
           namedArgs: {
-            'amount': game.weeklyAmount.toString(),
+            'amount': game.weeklyAmount.toStringAsFixed(2),
           },
         ),
       ),

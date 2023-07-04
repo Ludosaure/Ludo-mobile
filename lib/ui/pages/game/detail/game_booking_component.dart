@@ -137,7 +137,7 @@ class _GameBookingComponentState extends State<GameBookingComponent> {
             ),
           ).tr(
             namedArgs: {
-              "amount": _price.toString(),
+              "amount": _price.toStringAsFixed(2),
             },
           ),
         ],
@@ -167,7 +167,7 @@ class _GameBookingComponentState extends State<GameBookingComponent> {
           ),
         ).tr(
           namedArgs: {
-            "amount": _price.toString(),
+            "amount": _price.toStringAsFixed(2),
           },
         ),
         const SizedBox(width: 8),
