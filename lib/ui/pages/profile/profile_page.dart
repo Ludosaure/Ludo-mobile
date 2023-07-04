@@ -56,14 +56,7 @@ class _ProfilePageState extends State<ProfilePage> {
       child: BlocConsumer<SessionCubit, SessionState>(
         listener: (context, state) {
           if (state is UserNotLogged) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: const Text(
-                  "errors.user-must-log-for-access",
-                ).tr(),
-                backgroundColor: Theme.of(context).colorScheme.error,
-              ),
-            );
+            context.go(Routes.login.path);
           }
         },
         builder: (context, state) {
@@ -78,10 +71,6 @@ class _ProfilePageState extends State<ProfilePage> {
             connectedUser = state.user;
             updatePhoneFormat();
             return _buildPageContent(context);
-          }
-
-          if (state is UserNotLogged) {
-            context.go(Routes.login.path);
           }
 
           return const Center(

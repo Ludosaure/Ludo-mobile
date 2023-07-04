@@ -323,6 +323,10 @@ class CartCubit extends Cubit<CartState> {
     }
   }
 
+  void clearCart() {
+    emit(AddToCartInitial());
+  }
+
   @override
   Future<void> close() {
     _sessionCubit.close();
