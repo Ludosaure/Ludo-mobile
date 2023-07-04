@@ -9,7 +9,7 @@ class TermsAndConditionsRepository {
     DateTime createdAt = DateTime.now();
     DateTime lastUpdatedAt = DateTime.now();
     //TODO passer par quill
-    String termsAndConditions = "Terms and conditions";
+    String termsAndConditions = "ARTICLE 1 — CHAMP D’APPLICATION";
     return TermsAndConditions(
       createdAt: createdAt,
       lastUpdatedAt: lastUpdatedAt,
