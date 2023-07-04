@@ -130,14 +130,22 @@ class FirebaseDatabaseService {
     });
   }
 
+  // maintenant on récupère les conversations directement depuis la collection
+  // des conversations via la liste de members. Par contre la liste des
+  // conversations de l'utilisateur existe toujours car c'est elle qui gère
+  // les isSeen. Cependant la liste est beuguée et devra être refacto pour
+  // pouvoir la supprimer et voir pour gérer isSeen dans la collection des
+  // conversations
   Stream<List<Conversation>> getConversationsDataOfCurrentUser() {
-    final user = getUserData(uid!);
-    return user.switchMap((userFirebase) {
-      final conversationIds = userFirebase.conversations.map((conversation) {
-        return conversation.conversationId;
-      }).toList();
-      final conversations =
-          conversationIds.map((id) => getConversationData(id)).toList();
+    return conversationsCollection
+        .where('members', arrayContains: uid)
+        .snapshots()
+        .switchMap((snapshot) {
+      final conversationIds = snapshot.docs.map((doc) => doc.id).toList();
+      final conversations = conversationIds
+          .map((id) => getConversationData(id))
+          .toList();
+
       return Rx.combineLatestList(conversations);
     });
   }
