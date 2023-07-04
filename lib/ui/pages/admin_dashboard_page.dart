@@ -52,13 +52,13 @@ class AdminDashboardPage extends StatelessWidget {
           context.push(Routes.planList.path);
         },
       ),
-      _buildCard(
+      /*_buildCard(
         title: 'Gestion des catégories',
         icon: Icons.list_alt,
         onTap: () {
           context.push(Routes.categoryList.path);
         },
-      ),
+      ),*/
     ];
   }
 
