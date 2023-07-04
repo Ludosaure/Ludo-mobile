@@ -166,30 +166,30 @@ class _ReservationListState extends State<ReservationList> {
     return TabBar(
       isScrollable: true,
       indicatorColor: Theme.of(context).colorScheme.primary,
-      tabs: const [
+      tabs: [
         Tab(
-          child: Text(
-            "Toutes",
+          child: const Text(
+            "all.fem",
             style: TextStyle(color: Colors.black),
-          ),
+          ).tr(),
         ),
         Tab(
-          child: Text(
-            "Retards",
+          child: const Text(
+            "reservation-late",
             style: TextStyle(color: Colors.black),
-          ),
+          ).tr(),
         ),
         Tab(
-          child: Text(
-            "En cours",
+          child: const Text(
+            "reservation-running",
             style: TextStyle(color: Colors.black),
-          ),
+          ).tr(),
         ),
         Tab(
-          child: Text(
-            "Retournées",
+          child: const Text(
+            "reservation-returned",
             style: TextStyle(color: Colors.black),
-          ),
+          ).tr(),
         ),
       ],
     );
