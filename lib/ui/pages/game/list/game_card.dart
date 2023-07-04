@@ -80,13 +80,24 @@ class GameCard extends StatelessWidget {
             ),
           ],
         ),
-        trailing: Text(
-          'amount',
-          style: Theme.of(context).textTheme.titleMedium,
-        ).tr(
-          namedArgs: {
-            'amount': game.weeklyAmount.toString(),
-          },
+        trailing: Column(
+          children: [
+            Text(
+              'amount',
+              style: Theme.of(context).textTheme.titleMedium,
+            ).tr(
+              namedArgs: {
+                'amount': game.weeklyAmount.toString(),
+              },
+            ),
+            const Text(
+              "weekly-amount-label",
+              style: TextStyle(
+                color: Colors.grey,
+                fontSize: 12,
+              ),
+            ).tr(),
+          ],
         ),
       ),
       child: Padding(
