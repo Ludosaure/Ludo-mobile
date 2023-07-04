@@ -222,7 +222,7 @@
   "max-players-field": "Nombre de joueurs maximum *",
   "currency-symbol": "€",
   "percent-symbol": "%",
-  "reservation-details-info": "* Il se peut que certains jeux n'apparaissent plus dans le détails suite à leur suppression. Seule la facture consèrve l'intégralité de la commande dans le temps.",
+  "reservation-details-info": "* Il se peut que certains jeux n'apparaissent plus dans le détails suite à leur suppression. Seule la facture conserve l'intégralité de la commande dans le temps.",
   "list-plans-title": "Liste des réductions",
   "list-categories-title": "Liste des catégories",
   "review-title": "Commentaires",
