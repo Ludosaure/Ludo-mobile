@@ -92,6 +92,7 @@ class CreateGameBloc extends Bloc<CreateGameEvent, CreateGameInitial> {
       return;
     }
 
+    clearGame();
     emit(
       state.copyWith(
         status: const FormSubmissionSuccessful(),
@@ -137,6 +138,10 @@ class CreateGameBloc extends Bloc<CreateGameEvent, CreateGameInitial> {
 
   Future<String> _uploadImage(dynamic image) async {
     return await _mediaRepository.uploadPicture(image);
+  }
+
+  void clearGame() {
+    emit(CreateGameInitial());
   }
 
   @override
