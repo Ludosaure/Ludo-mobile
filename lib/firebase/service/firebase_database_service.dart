@@ -41,7 +41,7 @@ class FirebaseDatabaseService {
       return userDoc.set({
         'name': name,
         'firstname': firstname,
-        'email': email,
+        'email': email.toLowerCase(),
         'profilePicture': profilePicture,
         'conversations': [],
         'isAdmin': isAdmin,
@@ -96,7 +96,7 @@ class FirebaseDatabaseService {
 
   Future<UserFirebase?> getUserDataByEmail(String email) async {
     QuerySnapshot<Object?> usersQuerySnapshot =
-        await userCollection.where('email', isEqualTo: email).limit(1).get();
+        await userCollection.where('email', isEqualTo: email.toLowerCase()).limit(1).get();
     List<UserFirebase?> users =
         userFirebaseListFromQuerySnapshot(usersQuerySnapshot);
     return users.isNotEmpty ? users.first : null;
@@ -130,14 +130,22 @@ class FirebaseDatabaseService {
     });
   }
 
+  // maintenant on récupère les conversations directement depuis la collection
+  // des conversations via la liste de members. Par contre la liste des
+  // conversations de l'utilisateur existe toujours car c'est elle qui gère
+  // les isSeen. Cependant la liste est beuguée et devra être refacto pour
+  // pouvoir la supprimer et voir pour gérer isSeen dans la collection des
+  // conversations
   Stream<List<Conversation>> getConversationsDataOfCurrentUser() {
-    final user = getUserData(uid!);
-    return user.switchMap((userFirebase) {
-      final conversationIds = userFirebase.conversations.map((conversation) {
-        return conversation.conversationId;
-      }).toList();
-      final conversations =
-          conversationIds.map((id) => getConversationData(id)).toList();
+    return conversationsCollection
+        .where('members', arrayContains: uid)
+        .snapshots()
+        .switchMap((snapshot) {
+      final conversationIds = snapshot.docs.map((doc) => doc.id).toList();
+      final conversations = conversationIds
+          .map((id) => getConversationData(id))
+          .toList();
+
       return Rx.combineLatestList(conversations);
     });
   }
@@ -151,13 +159,11 @@ class FirebaseDatabaseService {
   }
 
   Stream<List<String>> getConversationIds() {
-    return userCollection.doc(uid).snapshots().map((userSnapshot) {
-      final userFirebase = userFirebaseFromDocumentSnapshot(
-          userSnapshot as DocumentSnapshot<Map<String, dynamic>>)!;
-
-      final conversationIds = userFirebase.conversations.map((conversation) {
-        return conversation.conversationId;
-      }).toList();
+    return conversationsCollection
+        .where('members', arrayContains: uid)
+        .snapshots()
+        .map((snapshot) {
+      final conversationIds = snapshot.docs.map((doc) => doc.id).toList();
       return conversationIds;
     });
   }
@@ -230,29 +236,39 @@ class FirebaseDatabaseService {
         'targetUserId': targetUserId,
         'messages': [],
       });
+      String conversationId = conversationDocumentReference.id;
       // ajout de l'id de la conversation qui vient d'être créée
       await conversationDocumentReference.update({
-        "conversationId": conversationDocumentReference.id,
+        "conversationId": conversationId,
       });
-      if (message.isNotEmpty) {
-        sendMessage(conversationDocumentReference.id, senderId, message);
-      }
       // ajout de la conversation dans la liste des conversations de chaque membre
-      for (var memberId in memberIds) {
-        DocumentReference userDocumentReference = userCollection.doc(memberId);
-        await userDocumentReference.update({
-          'conversations': FieldValue.arrayUnion([
-            {
-              'conversationId': conversationDocumentReference.id,
-              'isSeen': false
-            }
-          ])
-        });
+      synchronizeMembersToUserConversationsList(conversationId);
+      if (message.isNotEmpty) {
+        sendMessage(conversationId, senderId, message);
       }
     } else {
       // peut arriver quand c'est un admin qui envoie un message à un client via
       // sa réservation (un client n'a qu'une seule conversation)
       sendMessage(existingConversation[0].conversationId, senderId, message);
+    }
+  }
+
+  Future<void> synchronizeMembersToUserConversationsList(String conversationId) async {
+    Conversation conversation = await getConversationData(conversationId).first;
+    for (var memberId in conversation.members) {
+      DocumentReference userDocumentReference = userCollection.doc(memberId);
+      UserFirebase user = userFirebaseFromDocumentSnapshot(
+          await userDocumentReference.get() as DocumentSnapshot<Map<String, dynamic>>)!;
+      if(!user.conversations.any((userConversation) => userConversation.conversationId == conversationId)) {
+        await userDocumentReference.update({
+          'conversations': FieldValue.arrayUnion([
+            {
+              'conversationId': conversationId,
+              'isSeen': true,
+            }
+          ])
+        });
+      }
     }
   }
 
@@ -345,6 +361,11 @@ class FirebaseDatabaseService {
 
   Future<void> sendMessage(
       String conversationId, String senderId, String message) async {
+    // la ligne suivante sert de sécurité pour maintenir la synchronisation
+    // entre la liste des membres d'une conversation et la liste des
+    // conversations d'un membre. Elle devra être supprimée quand la liste avec
+    // isSeen sera gérée autrement sans beug
+    synchronizeMembersToUserConversationsList(conversationId);
     conversationsCollection.doc(conversationId).update({
       'messages': FieldValue.arrayUnion([
         {
