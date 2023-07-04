@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:ludo_mobile/domain/use_cases/cart/cart_cubit.dart';
+import 'package:ludo_mobile/injection.dart';
 import 'package:ludo_mobile/ui/components/menu/client_side_menu.dart';
 import 'package:ludo_mobile/ui/components/menu/no_account_side_menu.dart';
 import 'package:ludo_mobile/ui/components/nav_bar/app_bar/custom_app_bar.dart';
@@ -28,14 +30,13 @@ class HomeScaffold extends StatefulWidget {
 }
 
 class _HomeScaffoldState extends State<HomeScaffold> {
-  User? get user => widget.user;
-  int get navBarIndex => widget.navBarIndex;
-  Widget get body => widget.body;
-  Widget? get floatingActionButton => widget.floatingActionButton;
+  final CartCubit _cartCubit = locator<CartCubit>();
+  User? get _user => widget.user;
+  Widget get _body => widget.body;
 
   @override
   void initState() {
-    BlocProvider.of<CartCubit>(context).getCartContent();
+    _cartCubit.getCartContent();
     super.initState();
   }
 
@@ -44,16 +45,16 @@ class _HomeScaffoldState extends State<HomeScaffold> {
     return Scaffold(
       body: _buildBody(context),
       appBar: CustomAppBar(
-        user: user,
+        user: _user,
       ).build(context),
       bottomNavigationBar: _buildBottomNavigationBar(context),
-      floatingActionButton: floatingActionButton,
+      floatingActionButton: widget.floatingActionButton,
     );
   }
 
   Widget _buildBody(BuildContext context) {
     if (ResponsiveWrapper.of(context).isSmallerThan(TABLET)) {
-      return body;
+      return _body;
     }
 
     return ResponsiveRowColumn(
@@ -62,7 +63,7 @@ class _HomeScaffoldState extends State<HomeScaffold> {
         ResponsiveRowColumnItem(
           child: Flexible(
             flex: ResponsiveWrapper.of(context).isSmallerThan(DESKTOP) ? 2 : 1,
-            child: user != null
+            child: _user != null
                 ? const ClientSideMenu()
                 : const NoAccountSideMenu(),
           ),
@@ -70,7 +71,7 @@ class _HomeScaffoldState extends State<HomeScaffold> {
         ResponsiveRowColumnItem(
           child: Flexible(
             flex: 5,
-            child: body,
+            child: _body,
           ),
         ),
       ],
@@ -80,9 +81,12 @@ class _HomeScaffoldState extends State<HomeScaffold> {
   Widget? _buildBottomNavigationBar(BuildContext context) {
     final bool isTabletOrShorter =
         ResponsiveWrapper.of(context).isSmallerThan(TABLET);
-    if (user != null) {
+    if (_user != null) {
       return isTabletOrShorter
-          ? CustomBottomNavigationBar(index: navBarIndex, user: user!)
+          ? BlocProvider.value(
+              value: _cartCubit,
+              child: CustomBottomNavigationBar(index: widget.navBarIndex, user: _user!),
+            )
           : null;
     } else {
       return isTabletOrShorter ? const NoAccountBottomNavigationBar() : null;

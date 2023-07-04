@@ -36,6 +36,7 @@ class GameDetailsPage extends StatefulWidget {
 
 class _GameDetailsPageState extends State<GameDetailsPage> {
   late Game game;
+  User? get _user => widget.user;
 
   @override
   Widget build(BuildContext context) {
@@ -137,14 +138,14 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
             child: SizedBox(
               width: size.width * 0.35,
               child: GameBookingComponent(
-                user: widget.user,
+                user: _user,
                 game: game,
               ),
             ),
           ),
         ),
         Positioned(
-          top: (widget.user != null && !widget.user!.isAdmin())
+          top: (_user != null && !_user!.isAdmin())
               ? size.height * 0.25
               : size.height * 0.18,
           left: size.width * 0.60,
@@ -153,7 +154,7 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
             child: SizedBox(
               width: size.width * 0.35,
               child: ReviewSectionComponent(
-                isUserLoggedIn: widget.user != null,
+                isUserLoggedIn: _user != null,
                 game: game,
               ),
             ),
@@ -197,7 +198,7 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                 ),
               ],
               child: GameBookingComponent(
-                user: widget.user,
+                user: _user,
                 game: game,
               ),
             ),
@@ -215,7 +216,7 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
               height: 10,
             ),
             ReviewSectionComponent(
-              isUserLoggedIn: widget.user != null,
+              isUserLoggedIn: _user != null,
               game: game,
             ),
             const SizedBox(
