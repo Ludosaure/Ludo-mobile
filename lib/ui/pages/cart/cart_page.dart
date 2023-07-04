@@ -11,6 +11,7 @@ import 'package:ludo_mobile/utils/menu_items.dart';
 
 class CartPage extends StatefulWidget {
   final User user;
+
   const CartPage({
     required this.user,
     Key? key,
@@ -23,6 +24,7 @@ class CartPage extends StatefulWidget {
 class _CartPageState extends State<CartPage> {
   late List<Game> cartContent = [];
   late bool paymentSheetDisplayed = false;
+
   User get user => widget.user;
 
   @override
@@ -37,7 +39,10 @@ class _CartPageState extends State<CartPage> {
       navBarIndex: MenuItems.Cart.index,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
-        child: _buildMobileCartContent(context),
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width,
+          child: _buildMobileCartContent(context),
+        ),
       ),
       user: user,
     );
@@ -48,8 +53,7 @@ class _CartPageState extends State<CartPage> {
         ? null
         : BlocConsumer<CartCubit, CartState>(
             listener: (context, state) {
-              if (state is CartContentLoaded ||
-                  state is PaymentCompleted) {
+              if (state is CartContentLoaded || state is PaymentCompleted) {
                 setState(() {
                   cartContent = state.cartContent;
                 });
@@ -95,7 +99,6 @@ class _CartPageState extends State<CartPage> {
               if (state is CartContentLoaded ||
                   state is PaymentCanceled ||
                   state is PaymentTooHigh) {
-
                 cartContent = state.cartContent;
 
                 if (state.cartContent.isEmpty) {
