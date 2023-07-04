@@ -24,6 +24,7 @@ class _ConversationPageState extends State<ConversationPage> {
   Stream<Conversation>? _conversation;
   final _newMessageFormKey = GlobalKey<FormState>();
   final _messageController = TextEditingController();
+  String get _conversationId => widget.conversationId;
 
   @override
   void initState() {
@@ -33,9 +34,9 @@ class _ConversationPageState extends State<ConversationPage> {
 
   void _initConversation() async {
     FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
-        .setConversationToSeen(widget.conversationId);
+        .setConversationToSeen(_conversationId);
     await FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
-        .getConversationById(widget.conversationId)
+        .getConversationById(_conversationId)
         .then((snapshot) {
       setState(() {
         _conversation = snapshot;
@@ -133,7 +134,7 @@ class _ConversationPageState extends State<ConversationPage> {
                 if (_newMessageFormKey.currentState!.validate()) {
                   FirebaseDatabaseService(uid: currentUserId)
                       .sendMessage(
-                    widget.conversationId,
+                    _conversationId,
                     currentUserId,
                     _messageController.text,
                   )
@@ -146,7 +147,7 @@ class _ConversationPageState extends State<ConversationPage> {
               },
               style: ElevatedButton.styleFrom(
                 shape: const CircleBorder(),
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(15),
               ),
               child: const Icon(Icons.send),
             ),
@@ -263,7 +264,7 @@ class _ConversationPageState extends State<ConversationPage> {
       title: StreamBuilder(
         stream:
             FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
-                .getTargetUserDataByConversationId(widget.conversationId)
+                .getTargetUserDataByConversationId(_conversationId)
                 .asStream(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
@@ -383,7 +384,7 @@ class _ConversationPageState extends State<ConversationPage> {
 
   _showGroupInfosDialog(BuildContext parentContext) async {
     await FirebaseDatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
-        .getConversationMembers(widget.conversationId)
+        .getConversationMembers(_conversationId)
         .then((members) {
       showDialog(
         context: parentContext,

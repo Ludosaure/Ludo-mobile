@@ -28,6 +28,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   bool _hidePassword = true;
   bool _hideConfirmPassword = true;
+  bool _submitting = false;
 
   @override
   Widget build(BuildContext context) {
@@ -79,6 +80,7 @@ class _RegisterPageState extends State<RegisterPage> {
         mainAxisSize: MainAxisSize.min,
         children: [
           TextFormField(
+            enabled: !_submitting,
             validator: RequiredValidator(errorText: 'form.field-required-msg'.tr()),
             onChanged: (value) {
               context.read<RegisterBloc>().add(LastnameChangedEvent(value));
@@ -88,6 +90,7 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
           const SizedBox20(),
           TextFormField(
+            enabled: !_submitting,
             validator: RequiredValidator(errorText: 'form.field-required-msg'.tr()),
             decoration: FormFieldDecoration.textField("firstname-label".tr()),
             onChanged: (value) {
@@ -96,6 +99,7 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
           const SizedBox20(),
           TextFormField(
+            enabled: !_submitting,
             validator: MultiValidator([
               RequiredValidator(errorText: 'form.field-required-msg'.tr()),
               EmailValidator(errorText: 'form.invalid-email-msg'.tr()),
@@ -107,6 +111,7 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
           const SizedBox20(),
           TextFormField(
+            enabled: !_submitting,
             validator: ValidatorUtils.validatePhoneNumber,
             onChanged: (value) {
               context.read<RegisterBloc>().add(PhoneChangedEvent(value));
@@ -115,6 +120,7 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
           const SizedBox20(),
           TextFormField(
+            enabled: !_submitting,
             controller: _passwordController,
             validator: MultiValidator([
               RequiredValidator(errorText: 'form.field-required-msg'.tr()),
@@ -143,6 +149,7 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
           const SizedBox20(),
           TextFormField(
+            enabled: !_submitting,
             controller: _confirmPasswordController,
             validator: (String? value) {
               if (value != _passwordController.text) {
@@ -201,6 +208,9 @@ class _RegisterPageState extends State<RegisterPage> {
         return ElevatedButton(
           onPressed: () {
             if (_formKey.currentState!.validate()) {
+              setState(() {
+                _submitting = true;
+              });
               context.read<RegisterBloc>().add(const RegisterSubmitEvent());
             }
           },
@@ -226,7 +236,7 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget _titleRow() {
     return Row(
       children: [
-        !kIsWeb ? const CustomBackButton() : const SizedBox(),
+        kIsWeb || _submitting ? const SizedBox() : const CustomBackButton(),
         const Spacer(),
         const Text(
           "register-title",

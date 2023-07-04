@@ -24,6 +24,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   bool _hidePassword = true;
+  bool _submitting = false;
 
   @override
   Widget build(BuildContext context) {
@@ -82,6 +83,7 @@ class _LoginPageState extends State<LoginPage> {
       key: _formKey,
       child: Column(children: [
         TextFormField(
+          enabled: !_submitting,
           validator: RequiredValidator(
             errorText: "form.email-required-msg".tr(),
           ),
@@ -94,6 +96,7 @@ class _LoginPageState extends State<LoginPage> {
           height: 20,
         ),
         TextFormField(
+          enabled: !_submitting,
           validator: RequiredValidator(
             errorText: "form.password-required-msg".tr(),
           ),
@@ -159,7 +162,7 @@ class _LoginPageState extends State<LoginPage> {
         if (state.status is FormSubmissionSuccessful) {
           final user = state.loggedUser as User;
 
-          if(user.isAdmin()){
+          if (user.isAdmin()) {
             context.go(Routes.homeAdmin.path);
           } else {
             context.go(Routes.home.path);
@@ -184,6 +187,7 @@ class _LoginPageState extends State<LoginPage> {
           onPressed: () {
             if (_formKey.currentState!.validate()) {
               context.read<LoginBloc>().add(const LoginSubmitEvent());
+              _submitting = true;
             }
           },
           style: ElevatedButton.styleFrom(
@@ -209,7 +213,7 @@ class _LoginPageState extends State<LoginPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        !kIsWeb ? const CustomBackButton(): const SizedBox(),
+        kIsWeb || _submitting ?  const SizedBox() : const CustomBackButton(),
         const Spacer(),
         const Text(
           "login-title",
@@ -328,7 +332,9 @@ class _LoginPageState extends State<LoginPage> {
         TextButton(
           onPressed: () {
             if (confirmAccountFormKey.currentState!.validate()) {
-              context.read<LoginBloc>().add(ResendConfirmAccountEmailEvent(email));
+              context
+                  .read<LoginBloc>()
+                  .add(ResendConfirmAccountEmailEvent(email));
               Navigator.of(context, rootNavigator: true).pop();
             }
           },
