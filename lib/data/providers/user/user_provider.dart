@@ -14,30 +14,6 @@ import 'package:ludo_mobile/utils/app_constants.dart';
 class UserProvider {
   final String baseUrl = '${AppConstants.API_URL}/user';
 
-  Future<User> getMyInfos(String token) async {
-    final http.Response response = await http
-        .get(
-      Uri.parse('$baseUrl/me'),
-      headers: HttpHelper.getHeaders(token)
-    ).catchError((error) {
-      HttpHelper.handleRequestException(error);
-    });
-
-    if (response.statusCode == HttpCode.BAD_REQUEST) {
-      throw BadRequestException(
-        "errors.error-loading-user-data".tr(),
-      );
-    }
-
-    if (response.statusCode != HttpCode.OK) {
-      throw InternalServerException(
-        "errors.unknown".tr(),
-      );
-    }
-
-    return User.fromJson(jsonDecode(response.body));
-  }
-
   Future<User> updateUser(String token, UpdateUserRequest user) async {
     final http.Response response = await http
         .put(
