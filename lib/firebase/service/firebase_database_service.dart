@@ -236,29 +236,39 @@ class FirebaseDatabaseService {
         'targetUserId': targetUserId,
         'messages': [],
       });
+      String conversationId = conversationDocumentReference.id;
       // ajout de l'id de la conversation qui vient d'être créée
       await conversationDocumentReference.update({
-        "conversationId": conversationDocumentReference.id,
+        "conversationId": conversationId,
       });
-      if (message.isNotEmpty) {
-        sendMessage(conversationDocumentReference.id, senderId, message);
-      }
       // ajout de la conversation dans la liste des conversations de chaque membre
-      for (var memberId in memberIds) {
-        DocumentReference userDocumentReference = userCollection.doc(memberId);
-        await userDocumentReference.update({
-          'conversations': FieldValue.arrayUnion([
-            {
-              'conversationId': conversationDocumentReference.id,
-              'isSeen': false
-            }
-          ])
-        });
+      synchronizeMembersToUserConversationsList(conversationId);
+      if (message.isNotEmpty) {
+        sendMessage(conversationId, senderId, message);
       }
     } else {
       // peut arriver quand c'est un admin qui envoie un message à un client via
       // sa réservation (un client n'a qu'une seule conversation)
       sendMessage(existingConversation[0].conversationId, senderId, message);
+    }
+  }
+
+  Future<void> synchronizeMembersToUserConversationsList(String conversationId) async {
+    Conversation conversation = await getConversationData(conversationId).first;
+    for (var memberId in conversation.members) {
+      DocumentReference userDocumentReference = userCollection.doc(memberId);
+      UserFirebase user = userFirebaseFromDocumentSnapshot(
+          await userDocumentReference.get() as DocumentSnapshot<Map<String, dynamic>>)!;
+      if(!user.conversations.any((userConversation) => userConversation.conversationId == conversationId)) {
+        await userDocumentReference.update({
+          'conversations': FieldValue.arrayUnion([
+            {
+              'conversationId': conversationId,
+              'isSeen': true,
+            }
+          ])
+        });
+      }
     }
   }
 
@@ -351,6 +361,11 @@ class FirebaseDatabaseService {
 
   Future<void> sendMessage(
       String conversationId, String senderId, String message) async {
+    // la ligne suivante sert de sécurité pour maintenir la synchronisation
+    // entre la liste des membres d'une conversation et la liste des
+    // conversations d'un membre. Elle devra être supprimée quand la liste avec
+    // isSeen sera gérée autrement sans beug
+    synchronizeMembersToUserConversationsList(conversationId);
     conversationsCollection.doc(conversationId).update({
       'messages': FieldValue.arrayUnion([
         {
