@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/data/repositories/favorite/favorite_game.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
-import 'package:ludo_mobile/domain/use_cases/favorite_games/favorite_games_cubit.dart';
 import 'package:ludo_mobile/ui/components/favorite_button.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
 
@@ -31,11 +29,14 @@ class FavoriteGamesList extends StatelessWidget {
           ),
           child: ListTile(
             leading: favorite.picture != null
-                ? Image(
-                    image: NetworkImage(favorite.picture!),
-                    fit: BoxFit.cover,
-                    height: MediaQuery.of(context).size.height * 0.13,
-                    width: MediaQuery.of(context).size.width * 0.13,
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 5.0),
+                    child: Image(
+                      image: NetworkImage(favorite.picture!),
+                      fit: BoxFit.contain,
+                      height: MediaQuery.of(context).size.height * 0.13,
+                      width: MediaQuery.of(context).size.width * 0.13,
+                    ),
                   )
                 : const Padding(
                     padding: EdgeInsets.all(8.0),
@@ -47,12 +48,16 @@ class FavoriteGamesList extends StatelessWidget {
             onTap: () {
               context.push('${Routes.game.path}/${favorite.gameId}');
             },
-            title: Text(favorite.name),
-            trailing: BlocProvider.value(
-              value: context.read<FavoriteGamesCubit>(),
-              child: FavoriteButton(
-                game: Game.onlyWithId(favorite.gameId),
+            title: SizedBox(
+              height: 50,
+              child: Center(
+                child: Text(
+                  favorite.name,
+                ),
               ),
+            ),
+            trailing: FavoriteButton(
+              game: Game.onlyWithId(favorite.gameId),
             ),
           ),
         );

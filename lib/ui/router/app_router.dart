@@ -322,9 +322,6 @@ class AppRouter {
               BlocProvider.value(
                 value: _getFavoriteGamesCubit,
               ),
-              BlocProvider.value(
-                value: _cartCubit,
-              ),
             ],
             child: FavoriteGamesPage(
               user: connectedUser!,
@@ -336,15 +333,8 @@ class AppRouter {
       GoRoute(
         path: Routes.inbox.path,
         pageBuilder: (context, state) => CustomTransitionPage(
-          child: MultiBlocProvider(
-            providers: [
-              BlocProvider.value(
-                value: _cartCubit,
-              ),
-            ],
-            child: InboxPage(
-              user: connectedUser!,
-            ),
+          child: InboxPage(
+            user: connectedUser!,
           ),
           transitionsBuilder: _getTransition,
         ),
@@ -372,9 +362,6 @@ class AppRouter {
             providers: [
               BlocProvider.value(
                 value: _sessionCubit,
-              ),
-              BlocProvider.value(
-                value: _cartCubit,
               ),
             ],
             child: ProfilePage(
@@ -460,7 +447,7 @@ class AppRouter {
     errorBuilder: (context, state) {
       return connectedUser!.isAdmin()
           ? _adminHome()
-          : UserHomePage(connectedUser: connectedUser!);
+          : _userHome();
     },
   );
 
@@ -538,9 +525,6 @@ class AppRouter {
         ),
         BlocProvider.value(
           value: _listReductionPlanCubit,
-        ),
-        BlocProvider.value(
-          value: _cartCubit,
         ),
       ],
       child: UserHomePage(

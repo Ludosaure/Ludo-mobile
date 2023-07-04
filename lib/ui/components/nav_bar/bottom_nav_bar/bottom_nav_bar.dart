@@ -81,7 +81,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
           label: MenuItems.Home.label,
         ),
         BottomNavigationBarItem(
-          icon: _buildCartIcon(),
+          icon: _buildCartIcon(context),
           label: MenuItems.Cart.label,
         ),
         BottomNavigationBarItem(
@@ -105,9 +105,9 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
     );
   }
 
-  Widget _buildCartIcon() {
+  Widget _buildCartIcon(BuildContext context) {
     return BlocConsumer<CartCubit, CartState>(
-      listener: (context, state) {
+      listener: (_, state) {
         if (state is LoadCartContentError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -127,7 +127,11 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
           );
         }
       },
-      builder: (context, state) {
+      builder: (_, state) {
+        if(state is AddToCartInitial) {
+          context.read<CartCubit>().getCartContent();
+        }
+
         if (state is CartContentLoaded) {
           return Badge(
             badgeContent: Text(
