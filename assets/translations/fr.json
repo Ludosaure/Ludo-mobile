@@ -229,5 +229,9 @@
   "must-have-account-to-review": "Vous devez avoir un compte pour pouvoir laisser un avis.",
   "must-have-rented-game-to-review": "Vous devez avoir loué ce jeu pour pouvoir laisser un avis.",
   "review-field": "Donnez votre avis",
-  "review-submit-button": "Publier"
+  "review-submit-button": "Publier",
+  "dialog-ok": "J'ai compris",
+  "booking-date-changed-dialog-title": "Vous avez des jeux dans votre panier",
+  "booking-date-changed-dialog-content": "Attention si vous changez la date de réservation cela affectera tous les jeux du panier"
+
 }

@@ -211,20 +211,20 @@ class _GameBookingComponentState extends State<GameBookingComponent> {
   }
 
   void _onCalendarPressed() {
-    if (!context.read<CartCubit>().isCartEmpty() && !context.read<CartCubit>().warningDisplayed()) {
+    if (!context.read<CartCubit>().isCartEmpty() && !context.read<CartCubit>().wasWarningDisplayed()) {
       showDialog(
         context: context,
-        builder: (context) => AlertDialog(
-          title: const Text("Vous avez des jeux dans votre panier"),
+        builder: (childContext) => AlertDialog(
+          title: const Text("booking-date-changed-dialog-title").tr(),
           content: const Text(
-              "Attention si vous changez la date de réservation cela affectera tous les jeux du panier"),
+              "booking-date-changed-dialog-content").tr(),
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop();
-                context.read<CartCubit>().warningWasDisplayed();
+                context.read<CartCubit>().warningWasDisplayed(true);
+                Navigator.of(childContext).pop();
               },
-              child: const Text("J'ai compris"),
+              child: const Text("dialog-ok").tr(),
             ),
           ],
         ),

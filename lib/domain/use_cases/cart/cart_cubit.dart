@@ -35,12 +35,12 @@ class CartCubit extends Cubit<CartState> {
     return state.cartContent.isEmpty;
   }
 
-  bool warningDisplayed() {
+  bool wasWarningDisplayed() {
     return _warningDisplayed;
   }
 
-  void warningWasDisplayed() {
-    _warningDisplayed = true;
+  void warningWasDisplayed(bool wasDisplayed) {
+    _warningDisplayed = wasDisplayed;
   }
 
   DateTimeRange getBookingPeriod() {
