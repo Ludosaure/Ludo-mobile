@@ -2,9 +2,14 @@ part of 'list_all_reservations_cubit.dart';
 
 @immutable
 abstract class ListAllReservationsState {
-  final List<Reservation> reservations;
+  final SortedReservations reservations;
   const ListAllReservationsState({
-    this.reservations = const [],
+    this.reservations = const SortedReservations(
+      all: [],
+      late: [],
+      current: [],
+      returned: [],
+    )
   });
 }
 
@@ -17,7 +22,7 @@ class ListAllReservationsLoading extends ListAllReservationsState {
 }
 
 class ListReservationsSuccess extends ListAllReservationsState {
-  const ListReservationsSuccess({required List<Reservation> reservations})
+  const ListReservationsSuccess({required SortedReservations reservations})
       : super(reservations: reservations);
 }
 

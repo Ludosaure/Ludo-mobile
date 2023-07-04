@@ -8,7 +8,7 @@ import 'package:ludo_mobile/firebase/model/user_firebase.dart';
 import 'package:ludo_mobile/firebase/service/firebase_database_service.dart';
 import 'package:ludo_mobile/ui/components/circle-avatar.dart';
 import 'package:ludo_mobile/ui/components/custom_back_button.dart';
-import 'package:responsive_framework/responsive_wrapper.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 
 class ConversationPage extends StatefulWidget {
   final String conversationId;
@@ -47,13 +47,20 @@ class _ConversationPageState extends State<ConversationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildAppBar(context),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildMessageList(),
-          _buildMessageInput(context),
-        ],
+      body: Center(
+        child: SizedBox(
+          width: ResponsiveWrapper.of(context).isSmallerThan(MOBILE)
+              ? double.infinity
+              : MediaQuery.of(context).size.width * 0.6,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildMessageList(),
+              _buildMessageInput(context),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -79,6 +86,7 @@ class _ConversationPageState extends State<ConversationPage> {
                 title:
                     const Text('errors.error-loading-conversation-data').tr(),
                 subtitle: Text(snapshot.error.toString()),
+                dense: true,
               );
             }
 
@@ -106,32 +114,39 @@ class _ConversationPageState extends State<ConversationPage> {
                 maxLines: null,
                 controller: _messageController,
                 validator: RequiredValidator(
-                    errorText: 'form.field-required-msg'.tr()),
+                  errorText: 'form.field-required-msg'.tr(),
+                ),
                 autocorrect: false,
                 decoration: InputDecoration(
                   hintText: 'type-message'.tr(),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
+                  isDense: true,
                 ),
               ),
             ),
             ElevatedButton(
               onPressed: () {
                 String currentUserId = FirebaseAuth.instance.currentUser!.uid;
+
                 if (_newMessageFormKey.currentState!.validate()) {
                   FirebaseDatabaseService(uid: currentUserId)
-                      .sendMessage(widget.conversationId, currentUserId,
-                          _messageController.text)
-                      .then((value) {
-                    _messageController.text = "";
-                  });
+                      .sendMessage(
+                    widget.conversationId,
+                    currentUserId,
+                    _messageController.text,
+                  )
+                      .then(
+                    (value) {
+                      _messageController.text = "";
+                    },
+                  );
                 }
               },
               style: ElevatedButton.styleFrom(
                 shape: const CircleBorder(),
-                padding:
-                    EdgeInsets.all(MediaQuery.of(context).size.width * 0.02),
+                padding: const EdgeInsets.all(20),
               ),
               child: const Icon(Icons.send),
             ),
@@ -255,6 +270,7 @@ class _ConversationPageState extends State<ConversationPage> {
             final targetUser = snapshot.data!;
 
             var title = 'administrators'.tr();
+
             if (FirebaseAuth.instance.currentUser!.uid != targetUser.uid) {
               var fullName = '${targetUser.firstname} ${targetUser.name}';
               var maxCharName = 45;
@@ -273,10 +289,17 @@ class _ConversationPageState extends State<ConversationPage> {
                 const SizedBox(width: 10),
                 Text(
                   title,
-                  style: const TextStyle(
+                  softWrap: true,
+                  overflow: TextOverflow.visible,
+                  style: TextStyle(
                     color: Colors.black,
-                    fontSize: 20,
-                    overflow: TextOverflow.ellipsis,
+                    fontSize: ResponsiveValue(
+                      context,
+                      defaultValue: 20.0,
+                      valueWhen: [
+                        const Condition.smallerThan(name: MOBILE, value: 18.0),
+                      ],
+                    ).value,
                   ),
                 ),
               ],

@@ -2,32 +2,52 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:ludo_mobile/domain/models/reservation.dart';
+import 'package:ludo_mobile/data/repositories/reservation/sorted_reservations.dart';
+import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:ludo_mobile/domain/use_cases/user_reservations/user_reservations_cubit.dart';
 import 'package:ludo_mobile/ui/pages/reservation/reservation_list.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
 
 class UserReservationsPage extends StatefulWidget {
-  const UserReservationsPage({super.key});
+  final User connectedUser;
+
+  const UserReservationsPage({
+    super.key,
+    required this.connectedUser,
+  });
 
   @override
   State<UserReservationsPage> createState() => _UserReservationsPageState();
 }
 
 class _UserReservationsPageState extends State<UserReservationsPage> {
-  late List<Reservation> reservations;
+  late SortedReservations reservations;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('my-reservations-title').tr(),
+        elevation: 0.0,
+        backgroundColor: Colors.grey[50],
+        shadowColor: Colors.grey[100],
+        title: const Text(
+          'my-reservations-title',
+          style: TextStyle(color: Colors.black),
+        ).tr(),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.black,
+          ),
           onPressed: () {
-            context.pop();
+            if(Navigator.canPop(context)) {
+              context.pop();
+            }
+            else {
+              context.go(Routes.home.path);
+            }
           },
-        )
+        ),
       ),
       body: _buildReservationList(),
     );
@@ -77,8 +97,11 @@ class _UserReservationsPageState extends State<UserReservationsPage> {
             if (state is UserReservationsSuccess) {
               reservations = state.reservations;
 
-              return ReservationList(reservations: reservations);
-            }
+            return ReservationList(
+              connectedUser: widget.connectedUser,
+              reservations: reservations,
+            );
+          }
 
             if (state is UserMustLogError) {
               context.go(Routes.login.path);
@@ -92,5 +115,4 @@ class _UserReservationsPageState extends State<UserReservationsPage> {
       ),
     );
   }
-
 }

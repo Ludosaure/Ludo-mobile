@@ -376,7 +376,9 @@ class AppRouter {
         pageBuilder: (context, state) => CustomTransitionPage(
           child: BlocProvider.value(
             value: locator<UserReservationsCubit>(),
-            child: const UserReservationsPage(),
+            child: UserReservationsPage(
+              connectedUser: connectedUser!,
+            ),
           ),
           transitionsBuilder: _getTransition,
         ),

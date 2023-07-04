@@ -3,16 +3,21 @@ import 'package:flutter/material.dart';
 class CustomCircleAvatar extends StatelessWidget {
   final String? userProfilePicture;
   final double? height;
+  final Color color;
 
-  const CustomCircleAvatar({Key? key, this.userProfilePicture = "", this.height})
-      : super(key: key);
+  const CustomCircleAvatar({
+    Key? key,
+    this.userProfilePicture = "",
+    this.height,
+    this.color = Colors.grey,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     if (userProfilePicture == null || userProfilePicture == "") {
       return Icon(
         Icons.person,
-        color: Colors.grey,
+        color: color,
         size: height != null ? height! : null,
       );
     }

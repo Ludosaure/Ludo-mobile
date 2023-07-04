@@ -2,7 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:ludo_mobile/domain/models/reservation.dart';
+import 'package:ludo_mobile/data/repositories/reservation/sorted_reservations.dart';
 import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:ludo_mobile/domain/use_cases/list_all_reservations/list_all_reservations_cubit.dart';
 import 'package:ludo_mobile/ui/components/scaffold/admin_scaffold.dart';
@@ -23,7 +23,7 @@ class AdminHomePage extends StatefulWidget {
 }
 
 class _AdminHomePageState extends State<AdminHomePage> {
-  late List<Reservation> reservations;
+  late SortedReservations reservations;
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +77,10 @@ class _AdminHomePageState extends State<AdminHomePage> {
             reservations = state.reservations;
 
             return RefreshIndicator(
-              child: ReservationList(reservations: reservations),
+              child: ReservationList(
+                connectedUser: widget.user,
+                reservations: reservations,
+              ),
               onRefresh: () async {
                 BlocProvider.of<ListAllReservationsCubit>(context)
                     .listReservations();
@@ -106,12 +109,10 @@ class _AdminHomePageState extends State<AdminHomePage> {
 
   void onSearch(String value) {
     setState(() {
-      reservations = reservations
-          .where((element) =>
-              element.createdBy.firstname.contains(value) ||
-              element.createdBy.lastname.contains(value) ||
-              element.createdBy.email.contains(value))
-          .toList();
+      // reservations = reservations
+      //     .where((element) =>
+      //         element.user.name.toLowerCase().contains(value.toLowerCase()))
+      //     .toList();
     });
   }
 }
