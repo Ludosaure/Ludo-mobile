@@ -19,6 +19,6 @@ class HttpHelper {
       );
     }
 
-    throw InternalServerException('errors.unknown'.tr());
+    throw InternalServerException("${'errors.unknown'.tr()} $error");
   }
 }

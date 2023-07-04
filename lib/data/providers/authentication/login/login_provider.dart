@@ -39,7 +39,7 @@ class LoginProvider {
         "errors.unverified-account".tr(),
       );
     } else {
-      throw Exception('errors.unknown'.tr());
+      throw Exception("${'errors.unknown'.tr()} ${response.body}");
     }
   }
 }
