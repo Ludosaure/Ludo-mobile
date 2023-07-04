@@ -229,14 +229,21 @@ class GameDetailsPage extends StatelessWidget {
               : Theme.of(context).colorScheme.secondary,
       elevation: 0,
       title: kIsWeb ? const Text(AppConstants.APP_NAME) : null,
-      leading: BackButton(
-        color: kIsWeb ? Colors.white : Colors.black,
-        onPressed: () {
-          if (Navigator.of(context).canPop()) {
-            context.pop();
-          } else {
-            context.go(Routes.home.path);
+      leading: BlocBuilder<CartCubit, CartState>(
+        builder: (context, state) {
+          if(state is BookingOperationLoading) {
+            return Container();
           }
+          return BackButton(
+            color: kIsWeb ? Colors.white : Colors.black,
+            onPressed: () {
+              if (Navigator.of(context).canPop()) {
+                context.pop();
+              } else {
+                context.go(Routes.home.path);
+              }
+            },
+          );
         },
       ),
       leadingWidth: MediaQuery.of(context).size.width * 0.20,

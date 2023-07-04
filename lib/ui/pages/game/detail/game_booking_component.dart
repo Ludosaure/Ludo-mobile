@@ -211,6 +211,26 @@ class _GameBookingComponentState extends State<GameBookingComponent> {
   }
 
   void _onCalendarPressed() {
+    if (!context.read<CartCubit>().isCartEmpty() && !context.read<CartCubit>().wasWarningDisplayed()) {
+      showDialog(
+        context: context,
+        builder: (childContext) => AlertDialog(
+          title: const Text("booking-date-changed-dialog-title").tr(),
+          content: const Text(
+              "booking-date-changed-dialog-content").tr(),
+          actions: [
+            TextButton(
+              onPressed: () {
+                context.read<CartCubit>().changeWarningDisplayed(true);
+                Navigator.of(childContext).pop();
+              },
+              child: const Text("dialog-ok").tr(),
+            ),
+          ],
+        ),
+      );
+    }
+
     setState(() {
       _showDatePicker = !_showDatePicker;
     });

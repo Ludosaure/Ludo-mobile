@@ -16,10 +16,10 @@ class FavoriteGamesList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _buildList();
+    return _buildList(context);
   }
 
-  Widget _buildList() {
+  Widget _buildList(BuildContext parentContext) {
     return ListView.builder(
       itemCount: favorites.length,
       scrollDirection: Axis.vertical,
@@ -45,7 +45,7 @@ class FavoriteGamesList extends StatelessWidget {
                     ),
                   ),
             onTap: () {
-              context.go('${Routes.game.path}/${favorite.gameId}');
+              context.push('${Routes.game.path}/${favorite.gameId}');
             },
             title: Text(favorite.name),
             trailing: BlocProvider.value(

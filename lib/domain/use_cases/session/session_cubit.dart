@@ -46,6 +46,7 @@ class SessionCubit extends Cubit<SessionState> with ChangeNotifier {
     emit(
       UserNotLogged(),
     );
+    _cartCubit.changeWarningDisplayed(false);
     _cartCubit.clearCart();
     notifyListeners();
   }

@@ -91,61 +91,21 @@ class AppRouter {
         path: Routes.landing.path,
         pageBuilder: (context, state) => CustomTransitionPage(
           child: const LandingPage(),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(
-              opacity: animation,
-              child: child,
-            );
-          },
+          transitionsBuilder: _getTransition,
         ),
       ),
       GoRoute(
         path: Routes.home.path,
         pageBuilder: (context, state) => CustomTransitionPage<void>(
           key: state.pageKey,
-          child: MultiBlocProvider(
-            providers: [
-              BlocProvider.value(
-                value: _loginBloc,
-              ),
-              BlocProvider.value(
-                value: _getGamesCubit,
-              ),
-              BlocProvider.value(
-                value: _listReductionPlanCubit,
-              ),
-              BlocProvider.value(
-                value: _cartCubit,
-              ),
-            ],
-            child: UserHomePage(
-              connectedUser: connectedUser,
-            ),
-          ),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(
-              opacity: animation,
-              child: child,
-            );
-          },
+          child: _userHome(),
+          transitionsBuilder: _getTransition,
         ),
       ),
       GoRoute(
         path: Routes.homeAdmin.path,
         pageBuilder: (context, state) => CustomTransitionPage(
-          child: BlocProvider.value(
-            value: _listAllReservationsCubit,
-            child: AdminHomePage(
-              user: connectedUser!,
-            ),
-          ),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(
-              opacity: animation,
-              child: child,
-            );
-          },
-        ),
+            child: _adminHome(), transitionsBuilder: _getTransition),
       ),
       GoRoute(
         path: Routes.login.path,
@@ -154,12 +114,7 @@ class AppRouter {
             value: _loginBloc,
             child: const LoginPage(),
           ),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(
-              opacity: animation,
-              child: child,
-            );
-          },
+          transitionsBuilder: _getTransition,
         ),
       ),
       GoRoute(
@@ -169,25 +124,14 @@ class AppRouter {
             value: _registerBLoc,
             child: const RegisterPage(),
           ),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(
-              opacity: animation,
-              child: child,
-            );
-          },
+          transitionsBuilder: _getTransition,
         ),
         routes: [
           GoRoute(
             path: Routes.success.path,
             pageBuilder: (context, state) => CustomTransitionPage(
               child: const RegisterSuccessPage(),
-              transitionsBuilder:
-                  (context, animation, secondaryAnimation, child) {
-                return FadeTransition(
-                  opacity: animation,
-                  child: child,
-                );
-              },
+              transitionsBuilder: _getTransition,
             ),
           ),
         ],
@@ -196,12 +140,7 @@ class AppRouter {
         path: Routes.terms.path,
         pageBuilder: (context, state) => CustomTransitionPage(
           child: TermsAndConditionsPage(),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(
-              opacity: animation,
-              child: child,
-            );
-          },
+          transitionsBuilder: _getTransition,
         ),
       ),
       GoRoute(
@@ -231,12 +170,7 @@ class AppRouter {
               gameId: state.params['id']!,
             ),
           ),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(
-              opacity: animation,
-              child: child,
-            );
-          },
+          transitionsBuilder: _getTransition,
         ),
       ),
       GoRoute(
@@ -258,12 +192,7 @@ class AppRouter {
               user: connectedUser!,
             ),
           ),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(
-              opacity: animation,
-              child: child,
-            );
-          },
+          transitionsBuilder: _getTransition,
         ),
       ),
       GoRoute(
@@ -280,12 +209,7 @@ class AppRouter {
             ],
             child: CreatePlanPage(),
           ),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(
-              opacity: animation,
-              child: child,
-            );
-          },
+          transitionsBuilder: _getTransition,
         ),
       ),
       GoRoute(
@@ -310,12 +234,7 @@ class AppRouter {
               game: state.extra! as Game,
             ),
           ),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(
-              opacity: animation,
-              child: child,
-            );
-          },
+          transitionsBuilder: _getTransition,
         ),
       ),
       GoRoute(
@@ -334,12 +253,7 @@ class AppRouter {
               plan: state.extra! as Plan,
             ),
           ),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(
-              opacity: animation,
-              child: child,
-            );
-          },
+          transitionsBuilder: _getTransition,
         ),
       ),
       GoRoute(
@@ -355,12 +269,7 @@ class AppRouter {
               game: state.extra! as Game,
             ),
           ),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(
-              opacity: animation,
-              child: child,
-            );
-          },
+          transitionsBuilder: _getTransition,
         ),
       ),
       GoRoute(
@@ -379,12 +288,7 @@ class AppRouter {
               user: state.extra! as User,
             ),
           ),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(
-              opacity: animation,
-              child: child,
-            );
-          },
+          transitionsBuilder: _getTransition,
         ),
       ),
       GoRoute(
@@ -407,12 +311,7 @@ class AppRouter {
               user: connectedUser!,
             ),
           ),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(
-              opacity: animation,
-              child: child,
-            );
-          },
+          transitionsBuilder: _getTransition,
         ),
       ),
       GoRoute(
@@ -431,12 +330,7 @@ class AppRouter {
               user: connectedUser!,
             ),
           ),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(
-              opacity: animation,
-              child: child,
-            );
-          },
+          transitionsBuilder: _getTransition,
         ),
       ),
       GoRoute(
@@ -452,12 +346,7 @@ class AppRouter {
               user: connectedUser!,
             ),
           ),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(
-              opacity: animation,
-              child: child,
-            );
-          },
+          transitionsBuilder: _getTransition,
         ),
       ),
       GoRoute(
@@ -466,24 +355,14 @@ class AppRouter {
           child: ConversationPage(
             conversationId: state.params['conversationId']!,
           ),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(
-              opacity: animation,
-              child: child,
-            );
-          },
+          transitionsBuilder: _getTransition,
         ),
       ),
       GoRoute(
         path: Routes.logout.path,
         pageBuilder: (context, state) => CustomTransitionPage(
           child: const LandingPage(),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(
-              opacity: animation,
-              child: child,
-            );
-          },
+          transitionsBuilder: _getTransition,
         ),
       ),
       GoRoute(
@@ -502,12 +381,7 @@ class AppRouter {
               connectedUser: connectedUser!,
             ),
           ),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(
-              opacity: animation,
-              child: child,
-            );
-          },
+          transitionsBuilder: _getTransition,
         ),
       ),
       GoRoute(
@@ -517,12 +391,7 @@ class AppRouter {
             value: locator<UserReservationsCubit>(),
             child: const UserReservationsPage(),
           ),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(
-              opacity: animation,
-              child: child,
-            );
-          },
+          transitionsBuilder: _getTransition,
         ),
       ),
       GoRoute(
@@ -531,12 +400,7 @@ class AppRouter {
           child: AdminDashboardPage(
             user: connectedUser!,
           ),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(
-              opacity: animation,
-              child: child,
-            );
-          },
+          transitionsBuilder: _getTransition,
         ),
       ),
       GoRoute(
@@ -548,12 +412,7 @@ class AppRouter {
               user: connectedUser!,
             ),
           ),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(
-              opacity: animation,
-              child: child,
-            );
-          },
+          transitionsBuilder: _getTransition,
         ),
       ),
       GoRoute(
@@ -572,12 +431,7 @@ class AppRouter {
               user: connectedUser!,
             ),
           ),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(
-              opacity: animation,
-              child: child,
-            );
-          },
+          transitionsBuilder: _getTransition,
         ),
       ),
       GoRoute(
@@ -587,12 +441,7 @@ class AppRouter {
             value: _getCategoriesCubit,
             child: const CategoryListPage(),
           ),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(
-              opacity: animation,
-              child: child,
-            );
-          },
+          transitionsBuilder: _getTransition,
         ),
       ),
       GoRoute(
@@ -602,17 +451,17 @@ class AppRouter {
             value: _listReductionPlanCubit,
             child: const PlanListPage(),
           ),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(
-              opacity: animation,
-              child: child,
-            );
-          },
+          transitionsBuilder: _getTransition,
         ),
       ),
     ],
     redirect: _redirect,
     refreshListenable: GoRouterRefreshStream(_sessionCubit.stream),
+    errorBuilder: (context, state) {
+      return connectedUser!.isAdmin()
+          ? _adminHome()
+          : UserHomePage(connectedUser: connectedUser!);
+    },
   );
 
   String? _redirect(GoRouterState state) {
@@ -644,9 +493,11 @@ class AppRouter {
   }
 
   bool _isAdminRoute(String route) {
+    RegExp updateGameRoute = AppConstants.GAME_UPDATE_REGEX;
+
     return route == Routes.homeAdmin.path ||
         route == Routes.addGame.path ||
-        route == Routes.updateGame.path ||
+        updateGameRoute.hasMatch(route) ||
         route == Routes.createPlan.path ||
         route == Routes.updatePlan.path ||
         route == Routes.reservations.path ||
@@ -658,7 +509,7 @@ class AppRouter {
   }
 
   bool _isUnauthenticatedRoute(String route) {
-    RegExp gameDetailsRoute = AppConstants.UUID_V4;
+    RegExp gameDetailsRoute = AppConstants.GAME_DETAILS_REGEX;
 
     return route == Routes.login.path ||
         route == Routes.register.path ||
@@ -667,6 +518,44 @@ class AppRouter {
         route == Routes.home.path ||
         route == Routes.landing.path ||
         gameDetailsRoute.hasMatch(route);
+  }
+
+  FadeTransition _getTransition(context, animation, secondaryAnimation, child) {
+    return FadeTransition(
+      opacity: animation,
+      child: child,
+    );
+  }
+
+  _userHome() {
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(
+          value: _loginBloc,
+        ),
+        BlocProvider.value(
+          value: _getGamesCubit,
+        ),
+        BlocProvider.value(
+          value: _listReductionPlanCubit,
+        ),
+        BlocProvider.value(
+          value: _cartCubit,
+        ),
+      ],
+      child: UserHomePage(
+        connectedUser: connectedUser,
+      ),
+    );
+  }
+
+  BlocProvider<ListAllReservationsCubit> _adminHome() {
+    return BlocProvider.value(
+      value: _listAllReservationsCubit,
+      child: AdminHomePage(
+        user: connectedUser!,
+      ),
+    );
   }
 
   void dispose() {

@@ -19,6 +19,7 @@ class CartCubit extends Cubit<CartState> {
   final SessionCubit _sessionCubit;
   final PaymentProvider _paymentProvider;
   final ReservationRepository _reservationRepository;
+  bool _warningDisplayed = false;
 
   CartCubit(
     this._sessionCubit,
@@ -28,6 +29,18 @@ class CartCubit extends Cubit<CartState> {
 
   bool isGameInCart(String gameId) {
     return state.cartContent.any((game) => game.id == gameId);
+  }
+
+  bool isCartEmpty() {
+    return state.cartContent.isEmpty;
+  }
+
+  bool wasWarningDisplayed() {
+    return _warningDisplayed;
+  }
+
+  void changeWarningDisplayed(bool wasDisplayed) {
+    _warningDisplayed = wasDisplayed;
   }
 
   DateTimeRange getBookingPeriod() {
