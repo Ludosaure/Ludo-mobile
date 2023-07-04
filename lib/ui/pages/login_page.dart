@@ -113,7 +113,7 @@ class _LoginPageState extends State<LoginPage> {
           mainAxisAlignment: MainAxisAlignment.end,
           verticalDirection: VerticalDirection.down,
           children: [
-            TextButton(
+            /*TextButton(
               style: TextButton.styleFrom(
                 visualDensity: VisualDensity.compact,
                 padding: const EdgeInsets.all(0),
@@ -127,7 +127,7 @@ class _LoginPageState extends State<LoginPage> {
               child: const Text(
                 "password-forgotten-label",
               ).tr(),
-            ),
+            ),*/
             TextButton(
               style: TextButton.styleFrom(
                 visualDensity: VisualDensity.compact,
