@@ -114,6 +114,7 @@ extension ReservationExtension on Reservation {
     if (!paid) {
       return ReservationStatus.PENDING_PAIEMENT;
     }
+
     return ReservationStatus.RUNNING;
   }
 }

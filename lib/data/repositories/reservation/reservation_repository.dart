@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 import 'package:ludo_mobile/data/providers/reservation/reservation_provider.dart';
 import 'package:ludo_mobile/data/repositories/reservation/new_reservation.dart';
+import 'package:ludo_mobile/data/repositories/reservation/sorted_reservations.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
 import 'package:ludo_mobile/domain/models/reservation.dart';
+import 'package:ludo_mobile/domain/reservation_status.dart';
 
 @injectable
 class ReservationRepository {
@@ -11,25 +13,31 @@ class ReservationRepository {
 
   ReservationRepository(this._reservationProvider);
 
-  Future<List<Reservation>> getReservations() async {
-    return await _reservationProvider.getReservations();
+  Future<SortedReservations> getReservations() async {
+    List<Reservation> reservations = await _reservationProvider.getReservations();
+
+    return _sortReservations(reservations);
   }
 
-  Future<List<Reservation>> getMyReservations() async {
-    return await _reservationProvider.listUserReservations();
+  Future<SortedReservations> getMyReservations() async {
+    List<Reservation> reservations = await _reservationProvider.listUserReservations();
+
+    return _sortReservations(reservations);
   }
 
   Future<Reservation> getReservation(String reservationId) async {
     return await _reservationProvider.getReservation(reservationId);
   }
 
-  Future<NewReservation> createReservation(DateTimeRange bookingPeriod, List<Game> games) async {
+  Future<NewReservation> createReservation(
+      DateTimeRange bookingPeriod, List<Game> games) async {
     NewReservation reservation = NewReservation(
       rentPeriod: bookingPeriod,
       games: games,
     );
 
-    final String reservationId = await _reservationProvider.createReservation(reservation);
+    final String reservationId =
+        await _reservationProvider.createReservation(reservation);
 
     reservation.id = reservationId;
 
@@ -50,5 +58,20 @@ class ReservationRepository {
 
   Future<void> returnReservationGames(String reservationId) async {
     await _reservationProvider.returnReservationGames(reservationId);
+  }
+
+  SortedReservations _sortReservations(List<Reservation> reservations) {
+    return SortedReservations(
+      all: reservations,
+      late: reservations
+          .where((res) => res.status == ReservationStatus.LATE)
+          .toList(),
+      current: reservations
+          .where((res) => res.status == ReservationStatus.RUNNING)
+          .toList(),
+      returned: reservations
+          .where((res) => res.status == ReservationStatus.RETURNED)
+          .toList(),
+    );
   }
 }

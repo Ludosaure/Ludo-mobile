@@ -2,9 +2,15 @@ part of 'user_reservations_cubit.dart';
 
 @immutable
 abstract class UserReservationsState {
-  final List<Reservation> reservations;
+  final SortedReservations reservations;
+
   const UserReservationsState({
-    this.reservations = const [],
+    this.reservations = const SortedReservations(
+      all: [],
+      late: [],
+      current: [],
+      returned: [],
+    ),
   });
 }
 
@@ -17,16 +23,18 @@ class UserReservationsLoading extends UserReservationsState {
 }
 
 class UserReservationsSuccess extends UserReservationsState {
-  const UserReservationsSuccess({required List<Reservation> reservations})
+  const UserReservationsSuccess({required SortedReservations reservations})
       : super(reservations: reservations);
 }
 
 class UserReservationsError extends UserReservationsState {
   final String message;
+
   const UserReservationsError({required this.message}) : super();
 }
 
 class UserMustLogError extends UserReservationsInitial {
   final String message;
+
   const UserMustLogError({required this.message}) : super();
 }

@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,7 +18,6 @@ import 'package:ludo_mobile/ui/pages/game/list/game_tile.dart';
 import 'package:ludo_mobile/ui/pages/invoices/InvoicesList.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
 import 'package:ludo_mobile/utils/app_constants.dart';
-import 'package:ludo_mobile/utils/local_storage_helper.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
 class ReservationDetailsPage extends StatefulWidget {
@@ -41,110 +41,50 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final bool displayDesktopLayout = user.isAdmin() &&
+        kIsWeb &&
+        ResponsiveWrapper.of(context).isLargerThan(TABLET) ||
+        kIsWeb &&
+            ResponsiveWrapper.of(context).isLargerThan(MOBILE) &&
+            !user.isAdmin();
+
     return Scaffold(
-      appBar: _buildAppBar(context),
-      body: BlocConsumer<GetReservationCubit, GetReservationState>(
-        builder: (context, state) {
-          if (state is GetReservationInitial) {
-            BlocProvider.of<GetReservationCubit>(context)
-                .getReservation(widget.reservationId);
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          if (state is GetReservationLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          if (state is GetReservationSuccess) {
-            reservation = state.reservation;
-            return ResponsiveWrapper.of(context).isSmallerThan(DESKTOP)
-                ? _buildMobileReservationContent(context)
-                : _buildDesktopReservationContent(context);
-          }
-          return Container();
-        },
-        listener: (context, state) {
-          if (state is GetReservationError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: Theme.of(context).colorScheme.error,
-              ),
-            );
-          }
-        },
-      ),
+      appBar: !displayDesktopLayout ? _buildAppBar(context) : null,
+      body: _buildBody(context),
     );
   }
 
-  Widget _buildDesktopReservationContent(BuildContext context) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.vertical,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(40, 15, 40, 40),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.max,
-          verticalDirection: VerticalDirection.down,
-          children: [
-            _buildDesktopReservationHeader(context),
-            _buildDesktopReservationBody(context),
-            _buildReservationInfoText(context),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDesktopReservationBody(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            _buildGameDetails(context),
-            Padding(
-              padding: const EdgeInsets.only(top: 40),
-              child: SizedBox(
-                width: size.width * 0.35,
-                child: _buildReservationSynthesis(context),
-              ),
+  Widget _buildBody(BuildContext context) {
+    return BlocConsumer<GetReservationCubit, GetReservationState>(
+      builder: (context, state) {
+        if (state is GetReservationInitial) {
+          BlocProvider.of<GetReservationCubit>(context)
+              .getReservation(widget.reservationId);
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        if (state is GetReservationLoading) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        if (state is GetReservationSuccess) {
+          reservation = state.reservation;
+          return _buildMobileReservationContent(context);
+        }
+        return Container();
+      },
+      listener: (context, state) {
+        if (state is GetReservationError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: Theme.of(context).colorScheme.error,
             ),
-          ],
-        ),
-        SizedBox(
-          width: size.width * 0.5,
-          child: InvoicesList(invoices: reservation.invoices!),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDesktopReservationHeader(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const CustomBackButton(),
-            _buildReservationInfos(context),
-          ],
-        ),
-        const SizedBox(height: 20),
-        _buildReservationDetails(context),
-      ],
+          );
+        }
+      },
     );
   }
 
@@ -161,7 +101,7 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
           children: [
             _buildReservationInfos(context),
             _buildReservationDetails(context),
-            _buildGameDetails(context),
+            _buildGameList(context),
             const SizedBox(height: 20),
             _buildReservationSynthesis(context),
             const SizedBox(height: 20),
@@ -199,20 +139,18 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
         Text(
           "nb-weeks".tr(namedArgs: {"nbWeeks": reservation.nbWeeks.toString()}),
         ),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Text(
-              reservation.status.label,
-              style: TextStyle(
-                fontSize: 16,
-                color: color,
-                fontWeight: FontWeight.bold,
-              ),
+        SizedBox(
+          width: MediaQuery.of(context).size.width * 0.5,
+          child: Text(
+            reservation.status.label,
+            textAlign: TextAlign.end,
+            style: TextStyle(
+              fontSize: 16,
+              color: color,
+              fontWeight: FontWeight.bold,
             ),
-          ],
-        ),
+          ),
+        )
       ],
     );
   }
@@ -246,14 +184,15 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
   }
 
   Widget _buildReservationSynthesis(BuildContext context) {
-    return Card(
-      color: Theme.of(context).colorScheme.primary,
-      shape: RoundedRectangleBorder(
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primary,
         borderRadius: BorderRadius.circular(10.0),
       ),
       child: Padding(
         padding: const EdgeInsets.all(15.0),
         child: Column(
+          mainAxisSize: MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
@@ -284,8 +223,7 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
   }
 
   Future<Widget> _buildContactUser(BuildContext context) async {
-    var connectedUserId =
-        (await LocalStorageHelper.getUserFromLocalStorage())!.id;
+    var connectedUserId = user.id;
     if (reservation.user!.id == connectedUserId) {
       return Container();
     }
@@ -342,6 +280,7 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
 
   Widget _buildTotalAmount(BuildContext context) {
     return Row(
+      mainAxisSize: MainAxisSize.max,
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -395,18 +334,9 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
     );
   }
 
-  Widget _buildGameDetails(BuildContext context) {
-    if (ResponsiveWrapper.of(context).isSmallerThan(DESKTOP)) {
-      return _buildGameList(context);
-    }
-    return SizedBox(
-      width: MediaQuery.of(context).size.width * 0.5,
-      child: _buildGameList(context),
-    );
-  }
-
-  _buildGameList(BuildContext context) {
+  Widget _buildGameList(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.max,
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
@@ -520,8 +450,7 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
   }
 
   Future<void> _showNewMessageDialog(BuildContext parentContext) async {
-    var connectedUserId =
-        (await LocalStorageHelper.getUserFromLocalStorage())!.id;
+    var connectedUserId = user.id;
     if (connectedUserId == reservation.user!.id) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -540,11 +469,11 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
   }
 
   Widget _buildReservationInfoText(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-
     return Container(
-      width: size.width,
-      margin: const EdgeInsets.only(top: 10, bottom: 10),
+      margin: const EdgeInsets.symmetric(
+        vertical: 10,
+        horizontal: 20,
+      ),
       child: const Text(
         "reservation-details-info",
         style: TextStyle(

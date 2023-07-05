@@ -233,6 +233,8 @@
   "review-submit-button": "Publier",
   "dialog-ok": "J'ai compris",
   "booking-date-changed-dialog-title": "Vous avez des jeux dans votre panier",
-  "booking-date-changed-dialog-content": "Attention si vous changez la date de réservation cela affectera tous les jeux du panier"
-
+  "booking-date-changed-dialog-content": "Attention si vous changez la date de réservation cela affectera tous les jeux du panier",
+  "reservation-late": "Retards",
+  "reservation-running": "En cours",
+  "reservation-returned": "Retournées"
 }

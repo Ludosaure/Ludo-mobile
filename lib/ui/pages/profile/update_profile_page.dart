@@ -39,14 +39,21 @@ class _UpdateProfilePageState extends State<UpdateProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0.0,
         leading: BackButton(
+          color: Colors.black,
           onPressed: () => context.pop(),
         ),
         title: const Text(
           "update-user-title",
           softWrap: true,
           overflow: TextOverflow.visible,
+          style: TextStyle(
+            color: Colors.black,
+          ),
         ).tr(
           namedArgs: {
             "firstname": user.firstname,
