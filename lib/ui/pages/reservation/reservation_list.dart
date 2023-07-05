@@ -59,13 +59,13 @@ class _ReservationListState extends State<ReservationList> {
               SizedBox(
                 width: connectedUser.isAdmin()
                     ? size.width * 0.22
-                    : size.width * 0.32,
+                    : size.width * 0.3,
                 child: _buildMobile(context),
               ),
               SizedBox(
                 width: connectedUser.isAdmin()
                     ? size.width * 0.55
-                    : size.width * 0.65,
+                    : size.width * 0.6,
                 child: MultiBlocProvider(
                   providers: [
                     BlocProvider.value(
@@ -128,7 +128,7 @@ class _ReservationListState extends State<ReservationList> {
             ),
             onTap: () {
               if (!kIsWeb ||
-                  ResponsiveWrapper.of(context).isSmallerThan(TABLET) ||
+                  ResponsiveWrapper.of(context).isSmallerThan(DESKTOP) ||
                   connectedUser.isAdmin() &&
                       ResponsiveWrapper.of(context).isSmallerThan(DESKTOP)) {
                 context.push('${Routes.reservations.path}/${reservation.id}');
