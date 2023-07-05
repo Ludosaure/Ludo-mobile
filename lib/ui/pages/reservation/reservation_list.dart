@@ -105,21 +105,14 @@ class _ReservationListState extends State<ReservationList> {
             color = Colors.green[200]!;
             break;
           default:
-            color = selectedReservation.id == reservation.id
-                ? Theme.of(context).colorScheme.secondary
-                : Colors.white;
+            color = Colors.white;
         }
 
         return Card(
           color: color,
+          elevation: selectedReservation.id == reservation.id ? 10.0 : 0.5,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10.0),
-            side: selectedReservation.id == reservation.id
-                ? BorderSide(
-                    color: Theme.of(context).colorScheme.primary,
-                    width: 2.0,
-                  )
-                : BorderSide.none,
           ),
           child: ListTile(
             leading: CustomCircleAvatar(
@@ -127,10 +120,13 @@ class _ReservationListState extends State<ReservationList> {
               userProfilePicture: reservation.user!.profilePicturePath,
             ),
             onTap: () {
-              if (!kIsWeb ||
-                  ResponsiveWrapper.of(context).isSmallerThan(DESKTOP) ||
-                  connectedUser.isAdmin() &&
-                      ResponsiveWrapper.of(context).isSmallerThan(DESKTOP)) {
+              final bool displayDesktopLayout = connectedUser.isAdmin() &&
+                  kIsWeb &&
+                  ResponsiveWrapper.of(context).isLargerThan(DESKTOP) ||
+                  kIsWeb &&
+                      ResponsiveWrapper.of(context).isLargerThan(MOBILE) &&
+                      !connectedUser.isAdmin();
+              if (!displayDesktopLayout) {
                 context.push('${Routes.reservations.path}/${reservation.id}');
               } else {
                 setState(() {
