@@ -1,4 +1,3 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
@@ -27,11 +26,14 @@ class GameGridList extends StatelessWidget {
         children: [
           const GameFilterTabBar(),
           Expanded(
-            child: TabBarView(
-              children: [
-                _buildGamesList(context, games),
-                _buildAvailableGamesList(context),
-              ],
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: TabBarView(
+                children: [
+                  _buildGamesList(context, games),
+                  _buildAvailableGamesList(context),
+                ],
+              ),
             ),
           ),
         ],

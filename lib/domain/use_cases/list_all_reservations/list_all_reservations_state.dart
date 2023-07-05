@@ -6,7 +6,7 @@ abstract class ListAllReservationsState {
   const ListAllReservationsState({
     this.reservations = const SortedReservations(
       all: [],
-      late: [],
+      overdue: [],
       current: [],
       returned: [],
     )

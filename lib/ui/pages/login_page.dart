@@ -168,6 +168,10 @@ class _LoginPageState extends State<LoginPage> {
             context.go(Routes.home.path);
           }
         } else if (state.status is FormSubmissionFailed) {
+          setState(() {
+            _submitting = false;
+          });
+
           FormSubmissionFailed status = state.status as FormSubmissionFailed;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(

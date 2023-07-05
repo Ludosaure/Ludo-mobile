@@ -191,6 +191,10 @@ class _RegisterPageState extends State<RegisterPage> {
         if (state.status is FormSubmissionSuccessful) {
           context.go(Routes.registerSuccess.path);
         } else if (state.status is FormSubmissionFailed) {
+          setState(() {
+            _submitting = false;
+          });
+
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(

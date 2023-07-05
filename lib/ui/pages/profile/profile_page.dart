@@ -18,6 +18,7 @@ import 'package:responsive_framework/responsive_wrapper.dart';
 
 class ProfilePage extends StatefulWidget {
   final User connectedUser;
+
   const ProfilePage({
     required this.connectedUser,
     Key? key,
@@ -29,6 +30,7 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   late final SessionCubit _sessionCubit = locator<SessionCubit>();
+
   User get connectedUser => widget.connectedUser;
   late User displayedUser;
 
@@ -109,6 +111,7 @@ class _ProfilePageState extends State<ProfilePage> {
               },
               child: const Text('my-reservations-title').tr(),
             ),
+          const SizedBox(height: 10),
           _buildUpdatePasswordButton(context),
           const SizedBox(height: 10),
           _buildTermsAndConditions(context),
@@ -231,12 +234,14 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _buildUserInfosBody(BuildContext context) {
     final size = MediaQuery.of(context).size;
+
     return Column(
+      mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ListTile(
-          leading: const Icon(Icons.account_circle),
+          leading: const Icon(Icons.person),
           title: Text(
             'personal-informations-title'.tr(),
             style: const TextStyle(
@@ -246,54 +251,76 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ),
         const SizedBox(height: 20),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const Icon(Icons.email),
-            SizedBox(width: size.width * 0.01),
-            Text(
-              displayedUser.email,
-              style: const TextStyle(
-                color: Colors.black,
-                fontSize: 17,
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 25.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.alternate_email,
+                    size: 20,
+                  ),
+                  SizedBox(width: size.width * 0.01),
+                  Text(
+                    displayedUser.email,
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 15,
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ],
-        ),
-        SizedBox(height: size.height * 0.01),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const Icon(Icons.phone),
-            SizedBox(width: size.width * 0.01),
-            Text(
-              displayedUser.phone,
-              style: const TextStyle(
-                color: Colors.black,
-                fontSize: 17,
+              SizedBox(height: size.height * 0.01),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.phone,
+                    size: 20,
+                  ),
+                  SizedBox(width: size.width * 0.01),
+                  Text(
+                    displayedUser.phone,
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 15,
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ],
-        ),
-        SizedBox(height: size.height * 0.01),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const Icon(Icons.account_box),
-            SizedBox(width: size.width * 0.01),
-            Text(
-              (displayedUser.pseudo != null && displayedUser.pseudo != "")
-                  ? displayedUser.pseudo!
-                  : 'pseudo-to-set-field'.tr(),
-              style: const TextStyle(
-                color: Colors.black,
-                fontSize: 17,
+              SizedBox(height: size.height * 0.01),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.account_box_outlined,
+                    size: 20,
+                  ),
+                  SizedBox(width: size.width * 0.01),
+                  Text(
+                    (displayedUser.pseudo != null && displayedUser.pseudo != "")
+                        ? displayedUser.pseudo!
+                        : 'pseudo-to-set-field'.tr(),
+                    style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w100),
+                  ),
+                ],
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ],
     );
@@ -301,7 +328,9 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _buildNotifsInfosBody(BuildContext context) {
     final size = MediaQuery.of(context).size;
+
     return Column(
+      mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -315,21 +344,40 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           ),
         ),
-        const SizedBox(height: 20),
-        ListTile(
-          leading: SizedBox(
-            width: size.width * 0.6,
-            child: Text(
-              'activate-mail-notifications-label'.tr(),
-              style: const TextStyle(
-                color: Colors.black,
-                fontSize: 17,
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ListTile(
+                title: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(
+                      Icons.notifications_none,
+                      color: Colors.black,
+                      size: 20,
+                    ),
+                    SizedBox(width: size.width * 0.01),
+                    Text(
+                      'activate-mail-notifications-label'.tr(),
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ],
+                ),
+                trailing: displayedUser.hasEnabledMailNotifications
+                    ? const Icon(Icons.check)
+                    : const Icon(Icons.close),
               ),
-            ),
+            ],
           ),
-          title: displayedUser.hasEnabledMailNotifications
-              ? const Icon(Icons.check)
-              : const Icon(Icons.close),
         ),
       ],
     );
@@ -359,7 +407,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void updatePhoneFormat() {
-    if(displayedUser.phone.startsWith('+33')) {
+    if (displayedUser.phone.startsWith('+33')) {
       displayedUser.phone = displayedUser.phone.replaceFirst('+33', '0');
     }
   }

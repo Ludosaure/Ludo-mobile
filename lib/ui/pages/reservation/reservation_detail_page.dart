@@ -43,7 +43,7 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
   Widget build(BuildContext context) {
     final bool displayDesktopLayout = user.isAdmin() &&
         kIsWeb &&
-        ResponsiveWrapper.of(context).isLargerThan(TABLET) ||
+        ResponsiveWrapper.of(context).isLargerThan(DESKTOP) ||
         kIsWeb &&
             ResponsiveWrapper.of(context).isLargerThan(MOBILE) &&
             !user.isAdmin();
@@ -379,7 +379,7 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
   }
 
   PreferredSizeWidget _buildAppBar(BuildContext context) {
-    if (ResponsiveWrapper.of(context).isSmallerThan(DESKTOP)) {
+    if (ResponsiveWrapper.of(context).isSmallerThan('4K')) {
       return AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,

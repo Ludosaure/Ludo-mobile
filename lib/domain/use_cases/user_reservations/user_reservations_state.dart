@@ -7,7 +7,7 @@ abstract class UserReservationsState {
   const UserReservationsState({
     this.reservations = const SortedReservations(
       all: [],
-      late: [],
+      overdue: [],
       current: [],
       returned: [],
     ),
