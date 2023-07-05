@@ -108,7 +108,9 @@ extension ReservationExtension on Reservation {
     if (returned) {
       return ReservationStatus.RETURNED;
     }
-    if (endDate.isBefore(DateTime.now()) && !returned) {
+    DateTime now = DateTime.now();
+    DateTime todayAtMidnight = DateTime(now.year, now.month, now.day);
+    if (endDate.isBefore(todayAtMidnight) && !returned) {
       return ReservationStatus.LATE;
     }
     if (!paid) {
