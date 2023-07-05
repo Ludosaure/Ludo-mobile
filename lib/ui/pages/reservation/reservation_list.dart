@@ -15,6 +15,7 @@ import 'package:ludo_mobile/ui/components/circle-avatar.dart';
 import 'package:ludo_mobile/ui/pages/reservation/reservation_detail_page.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
 import 'package:ludo_mobile/utils/app_constants.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 import 'package:responsive_framework/responsive_wrapper.dart';
 
 class ReservationList extends StatefulWidget {
@@ -35,6 +36,7 @@ class _ReservationListState extends State<ReservationList> {
   late Reservation selectedReservation = reservations.all[0];
 
   User get connectedUser => widget.connectedUser;
+
   SortedReservations get reservations => widget.reservations;
 
   @override
@@ -42,7 +44,7 @@ class _ReservationListState extends State<ReservationList> {
     final Size size = MediaQuery.of(context).size;
     final bool displayDesktopLayout = connectedUser.isAdmin() &&
             kIsWeb &&
-            ResponsiveWrapper.of(context).isLargerThan(TABLET) ||
+            ResponsiveWrapper.of(context).isLargerThan(DESKTOP) ||
         kIsWeb &&
             ResponsiveWrapper.of(context).isLargerThan(MOBILE) &&
             !connectedUser.isAdmin();
@@ -56,14 +58,14 @@ class _ReservationListState extends State<ReservationList> {
             children: [
               SizedBox(
                 width: connectedUser.isAdmin()
-                    ? size.width * 0.2
-                    : size.width * 0.3,
+                    ? size.width * 0.22
+                    : size.width * 0.32,
                 child: _buildMobile(context),
               ),
               SizedBox(
                 width: connectedUser.isAdmin()
-                    ? size.width * 0.5
-                    : size.width * 0.6,
+                    ? size.width * 0.55
+                    : size.width * 0.65,
                 child: MultiBlocProvider(
                   providers: [
                     BlocProvider.value(
@@ -103,13 +105,21 @@ class _ReservationListState extends State<ReservationList> {
             color = Colors.green[200]!;
             break;
           default:
-            color = Colors.white;
+            color = selectedReservation.id == reservation.id
+                ? Theme.of(context).colorScheme.secondary
+                : Colors.white;
         }
 
         return Card(
           color: color,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10.0),
+            side: selectedReservation.id == reservation.id
+                ? BorderSide(
+                    color: Theme.of(context).colorScheme.primary,
+                    width: 2.0,
+                  )
+                : BorderSide.none,
           ),
           child: ListTile(
             leading: CustomCircleAvatar(
@@ -118,7 +128,9 @@ class _ReservationListState extends State<ReservationList> {
             ),
             onTap: () {
               if (!kIsWeb ||
-                  ResponsiveWrapper.of(context).isSmallerThan(TABLET) || connectedUser.isAdmin() && ResponsiveWrapper.of(context).isSmallerThan(DESKTOP)) {
+                  ResponsiveWrapper.of(context).isSmallerThan(TABLET) ||
+                  connectedUser.isAdmin() &&
+                      ResponsiveWrapper.of(context).isSmallerThan(DESKTOP)) {
                 context.push('${Routes.reservations.path}/${reservation.id}');
               } else {
                 setState(() {
@@ -151,7 +163,7 @@ class _ReservationListState extends State<ReservationList> {
             child: TabBarView(
               children: [
                 _buildReservationList(reservations.all),
-                _buildReservationList(reservations.late),
+                _buildReservationList(reservations.overdue),
                 _buildReservationList(reservations.current),
                 _buildReservationList(reservations.returned),
               ],

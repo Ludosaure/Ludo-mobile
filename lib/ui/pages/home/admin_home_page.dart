@@ -31,7 +31,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
       body: _buildReservationList(),
       navBarIndex: AdminMenuItems.Home.index,
       onSortPressed: null,
-      onSearch: onSearch,
+      onSearch: null,
       user: widget.user,
     );
   }
@@ -98,21 +98,5 @@ class _AdminHomePageState extends State<AdminHomePage> {
         },
       ),
     );
-  }
-
-  void onSortPressed(String something) {
-    //TODO faire un type abstrait pour les filtres
-    setState(() {
-      // reservations.sort((a, b) => a.date.compareTo(b.date));
-    });
-  }
-
-  void onSearch(String value) {
-    setState(() {
-      // reservations = reservations
-      //     .where((element) =>
-      //         element.user.name.toLowerCase().contains(value.toLowerCase()))
-      //     .toList();
-    });
   }
 }

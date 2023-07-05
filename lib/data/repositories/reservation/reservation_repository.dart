@@ -63,7 +63,7 @@ class ReservationRepository {
   SortedReservations _sortReservations(List<Reservation> reservations) {
     return SortedReservations(
       all: reservations,
-      late: reservations
+      overdue: reservations
           .where((res) => res.status == ReservationStatus.LATE)
           .toList(),
       current: reservations
