@@ -9,6 +9,7 @@ import 'package:ludo_mobile/domain/models/user.dart';
 import 'package:ludo_mobile/domain/reservation_status.dart';
 import 'package:ludo_mobile/domain/use_cases/get_reservation/get_reservation_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/invoice/download_invoice_cubit.dart';
+import 'package:ludo_mobile/domain/use_cases/list_all_reservations/list_all_reservations_cubit.dart';
 import 'package:ludo_mobile/domain/use_cases/user_reservations/user_reservations_cubit.dart';
 import 'package:ludo_mobile/injection.dart';
 import 'package:ludo_mobile/ui/components/circle-avatar.dart';
@@ -19,10 +20,11 @@ import 'package:responsive_framework/responsive_framework.dart';
 import 'package:responsive_framework/responsive_wrapper.dart';
 
 class ReservationList extends StatefulWidget {
-  final SortedReservations reservations;
+  //TODO c'est de la grosse merde mais pour l'instant ça fera l'affaire
+  SortedReservations reservations;
   final User connectedUser;
 
-  const ReservationList({
+  ReservationList({
     Key? key,
     required this.reservations,
     required this.connectedUser,
@@ -33,11 +35,13 @@ class ReservationList extends StatefulWidget {
 }
 
 class _ReservationListState extends State<ReservationList> {
-  late Reservation selectedReservation = reservations.all[0];
+  late Reservation selectedReservation = sortedReservations.all[0];
 
   User get connectedUser => widget.connectedUser;
 
-  SortedReservations get reservations => widget.reservations;
+  SortedReservations get sortedReservations => widget.reservations;
+  set sortedReservations(SortedReservations value) =>
+      widget.reservations = value;
 
   @override
   Widget build(BuildContext context) {
@@ -90,58 +94,78 @@ class _ReservationListState extends State<ReservationList> {
   }
 
   Widget _buildReservationList(List<Reservation> reservations) {
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      itemCount: reservations.length,
-      itemBuilder: (context, index) {
-        Reservation reservation = reservations[index];
-        Color color;
-
-        switch (reservation.status) {
-          case ReservationStatus.LATE:
-            color = Colors.red[200]!;
-            break;
-          case ReservationStatus.RETURNED:
-            color = Colors.green[200]!;
-            break;
-          default:
-            color = Colors.white;
-        }
-
-        return Card(
-          color: color,
-          elevation: selectedReservation.id == reservation.id ? 10.0 : 0.5,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          child: ListTile(
-            leading: CustomCircleAvatar(
-              color: Colors.black,
-              userProfilePicture: reservation.user!.profilePicturePath,
-            ),
-            onTap: () {
-              final bool displayDesktopLayout = connectedUser.isAdmin() &&
-                  kIsWeb &&
-                  ResponsiveWrapper.of(context).isLargerThan(DESKTOP) ||
-                  kIsWeb &&
-                      ResponsiveWrapper.of(context).isLargerThan(MOBILE) &&
-                      !connectedUser.isAdmin();
-              if (!displayDesktopLayout) {
-                context.push('${Routes.reservations.path}/${reservation.id}');
-              } else {
-                setState(() {
-                  selectedReservation = reservation;
-                });
-              }
-            },
-            title: Text(
-              "#${reservation.reservationNumber} ${reservation.createdBy.firstname} ${reservation.createdBy.lastname}",
-            ),
-            subtitle: Text(_getPeriod(reservation)),
-            trailing: Text("${reservation.amount.toStringAsFixed(2)} €"),
-          ),
-        );
+    return RefreshIndicator(
+      onRefresh: () async {
+        BlocProvider.of<ListAllReservationsCubit>(context).listReservations();
       },
+      child: BlocConsumer<ListAllReservationsCubit, ListAllReservationsState>(
+        listener: (context, state) {
+          if (state is ListReservationsSuccess) {
+            setState(() {
+              sortedReservations = state.reservations;
+            });
+          }
+        },
+        builder: (context, state) {
+          return ListView.builder(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            itemCount: reservations.length,
+            itemBuilder: (context, index) {
+              Reservation reservation = reservations[index];
+              Color color;
+
+              switch (reservation.status) {
+                case ReservationStatus.LATE:
+                  color = Colors.red[200]!;
+                  break;
+                case ReservationStatus.RETURNED:
+                  color = Colors.green[200]!;
+                  break;
+                default:
+                  color = Colors.white;
+              }
+
+              return Card(
+                color: color,
+                elevation:
+                    selectedReservation.id == reservation.id ? 10.0 : 0.5,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                child: ListTile(
+                  leading: CustomCircleAvatar(
+                    color: Colors.black,
+                    userProfilePicture: reservation.user!.profilePicturePath,
+                  ),
+                  onTap: () {
+                    final bool displayDesktopLayout = connectedUser.isAdmin() &&
+                            kIsWeb &&
+                            ResponsiveWrapper.of(context)
+                                .isLargerThan(DESKTOP) ||
+                        kIsWeb &&
+                            ResponsiveWrapper.of(context)
+                                .isLargerThan(MOBILE) &&
+                            !connectedUser.isAdmin();
+                    if (!displayDesktopLayout) {
+                      context.push(
+                          '${Routes.reservations.path}/${reservation.id}');
+                    } else {
+                      setState(() {
+                        selectedReservation = reservation;
+                      });
+                    }
+                  },
+                  title: Text(
+                    "#${reservation.reservationNumber} ${reservation.createdBy.firstname} ${reservation.createdBy.lastname}",
+                  ),
+                  subtitle: Text(_getPeriod(reservation)),
+                  trailing: Text("${reservation.amount.toStringAsFixed(2)} €"),
+                ),
+              );
+            },
+          );
+        },
+      ),
     );
   }
 
@@ -158,10 +182,10 @@ class _ReservationListState extends State<ReservationList> {
           Expanded(
             child: TabBarView(
               children: [
-                _buildReservationList(reservations.all),
-                _buildReservationList(reservations.overdue),
-                _buildReservationList(reservations.current),
-                _buildReservationList(reservations.returned),
+                _buildReservationList(sortedReservations.all),
+                _buildReservationList(sortedReservations.overdue),
+                _buildReservationList(sortedReservations.current),
+                _buildReservationList(sortedReservations.returned),
               ],
             ),
           ),

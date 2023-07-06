@@ -37,7 +37,17 @@ class GameTile extends StatelessWidget {
     );
 
     if (game.imageUrl != null) {
-      leading = Image.network(game.imageUrl!);
+      leading = Image.network(
+        game.imageUrl!,
+        errorBuilder: (context, exception, trace) {
+          return const SizedBox(
+            child: FaIcon(
+              FontAwesomeIcons.diceD20,
+              color: Colors.grey,
+            ),
+          );
+        },
+      );
     }
 
     return ListTile(
@@ -53,34 +63,34 @@ class GameTile extends StatelessWidget {
       return SizedBox(
         width: 60,
         child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              GestureDetector(
-                onTap: () {
-                  context.push(
-                    '${Routes.game.path}/${game.id}/${Routes.gameUnavailabilities.path}',
-                    extra: game,
-                  );
-                },
-                child: const Icon(
-                  Icons.edit_calendar_outlined,
-                  color: Colors.grey,
-                ),
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            GestureDetector(
+              onTap: () {
+                context.push(
+                  '${Routes.game.path}/${game.id}/${Routes.gameUnavailabilities.path}',
+                  extra: game,
+                );
+              },
+              child: const Icon(
+                Icons.edit_calendar_outlined,
+                color: Colors.grey,
               ),
-              GestureDetector(
-                onTap: () {
-                  context.push(
-                    '${Routes.game.path}/${game.id}/${Routes.updateGame.path}',
-                    extra: game,
-                  );
-                },
-                child: const Icon(
-                  Icons.edit,
-                  color: Colors.grey,
-                ),
+            ),
+            GestureDetector(
+              onTap: () {
+                context.push(
+                  '${Routes.game.path}/${game.id}/${Routes.updateGame.path}',
+                  extra: game,
+                );
+              },
+              child: const Icon(
+                Icons.edit,
+                color: Colors.grey,
               ),
-            ],
+            ),
+          ],
         ),
       );
     } else {
@@ -94,5 +104,4 @@ class GameTile extends StatelessWidget {
       );
     }
   }
-
 }

@@ -1,25 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ludo_mobile/domain/models/game.dart';
+import 'package:ludo_mobile/domain/use_cases/get_games/get_games_cubit.dart';
 import 'package:ludo_mobile/ui/components/game_filter_tab_bar.dart';
 import 'package:ludo_mobile/ui/pages/game/list/game_card.dart';
 import 'package:ludo_mobile/ui/router/routes.dart';
 import 'package:responsive_framework/responsive_wrapper.dart';
 
-class GameGridList extends StatelessWidget {
-  final List<Game> games;
+class GameGridList extends StatefulWidget {
+  List<Game> games;
 
-  const GameGridList({
+  GameGridList({
     super.key,
     required this.games,
   });
 
   @override
+  State<GameGridList> createState() => _GameGridListState();
+}
+
+class _GameGridListState extends State<GameGridList> {
+  late List<Game> availableGames =
+      widget.games.where((game) => game.isAvailable!).toList();
+
+  @override
   Widget build(BuildContext context) {
-    return _buildTabBar(context);
+    return _buildBody(context);
   }
 
-  Widget _buildTabBar(BuildContext context) {
+  Widget _buildBody(BuildContext context) {
     return DefaultTabController(
       length: 2,
       child: Column(
@@ -30,8 +40,8 @@ class GameGridList extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: TabBarView(
                 children: [
-                  _buildGamesList(context, games),
-                  _buildAvailableGamesList(context),
+                  _buildGamesList(context, widget.games),
+                  _buildGamesList(context, availableGames),
                 ],
               ),
             ),
@@ -41,30 +51,43 @@ class GameGridList extends StatelessWidget {
     );
   }
 
-  Widget _buildAvailableGamesList(BuildContext context) {
-    final availableGames = games.where((game) => game.isAvailable!).toList();
-    return _buildGamesList(context, availableGames);
-  }
-
   Widget _buildGamesList(BuildContext context, List<Game> games) {
-    return GridView.builder(
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: _getItemNb(context),
-      ),
-      itemCount: games.length,
-      itemBuilder: (context, index) {
-        final Game game = games[index];
-        return GestureDetector(
-          onTap: () {
-            context.push(
-              '${Routes.game.path}/${game.id}',
-            );
-          },
-          child: GameCard(
-            game: game,
-          ),
-        );
+    return RefreshIndicator(
+      onRefresh: () async {
+        BlocProvider.of<GetGamesCubit>(context).getGames();
       },
+      child: BlocConsumer<GetGamesCubit, GetGamesState>(
+        listener: (context, state) {
+          if (state is GetGamesSuccess) {
+            setState(() {
+              widget.games = state.games;
+              availableGames =
+                  widget.games.where((game) => game.isAvailable!).toList();
+            });
+          }
+        },
+        builder: (context, state) {
+          return GridView.builder(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: _getItemNb(context),
+            ),
+            itemCount: games.length,
+            itemBuilder: (context, index) {
+              final Game game = games[index];
+              return GestureDetector(
+                onTap: () {
+                  context.push(
+                    '${Routes.game.path}/${game.id}',
+                  );
+                },
+                child: GameCard(
+                  game: game,
+                ),
+              );
+            },
+          );
+        },
+      ),
     );
   }
 

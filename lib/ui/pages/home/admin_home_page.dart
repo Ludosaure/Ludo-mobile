@@ -76,15 +76,9 @@ class _AdminHomePageState extends State<AdminHomePage> {
           if (state is ListReservationsSuccess) {
             reservations = state.reservations;
 
-            return RefreshIndicator(
-              child: ReservationList(
-                connectedUser: widget.user,
-                reservations: reservations,
-              ),
-              onRefresh: () async {
-                BlocProvider.of<ListAllReservationsCubit>(context)
-                    .listReservations();
-              },
+            return ReservationList(
+              connectedUser: widget.user,
+              reservations: reservations,
             );
           }
 
