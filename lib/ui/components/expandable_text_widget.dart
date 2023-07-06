@@ -27,8 +27,7 @@ class _ExpandableTextState extends State<ExpandableTextWidget> {
     int textHeightInt = textHeight.toInt();
     if (widget.text.length > textHeight) {
       firstHalf = widget.text.substring(0, textHeightInt);
-      secondHalf =
-          widget.text.substring(textHeightInt + 1, widget.text.length);
+      secondHalf = widget.text.substring(textHeightInt + 1, widget.text.length);
     } else {
       firstHalf = widget.text;
       secondHalf = "";
@@ -47,6 +46,9 @@ class _ExpandableTextState extends State<ExpandableTextWidget> {
               ),
             )
           : Column(
+              mainAxisSize: MainAxisSize.min,
+              verticalDirection: VerticalDirection.down,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   hiddenText ? "$firstHalf..." : firstHalf + secondHalf,
@@ -66,7 +68,9 @@ class _ExpandableTextState extends State<ExpandableTextWidget> {
                   child: Row(
                     children: [
                       Text(
-                        hiddenText ? "see-more-label".tr() : "see-less-label".tr(),
+                        hiddenText
+                            ? "see-more-label".tr()
+                            : "see-less-label".tr(),
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.primary,
                           fontWeight: FontWeight.bold,

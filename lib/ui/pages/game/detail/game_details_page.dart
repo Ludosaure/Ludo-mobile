@@ -120,7 +120,16 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
           left: size.width * 0.25,
           child: SizedBox(
             width: size.width * 0.30,
-            child: _buildGameDescription(context),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SizedBox(
+                height: size.height * 0.4,
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  child: _buildGameDescription(context),
+                ),
+              ),
+            ),
           ),
         ),
         Positioned(
@@ -238,7 +247,7 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
       title: kIsWeb ? const Text(AppConstants.APP_NAME) : null,
       leading: BlocBuilder<CartCubit, CartState>(
         builder: (context, state) {
-          if(state is BookingOperationLoading) {
+          if (state is BookingOperationLoading) {
             return Container();
           }
           return BackButton(
@@ -247,7 +256,9 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
               if (Navigator.of(context).canPop()) {
                 context.pop();
               } else {
-                context.go(Routes.home.path);
+                _user != null && _user!.isAdmin()
+                    ? context.go(Routes.homeAdmin.path)
+                    : context.go(Routes.home.path);
               }
             },
           );
@@ -288,12 +299,14 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
           ),
         ),
         const SizedBox(width: 8),
-        BlocProvider.value(
-          value: context.read<FavoriteGamesCubit>(),
-          child: FavoriteButton(
-            game: game,
-          ),
-        ),
+        _user != null
+            ? BlocProvider.value(
+                value: context.read<FavoriteGamesCubit>(),
+                child: FavoriteButton(
+                  game: game,
+                ),
+              )
+            : const SizedBox(),
       ],
     );
   }
@@ -359,17 +372,9 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
       );
     }
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      verticalDirection: VerticalDirection.down,
-      children: [
-        ExpandableTextWidget(
-          text: game.description!,
-          height: MediaQuery.of(context).size.height * 0.25,
-        ),
-      ],
+    return ExpandableTextWidget(
+      text: game.description!,
+      height: MediaQuery.of(context).size.height * 0.25,
     );
   }
 
