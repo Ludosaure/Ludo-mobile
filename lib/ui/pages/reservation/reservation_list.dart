@@ -73,6 +73,9 @@ class _ReservationListState extends State<ReservationList> {
                 child: MultiBlocProvider(
                   providers: [
                     BlocProvider.value(
+                      value: locator<ListAllReservationsCubit>(),
+                    ),
+                    BlocProvider.value(
                       value: locator<GetReservationCubit>(),
                     ),
                     BlocProvider.value(
@@ -96,76 +99,157 @@ class _ReservationListState extends State<ReservationList> {
   Widget _buildReservationList(List<Reservation> reservations) {
     return RefreshIndicator(
       onRefresh: () async {
-        BlocProvider.of<ListAllReservationsCubit>(context).listReservations();
+        if(connectedUser.isAdmin()) {
+          BlocProvider.of<ListAllReservationsCubit>(context).listReservations();
+        } else {
+          BlocProvider.of<UserReservationsCubit>(context).getMyReservations();
+        }
       },
-      child: BlocConsumer<ListAllReservationsCubit, ListAllReservationsState>(
-        listener: (context, state) {
-          if (state is ListReservationsSuccess) {
-            setState(() {
-              sortedReservations = state.reservations;
-            });
-          }
-        },
-        builder: (context, state) {
-          return ListView.builder(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            itemCount: reservations.length,
-            itemBuilder: (context, index) {
-              Reservation reservation = reservations[index];
-              Color color;
+      child: connectedUser.isAdmin()
+          ? _buildAdminList(context, reservations)
+          : _buildClientList(context, reservations),
+    );
+  }
 
-              switch (reservation.status) {
-                case ReservationStatus.LATE:
-                  color = Colors.red[200]!;
-                  break;
-                case ReservationStatus.RETURNED:
-                  color = Colors.green[200]!;
-                  break;
-                default:
-                  color = Colors.white;
-              }
+  Widget _buildClientList(BuildContext context, List<Reservation> reservations) {
+    return BlocConsumer<UserReservationsCubit, UserReservationsState>(
+      listener: (context, state) {
+        if (state is UserReservationsSuccess) {
+          setState(() {
+            sortedReservations = state.reservations;
+          });
+        }
+      },
+      builder: (context, state) {
+        return ListView.builder(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          itemCount: reservations.length,
+          itemBuilder: (context, index) {
+            Reservation reservation = reservations[index];
+            Color color;
 
-              return Card(
-                color: color,
-                elevation:
-                    selectedReservation.id == reservation.id ? 10.0 : 0.5,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
+            switch (reservation.status) {
+              case ReservationStatus.LATE:
+                color = Colors.red[200]!;
+                break;
+              case ReservationStatus.RETURNED:
+                color = Colors.green[200]!;
+                break;
+              default:
+                color = Colors.white;
+            }
+
+            return Card(
+              color: color,
+              elevation:
+              selectedReservation.id == reservation.id ? 10.0 : 0.5,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: ListTile(
+                leading: CustomCircleAvatar(
+                  color: Colors.black,
+                  userProfilePicture: reservation.user!.profilePicturePath,
                 ),
-                child: ListTile(
-                  leading: CustomCircleAvatar(
-                    color: Colors.black,
-                    userProfilePicture: reservation.user!.profilePicturePath,
-                  ),
-                  onTap: () {
-                    final bool displayDesktopLayout = connectedUser.isAdmin() &&
-                            kIsWeb &&
-                            ResponsiveWrapper.of(context)
-                                .isLargerThan(DESKTOP) ||
-                        kIsWeb &&
-                            ResponsiveWrapper.of(context)
-                                .isLargerThan(MOBILE) &&
-                            !connectedUser.isAdmin();
-                    if (!displayDesktopLayout) {
-                      context.push(
-                          '${Routes.reservations.path}/${reservation.id}');
-                    } else {
-                      setState(() {
-                        selectedReservation = reservation;
-                      });
-                    }
-                  },
-                  title: Text(
-                    "#${reservation.reservationNumber} ${reservation.createdBy.firstname} ${reservation.createdBy.lastname}",
-                  ),
-                  subtitle: Text(_getPeriod(reservation)),
-                  trailing: Text("${reservation.amount.toStringAsFixed(2)} €"),
+                onTap: () {
+                  final bool displayDesktopLayout = connectedUser.isAdmin() &&
+                      kIsWeb &&
+                      ResponsiveWrapper.of(context)
+                          .isLargerThan(DESKTOP) ||
+                      kIsWeb &&
+                          ResponsiveWrapper.of(context)
+                              .isLargerThan(MOBILE) &&
+                          !connectedUser.isAdmin();
+                  if (!displayDesktopLayout) {
+                    context.push(
+                        '${Routes.reservations.path}/${reservation.id}');
+                  } else {
+                    setState(() {
+                      selectedReservation = reservation;
+                    });
+                  }
+                },
+                title: Text(
+                  "#${reservation.reservationNumber} ${reservation.createdBy.firstname} ${reservation.createdBy.lastname}",
                 ),
-              );
-            },
-          );
-        },
-      ),
+                subtitle: Text(_getPeriod(reservation)),
+                trailing: Text("${reservation.amount.toStringAsFixed(2)} €"),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildAdminList(BuildContext context, List<Reservation> reservations) {
+    return BlocConsumer<ListAllReservationsCubit, ListAllReservationsState>(
+      listener: (context, state) {
+        if (state is ListReservationsSuccess) {
+          setState(() {
+            sortedReservations = state.reservations;
+          });
+        }
+      },
+      builder: (context, state) {
+        return ListView.builder(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          itemCount: reservations.length,
+          itemBuilder: (context, index) {
+            Reservation reservation = reservations[index];
+            Color color;
+
+            switch (reservation.status) {
+              case ReservationStatus.LATE:
+                color = Colors.red[200]!;
+                break;
+              case ReservationStatus.RETURNED:
+                color = Colors.green[200]!;
+                break;
+              default:
+                color = Colors.white;
+            }
+
+            return Card(
+              color: color,
+              elevation:
+              selectedReservation.id == reservation.id ? 10.0 : 0.5,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: ListTile(
+                leading: CustomCircleAvatar(
+                  color: Colors.black,
+                  userProfilePicture: reservation.user!.profilePicturePath,
+                ),
+                onTap: () {
+                  final bool displayDesktopLayout = connectedUser.isAdmin() &&
+                      kIsWeb &&
+                      ResponsiveWrapper.of(context)
+                          .isLargerThan(DESKTOP) ||
+                      kIsWeb &&
+                          ResponsiveWrapper.of(context)
+                              .isLargerThan(MOBILE) &&
+                          !connectedUser.isAdmin();
+                  if (!displayDesktopLayout) {
+                    context.push(
+                        '${Routes.reservations.path}/${reservation.id}');
+                  } else {
+                    setState(() {
+                      selectedReservation = reservation;
+                    });
+                  }
+                },
+                title: Text(
+                  "#${reservation.reservationNumber} ${reservation.createdBy.firstname} ${reservation.createdBy.lastname}",
+                ),
+                subtitle: Text(_getPeriod(reservation)),
+                trailing: Text("${reservation.amount.toStringAsFixed(2)} €"),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
