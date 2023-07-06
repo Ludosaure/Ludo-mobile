@@ -49,8 +49,12 @@ class _UserHomePageState extends State<UserHomePage> {
 
   Widget _buildGameList() {
     return Padding(
-      padding:
-          const EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0, bottom: 40),
+      padding: const EdgeInsets.only(
+        left: 20.0,
+        right: 20.0,
+        top: 10.0,
+        bottom: 40,
+      ),
       child: BlocConsumer<GetGamesCubit, GetGamesState>(
         listener: (context, state) {
           if (state is GetGamesError) {
@@ -77,13 +81,9 @@ class _UserHomePageState extends State<UserHomePage> {
 
           if (state is GetGamesSuccess) {
             games = state.games;
-            return RefreshIndicator(
-                child: _gridView
-                    ? GameGridList(games: state.games)
-                    : GameTileList(games: state.games),
-                onRefresh: () async {
-                  BlocProvider.of<GetGamesCubit>(context).getGames();
-                });
+            return _gridView
+                ? GameGridList(games: state.games)
+                : GameTileList(games: state.games);
           }
 
           if (state is GetGamesError) {

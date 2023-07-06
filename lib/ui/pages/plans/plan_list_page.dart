@@ -15,7 +15,11 @@ class PlanListPage extends StatelessWidget {
       appBar: AppBar(
         leading: BackButton(
           onPressed: () {
-            context.pop();
+            if(Navigator.of(context).canPop()) {
+              context.pop();
+            } else {
+              context.go(Routes.adminDashboard.path);
+            }
           },
         ),
         title: const Text('list-plans-title').tr(),
